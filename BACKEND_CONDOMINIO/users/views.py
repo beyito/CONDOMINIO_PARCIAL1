@@ -24,7 +24,7 @@ class RegisterView(generics.CreateAPIView):
             "Status": 1,
             "Error": 0,
             "message": "Usuario registrado correctamente",
-            "data": serializer.data
+            "values": serializer.data
         }, status=status.HTTP_201_CREATED)
 
 
@@ -40,7 +40,7 @@ class UserViewSet(viewsets.ModelViewSet):
             "Status": 1,
             "Error": 0,
             "message": "Usuarios listados correctamente",
-            "data": serializer.data
+            "values": serializer.data
         })
 
 
@@ -56,14 +56,14 @@ class MyTokenObtainPairView(TokenObtainPairView):
                 "Status": 2,
                 "Error": 1,
                 "message": "Error al iniciar sesión",
-                "data": {}
+                "values": {}
             }, status=400)
         
         return Response({
             "Status": 1,
             "Error": 0,
             "message": "Se inició sesión correctamente",
-            "data": serializer.validated_data
+            "values": serializer.validated_data
         })
 
 
