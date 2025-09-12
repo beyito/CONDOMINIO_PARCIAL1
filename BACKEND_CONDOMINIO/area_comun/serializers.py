@@ -82,15 +82,15 @@ class ReservaSerializer(serializers.ModelSerializer):
     
 # REGISTRO DE VISITAS
 
-class ListaVisitantesSerializer(serializers.Serializer):
-    nombre = serializers.CharField(max_length=100)
-    apellido = serializers.CharField(max_length=100)
-    fecha_visita = serializers.DateField()
-    hora_entrada = serializers.TimeField()
-    hora_salida = serializers.TimeField()
+class ListaVisitantesSerializer(serializers.ModelSerializer):
+    copropietario = serializers.CharField(source='copropietario.nombre', read_only=True)
+    nombre = serializers.CharField(source='visitante.nombre', read_only=True)
+    apellido = serializers.CharField(source='visitante.apellido', read_only=True)
+    ci = serializers.CharField(source='visitante.ci', read_only=True)
 
     class Meta:
-        fields = ['nombre', 'apellido', 'fecha_visita', 'hora_entrada', 'hora_salida']
+        model = AutorizacionVisita
+        fields = ['copropietario', 'nombre', 'apellido', 'ci', 'motivo_visita', 'hora_inicio', 'hora_fin', 'estado']
 
 class MarcarEntradaSerializer(serializers.Serializer):
     guardia_id = serializers.IntegerField()
