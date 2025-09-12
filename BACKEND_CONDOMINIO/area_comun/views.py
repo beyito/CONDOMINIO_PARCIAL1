@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from datetime import datetime
 from .models import AreaComun, Reserva
 from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer
-
+from rest_framework.parsers import MultiPartParser, FormParser
 # #Crear Lista Invitados
 
 
@@ -187,6 +187,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
     queryset = Reserva.objects.all()
     serializer_class = ReservaSerializer
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser] 
 
     def list(self, request, *args, **kwargs):
         reservas = self.get_queryset()
@@ -199,7 +200,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
         })
 
     def perform_create(self, serializer):
-        serializer.save(usuario=self.request.user)
+        serializer.save()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
