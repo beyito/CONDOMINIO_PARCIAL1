@@ -85,13 +85,26 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'condominio',
         'USER': 'postgres',
-        'PASSWORD': 'CObuchan8',
+        'PASSWORD': 'password',
         'HOST': 'localhost',
         'PORT': '5432',
 
     }
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # token de acceso
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),    # token de refresco
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
