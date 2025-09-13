@@ -84,8 +84,8 @@ class GuardiaModel(models.Model):
         ('tarde', 'Tarde'),
         ('noche', 'Noche'),
     )
-    turno = models.CharField(max_length=50, choices=TURNO_CHOICES)
-    fecha_contratacion = models.DateField(auto_now_add=True)
+    turno = models.CharField(max_length=50, choices=TURNO_CHOICES, null=True, blank=True)
+    fecha_contratacion = models.DateField(auto_now_add=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
