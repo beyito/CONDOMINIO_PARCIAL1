@@ -4,7 +4,8 @@ from rest_framework.decorators import api_view,action
 from rest_framework.response import Response
 from datetime import datetime
 from .models import AreaComun, Reserva, AutorizacionVisita
-from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer
+from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer, ListaVisitantesSerializer
+from rest_framework.parsers import MultiPartParser, FormParser
 
 # #Crear Lista Invitados
 

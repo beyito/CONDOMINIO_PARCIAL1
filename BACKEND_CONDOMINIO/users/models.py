@@ -50,7 +50,7 @@ class Usuario(AbstractUser):
         ('inactivo', 'Inactivo'),
     )
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='activo')
-    idRol = models.ForeignKey(Rol, on_delete=models.RESTRICT, db_column="idrol", null=True, blank=True)
+    idRol = models.ForeignKey(Rol, on_delete=models.RESTRICT, db_column="idRol", default=1, blank=True, null=True)  # Relación con Rol, puede ser nulo
 
     # first_name y last_name ya existen en AbstractUser
     created_at = models.DateTimeField(auto_now_add=True)
@@ -68,7 +68,8 @@ class Usuario(AbstractUser):
     class Meta:
         db_table = "usuario"
 
-
+    def __str__(self):
+        return self.username
 
 
 class GuardiaModel(models.Model):
@@ -78,8 +79,13 @@ class GuardiaModel(models.Model):
         primary_key=True,
         db_column="id"
     )
-    turno = models.CharField(max_length=50)
-    fecha_contratacion = models.DateField()
+    TURNO_CHOICES = (
+        ('mañana', 'Mañana'),
+        ('tarde', 'Tarde'),
+        ('noche', 'Noche'),
+    )
+    turno = models.CharField(max_length=50, choices=TURNO_CHOICES)
+    fecha_contratacion = models.DateField(auto_now_add=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
@@ -93,7 +99,7 @@ class CopropietarioModel(models.Model):
         primary_key=True,
         db_column="id"
     )
-    unidad = models.CharField(max_length=50)
+    unidad = models.CharField(max_length=50, null=True, blank=True)  # Ejemplo: "Apto 101"
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

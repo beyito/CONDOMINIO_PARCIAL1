@@ -2,7 +2,7 @@
 from rest_framework import generics, viewsets, status
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, MyTokenObtainPairSerializer
+from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView
@@ -12,11 +12,61 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 User = get_user_model()
 
+class RegisterCopropietarioView(generics.CreateAPIView):
+    serializer_class = CopropietarioSerializer
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data['idRol'] = 2  # forzar el rol de copropietario
+        print(data)
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            serializer.save()  # llama automáticamente al create del serializer
+            return Response({
+                "Status": 1,
+                "Error": 0,
+                "message": "Usuario registrado correctamente",
+                "data": serializer.data
+            })
+        return Response({
+            "Status": 2,
+            "Error": 1,
+            "message": "Usuario no se pudo registrar correctamente",
+            "errors": serializer.errors
+        })
+
+class RegisterGuardiaView(generics.CreateAPIView):
+    serializer_class = CopropietarioSerializer
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data['idRol'] = 3  # forzar el rol de guardia
+        print(data)
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            serializer.save()  # llama automáticamente al create del serializer
+            return Response({
+                "Status": 1,
+                "Error": 0,
+                "message": "Usuario registrado correctamente",
+                "data": serializer.data
+            })
+        return Response({
+            "Status": 2,
+            "Error": 1,
+            "message": "Usuario no se pudo registrar correctamente",
+            "errors": serializer.errors
+        })
+
+
 class RegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
+        
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -26,7 +76,6 @@ class RegisterView(generics.CreateAPIView):
             "message": "Usuario registrado correctamente",
             "data": serializer.data
         }, status=status.HTTP_201_CREATED)
-
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -49,15 +98,15 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        try:
-            serializer.is_valid(raise_exception=True)
-        except Exception:
-            return Response({
-                "Status": 2,
-                "Error": 1,
-                "message": "Error al iniciar sesión",
-                "data": {}
-            }, status=400)
+        # try:
+        serializer.is_valid(raise_exception=True)
+        # except Exception:
+        #     return Response({
+        #         "Status": 2,
+        #         "Error": 1,
+        #         "message": "Error al iniciar sesión",
+        #         "data": {}
+        #     })
         
         return Response({
             "Status": 1,
