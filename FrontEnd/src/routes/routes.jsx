@@ -1,9 +1,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import LoginForm from '../pages/login'
-import Dashboard from '../pages/Dashboard'
+import Dashboard from '../pages/Dashboard/Dashboard'
 import ProtectedRoute from '../components/ProtectedRoutes'
-
+import EstadisticasDashboard from '../pages/Dashboard/components/EstadisticasDashboard'
+import AreasComunes from '../pages/Dashboard/components/AreasComunes'
 function AppRoutes() {
   const { isAuthenticated, loading } = useAuth()
 
@@ -23,7 +24,6 @@ function AppRoutes() {
           !isAuthenticated ? <LoginForm /> : <Navigate to='/dashboard' />
         }
       />
-
       <Route
         path='/dashboard'
         element={
@@ -31,7 +31,11 @@ function AppRoutes() {
             <Dashboard />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<EstadisticasDashboard />} /> {/* Default */}
+        <Route path='estadisticas' element={<EstadisticasDashboard />} />
+        <Route path='areas' element={<AreasComunes />} />
+      </Route>
 
       <Route
         path='/'

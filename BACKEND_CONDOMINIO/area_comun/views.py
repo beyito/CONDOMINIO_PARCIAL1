@@ -139,7 +139,7 @@ class AreaComunViewSet(viewsets.ModelViewSet):
             "Status": 1,
             "Error": 0,
             "message": "Áreas listadas correctamente",
-            "data": serializer.data
+            "values": serializer.data
         })
     def destroy(self, request, *args, **kwargs):
         if not request.user.is_authenticated or request.user.rol_id != 1:
@@ -147,7 +147,7 @@ class AreaComunViewSet(viewsets.ModelViewSet):
                 "Status": 0,
                 "Error": 1,
                 "message": "No tienes permisos para eliminar áreas comunes",
-                "data": None
+                "values": None
             }, status=status.HTTP_403_FORBIDDEN)
         
         instance = self.get_object()
@@ -159,7 +159,7 @@ class AreaComunViewSet(viewsets.ModelViewSet):
             "Status": 1,
             "Error": 0,
             "message": f"Área con id {instance.pk} eliminada correctamente",
-            "data": {}
+            "values": {}
         }, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
@@ -169,7 +169,7 @@ class AreaComunViewSet(viewsets.ModelViewSet):
                 "Status": 0,
                 "Error": 1,
                 "message": "No tienes permisos para crear áreas comunes",
-                "data": None
+                "values": None
             }, status=status.HTTP_403_FORBIDDEN)
         
         serializer = self.get_serializer(data=request.data)
@@ -179,7 +179,7 @@ class AreaComunViewSet(viewsets.ModelViewSet):
             "Status": 1,
             "Error": 0,
             "message": "Área creada correctamente",
-            "data": serializer.data
+            "values": serializer.data
         }, status=status.HTTP_201_CREATED)
 
 
@@ -196,7 +196,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
             "Status": 1,
             "Error": 0,
             "message": "Reservas listadas correctamente",
-            "data": serializer.data
+            "values": serializer.data
         })
 
     def perform_create(self, serializer):
@@ -210,7 +210,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
             "Status": 1,
             "Error": 0,
             "message": "Reserva creada correctamente",
-            "data": serializer.data
+            "values": serializer.data
         }, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
@@ -221,7 +221,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
                 "Status": 2,
                 "Error": 1,
                 "message": "La reserva ya está cancelada",
-                "data": {}
+                "values": {}
             }, status=status.HTTP_400_BAD_REQUEST)
         
         motivo = request.data.get('motivo_cancelacion', '')
