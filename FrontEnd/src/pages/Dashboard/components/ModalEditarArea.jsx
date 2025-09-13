@@ -1,14 +1,14 @@
-import { XCircle, Plus, Search } from 'lucide-react'
+import { XCircle } from 'lucide-react'
 
 import { useApi } from '../../../hooks/useApi'
-import { postareas } from '../../../api/areasComunes/areas'
+import { putareas } from '../../../api/areasComunes/areas'
 import { useState } from 'react'
 
 import ApprovalModal from '../../../components/AprovalModal'
 import ErrorModal from '../../../components/ErrorModal'
 
-export default function ModalCrearArea({ setShowModal, onSuccess }) {
-  const { execute, loading, error } = useApi(postareas)
+export default function ModalEditarArea({ setShowModal, onSuccess, area }) {
+  const { execute, loading, error } = useApi(putareas)
   const [approvalModalOpen, setApprovalModalOpen] = useState(false)
   const [errorModalOpen, setErrorModalOpen] = useState(false)
 
@@ -26,13 +26,13 @@ export default function ModalCrearArea({ setShowModal, onSuccess }) {
     }
 
     try {
-      const response = await execute(formData)
-      console.log('Área creada:', response.data)
+      const response = await execute(area.id_area, formData)
+      console.log('Área Editada:', response.data)
       setShowModal(false)
       onSuccess()
       setApprovalModalOpen(true)
     } catch (err) {
-      console.error('Error al crear área:', err)
+      console.error('Error al editar área:', err)
       setErrorModalOpen(true)
     }
   }
@@ -60,57 +60,53 @@ export default function ModalCrearArea({ setShowModal, onSuccess }) {
               name='nombre'
               placeholder='Nombre del área'
               className='w-full border border-gray-200 rounded-lg px-4 py-2'
+              defaultValue={area.nombre_area}
             />
             <input
               type='number'
               name='capacidad'
               placeholder='Capacidad'
               className='w-full border border-gray-200 rounded-lg px-4 py-2'
+              defaultValue={area.capacidad}
             />
             <input
               type='text'
               name='dias'
               placeholder='Días hábiles'
               className='w-full border border-gray-200 rounded-lg px-4 py-2'
+              defaultValue={area.dias_habiles}
             />
-            <label
-              htmlFor='apertura'
-              className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
-            >
-              Horario apertura
-            </label>
             <input
               type='time'
               name='apertura'
               placeholder='Horario apertura'
               className='w-full border border-gray-200 rounded-lg px-4 py-2'
+              defaultValue={area.apertura_hora}
             />
-            <label
-              htmlFor='cierre'
-              className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
-            >
-              Horario cierre
-            </label>
             <input
               type='time'
               name='cierre'
               placeholder='Horario cierre'
               className='w-full border border-gray-200 rounded-lg px-4 py-2'
+              defaultValue={area.cierre_hora}
             />
             <textarea
               placeholder='Reglas del área'
               name='reglas'
               className='w-full border border-gray-200 rounded-lg px-4 py-2'
+              defaultValue={area.reglas}
             />
             <input
               type='number'
               name='precio'
               placeholder='Precio por bloque'
               className='w-full border border-gray-200 rounded-lg px-4 py-2'
+              defaultValue={area.precio_por_bloque}
             />
             <select
               name='estado'
               className='w-full border border-gray-200 rounded-lg px-4 py-2'
+              defaultValue={area.estado}
               required
             >
               <option value=''>Selecciona un estado</option>
@@ -132,7 +128,7 @@ export default function ModalCrearArea({ setShowModal, onSuccess }) {
                 type='submit'
                 className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
               >
-                {loading ? 'Creando...' : 'Crear Área'}
+                {loading ? 'Editando...' : 'Editar Área'}
               </button>
             </div>
           </form>

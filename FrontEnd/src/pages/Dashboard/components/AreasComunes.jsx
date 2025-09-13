@@ -19,20 +19,31 @@ import {
   MoreVertical
 } from 'lucide-react'
 import { useApi } from '../../../hooks/useApi'
-import { getareas } from '../../../api/areasComunes/areas'
+import { getareas, deleteareas } from '../../../api/areasComunes/areas'
 import ModalCrearArea from './ModalCrearArea'
+import ModalEditarArea from './ModalEditarArea'
+
 export default function AreasComunes() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState('all')
   const [showModal, setShowModal] = useState(false)
   const [selectedArea, setSelectedArea] = useState(null)
-  const [viewMode, setViewMode] = useState('grid') // 'grid' o 'list'
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editingArea, setEditingArea] = useState(null)
 
   const { data, loading, error, execute } = useApi(getareas)
-
+  const handleDeleteArea = async (id) => {
+    try {
+      const response = await deleteareas(id)
+      console.log('Área eliminada:', response.data)
+      execute()
+    } catch (err) {
+      console.error('Error al eliminar área:', err)
+    }
+  }
   useEffect(() => {
     execute()
-  }, [execute])
+  }, [])
 
   // Obtenemos directamente el array de áreas
   const areas = data?.data?.values || []
@@ -69,19 +80,24 @@ export default function AreasComunes() {
     return time.slice(0, 5) // Formato HH:MM
   }
 
-  const filteredAreas = areas.filter((area) => {
-    const matchesSearch = area.nombre_area
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-    const matchesFilter = filterStatus === 'all' || area.estado === filterStatus
-    return matchesSearch && matchesFilter
-  })
+  const filteredAreas = areas
+    .filter((area) => area.estado !== 'inactivo') // <-- no mostrar inactivos
+    .filter((area) => {
+      const matchesSearch = area.nombre_area
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+      const matchesFilter =
+        filterStatus === 'all' || area.estado === filterStatus
+      return matchesSearch && matchesFilter
+    })
 
   const handleAreaClick = (area) => {
     setSelectedArea(area)
     setShowModal(true)
   }
 
+  if (loading) return <p>Cargando...</p>
+  if (error) return <p>Error al cargar áreas</p>
   return (
     <div className='space-y-6'>
       {/* Header */}
@@ -103,8 +119,19 @@ export default function AreasComunes() {
           <span>Nueva Área</span>
         </button>
       </div>
+      {/* Modales */}
       {showModal && selectedArea === null && (
-        <ModalCrearArea setShowModal={setShowModal} />
+        <ModalCrearArea
+          setShowModal={setShowModal}
+          onSuccess={() => execute()}
+        />
+      )}
+      {showEditModal && editingArea && (
+        <ModalEditarArea
+          setShowModal={setShowEditModal} // para cerrar el modal
+          onSuccess={() => execute()} // para refrescar la lista
+          area={editingArea} // los datos del área a editar
+        />
       )}
 
       {/* Filters and Search */}
@@ -130,6 +157,7 @@ export default function AreasComunes() {
               <option value='libre'>Disponible</option>
               <option value='ocupada'>Ocupada</option>
               <option value='mantenimiento'>Mantenimiento</option>
+              <option value='inactivo'>Inactivo</option>
             </select>
             <button className='p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors'>
               <Filter className='w-4 h-4 text-gray-600' />
@@ -167,9 +195,9 @@ export default function AreasComunes() {
         <div className='bg-white rounded-xl p-6 shadow-sm border border-gray-100'>
           <div className='flex items-center justify-between'>
             <div>
-              <p className='text-gray-600 text-sm'>Ocupadas</p>
+              <p className='text-gray-600 text-sm'>Inactivos</p>
               <p className='text-2xl font-bold text-red-600'>
-                {areas.filter((a) => a.estado === 'ocupada').length}
+                {areas.filter((a) => a.estado === 'inactivo').length}
               </p>
             </div>
             <div className='w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center'>
@@ -177,6 +205,7 @@ export default function AreasComunes() {
             </div>
           </div>
         </div>
+
         <div className='bg-white rounded-xl p-6 shadow-sm border border-gray-100'>
           <div className='flex items-center justify-between'>
             <div>
@@ -253,10 +282,21 @@ export default function AreasComunes() {
               <button className='p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors'>
                 <Eye className='w-4 h-4' />
               </button>
-              <button className='p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors'>
+              <button
+                className='p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors'
+                onClick={() => {
+                  setEditingArea(area) // pasamos los datos del área al modal
+                  setShowEditModal(true) // abrimos el modal
+                }}
+              >
                 <Edit className='w-4 h-4' />
               </button>
-              <button className='p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors'>
+              <button
+                className='p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors'
+                onClick={() => {
+                  handleDeleteArea(area.id_area)
+                }}
+              >
                 <Trash2 className='w-4 h-4' />
               </button>
             </div>

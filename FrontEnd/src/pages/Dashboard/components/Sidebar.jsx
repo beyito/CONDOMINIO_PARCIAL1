@@ -20,12 +20,6 @@ import {
 const menuItems = [
   { id: 'dashboard', icon: Home, label: 'Dashboard', path: '/dashboard' },
   {
-    id: 'estadisticas',
-    icon: Home,
-    label: 'Estadísticas',
-    path: '/dashboard/estadisticas'
-  },
-  {
     id: 'residentes',
     icon: Users,
     label: 'Residentes',

@@ -167,7 +167,7 @@ class AreaComunViewSet(viewsets.ModelViewSet):
             "values": serializer.data
         })
     def destroy(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or request.user.rol_id != 1:
+        if not request.user.is_authenticated or request.user.idRol.name != "Administrador":
             return Response({
                 "Status": 0,
                 "Error": 1,
@@ -189,12 +189,13 @@ class AreaComunViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         #Validar si es Admin
-        if not request.user.is_authenticated or request.user.rol_id != 1:
+
+        if not request.user.is_authenticated or request.user.idRol.name != "Administrador":
             return Response({
                 "Status": 0,
                 "Error": 1,
                 "message": "No tienes permisos para crear áreas comunes",
-                "values": None
+                "values":None
             }, status=status.HTTP_403_FORBIDDEN)
         
         serializer = self.get_serializer(data=request.data)
