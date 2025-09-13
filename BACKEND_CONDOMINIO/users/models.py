@@ -110,7 +110,7 @@ class CopropietarioModel(models.Model):
 class PersonaModel(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    documento = models.CharField(max_length=50, unique=True)  # CI, pasaporte, etc.
+    documento = models.CharField(max_length=50, unique=True)  # CI
     
     # Relación muchos a muchos: visitante puede visitar a varios copropietarios
     copropietarios = models.ManyToManyField(CopropietarioModel, through="area_comun.AutorizacionVisita")

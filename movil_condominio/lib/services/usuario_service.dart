@@ -17,7 +17,7 @@ class UsuarioService {
       Uri.parse('$baseUrl/mostrarUsuarios'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Token $token',
+        'Authorization': 'Bearer $token',
       },
     );
 

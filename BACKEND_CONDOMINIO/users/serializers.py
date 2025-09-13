@@ -47,6 +47,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data = super().validate(attrs)
         print(self.user.idRol)
         # Agregar info extra
+        data['id'] = self.user.id 
         data['username'] = self.user.username
         data['first_name'] = self.user.first_name
         data['last_name'] = self.user.last_name
@@ -78,7 +79,6 @@ class CopropietarioSerializer(serializers.ModelSerializer):
         print("joal")   
         usuario = Usuario.objects.create(**validated_data)
         usuario.set_password(validated_data['password'])
-        usuario.save()
        # unidad = validated_data.pop('unidad', None)
         usuario.save()
         

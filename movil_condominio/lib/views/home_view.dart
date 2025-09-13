@@ -23,7 +23,7 @@ class HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    final fechaActual = Functions.fechaActual();
+    //final fechaActual = Functions.fechaActual();
 
     return Scaffold(
       appBar: AppBar(

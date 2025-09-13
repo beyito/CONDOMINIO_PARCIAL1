@@ -15,7 +15,7 @@ class HomePage extends StatelessWidget {
     SizedBox(
       child: Text("Categorias"),
     ), //<-- Categories View. Podemos colocar un Widget como HomeView
-    UsuariosView(), //<-- Usuarios View
+    // UsuariosView(), //<-- Usuarios View
   ];
   @override
   Widget build(BuildContext context) {

@@ -8,7 +8,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
-
+from rest_framework.exceptions import AuthenticationFailed
+from .models import Usuario
+from rest_framework.decorators import api_view
 User = get_user_model()
 
 class RegisterCopropietarioView(generics.CreateAPIView):
@@ -23,14 +25,14 @@ class RegisterCopropietarioView(generics.CreateAPIView):
         if serializer.is_valid():
             serializer.save()  # llama automáticamente al create del serializer
             return Response({
-                "Status": 1,
-                "Error": 0,
+                "status": 1,
+                "error": 0,
                 "message": "Usuario registrado correctamente",
-                "data": serializer.data
+                "values": serializer.data
             })
         return Response({
-            "Status": 2,
-            "Error": 1,
+            "status": 2,
+            "error": 1,
             "message": "Usuario no se pudo registrar correctamente",
             "errors": serializer.errors
         })
@@ -47,14 +49,14 @@ class RegisterGuardiaView(generics.CreateAPIView):
         if serializer.is_valid():
             serializer.save()  # llama automáticamente al create del serializer
             return Response({
-                "Status": 1,
-                "Error": 0,
+                "status": 1,
+                "error": 0,
                 "message": "Usuario registrado correctamente",
-                "data": serializer.data
+                "values": serializer.data
             })
         return Response({
-            "Status": 2,
-            "Error": 1,
+            "status": 2,
+            "error": 1,
             "message": "Usuario no se pudo registrar correctamente",
             "errors": serializer.errors
         })
@@ -70,10 +72,10 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response({
-            "Status": 1,
-            "Error": 0,
+            "status": 1,
+            "error": 0,
             "message": "Usuario registrado correctamente",
-            "data": serializer.data
+            "values": serializer.data
         }, status=status.HTTP_201_CREATED)
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -85,10 +87,10 @@ class UserViewSet(viewsets.ModelViewSet):
         users = self.get_queryset()
         serializer = self.get_serializer(users, many=True)
         return Response({
-            "Status": 1,
-            "Error": 0,
+            "status": 1,
+            "error": 0,
             "message": "Usuarios listados correctamente",
-            "data": serializer.data
+            "values": serializer.data
         })
 
 
@@ -97,21 +99,31 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
+        print("Request data", request.data)
         try:
             serializer.is_valid(raise_exception=True)
-        except Exception:
-             return Response({
-                 "Status": 2,
-                 "Error": 1,
-                 "message": "Error al iniciar sesión",
-                 "data": {}
-             })
-        
+        except AuthenticationFailed as e:
+            # Aquí puedes personalizar según el mensaje
+            error_msg = str(e)
+            if "No active account" in error_msg:
+                return Response({
+                    "status": 2,
+                    "error": 1,
+                    "message": "Usuario o contraseña incorrectos"
+                })
+            
+            return Response({
+                "status": 2,
+                "error": 1,
+                "message": error_msg
+            })
+
+        # Si pasó la validación
         return Response({
-            "Status": 1,
-            "Error": 0,
+            "status": 1,
+            "error": 0,
             "message": "Se inició sesión correctamente",
-            "data": serializer.validated_data
+            "values": serializer.validated_data
         })
 
 
@@ -148,4 +160,30 @@ class LogoutView(APIView):
                 "Error": 1,
                 "message": f"Error al cerrar la sesión: {str(e)}",
             }, status=status.HTTP_400_BAD_REQUEST)
+# VER PERFIL
+
+class PerfilUsuarioView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        
+        usuario = request.user  # ya es el usuario autenticado
+        print(usuario.idRol)
+        return Response({
+            "status": 1,
+            "error": 0,
+            "message": "Perfil obtenido correctamente",
+            "values": {
+                    "id": usuario.id,
+                    "username": usuario.username,
+                    "nombre": usuario.nombre,
+                    "ci": usuario.ci,
+                    "email": usuario.email,
+                    "telefono": usuario.telefono,
+                    "rol": usuario.idRol.name,
+            }
+        })
+
+
+
         
