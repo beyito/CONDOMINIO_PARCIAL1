@@ -18,10 +18,10 @@ import {
   Settings,
   MoreVertical
 } from 'lucide-react'
-import { useApi } from '../../../hooks/useApi'
-import { getareas, deleteareas } from '../../../api/areasComunes/areas'
-import ModalCrearArea from './ModalCrearArea'
-import ModalEditarArea from './ModalEditarArea'
+import { useApi } from '../../hooks/useApi'
+import { getareas, deleteareas } from '../../api/areasComunes/areas'
+import ModalCrearArea from './components/ModalCrearArea'
+import ModalEditarArea from './components/ModalEditarArea'
 
 export default function AreasComunes() {
   const [searchTerm, setSearchTerm] = useState('')

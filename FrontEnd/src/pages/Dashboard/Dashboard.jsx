@@ -1,7 +1,6 @@
 import { Bell } from 'lucide-react'
 import { Outlet } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
-import EstadisticasDashboard from './components/EstadisticasDashboard'
 
 export default function CondominioSmartDashboard() {
   // Datos simulados para el dashboard

@@ -4,7 +4,9 @@ import LoginForm from '../pages/login'
 import Dashboard from '../pages/Dashboard/Dashboard'
 import ProtectedRoute from '../components/ProtectedRoutes'
 import EstadisticasDashboard from '../pages/Dashboard/components/EstadisticasDashboard'
-import AreasComunes from '../pages/Dashboard/components/AreasComunes'
+import AreasComunes from '../pages/AreasComunes/AreasComunes'
+import UsuariosDashboard from '../pages/Usuarios/Usuarios'
+
 function AppRoutes() {
   const { isAuthenticated, loading } = useAuth()
 
@@ -35,6 +37,7 @@ function AppRoutes() {
         <Route index element={<EstadisticasDashboard />} /> {/* Default */}
         <Route path='estadisticas' element={<EstadisticasDashboard />} />
         <Route path='areas' element={<AreasComunes />} />
+        <Route path='usuarios' element={<UsuariosDashboard />} />
       </Route>
 
       <Route

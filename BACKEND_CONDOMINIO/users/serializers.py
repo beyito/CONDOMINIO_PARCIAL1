@@ -13,6 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
         required=True, 
         validators=[validate_password]
     )
+    rol_name = serializers.SerializerMethodField() #campo extra a devolver
 
     class Meta:
         model = User
@@ -21,12 +22,17 @@ class UserSerializer(serializers.ModelSerializer):
             'username',
             'first_name',
             'last_name',
+            'nombre',
             'ci',
             'telefono',
             'email',
             'password', 
-            'idRol'  
+            'idRol',
+            'rol_name'
         ]
+
+    def get_rol_name(self, obj):
+        return obj.idRol.name if obj.idRol else None
 
     def create(self, validated_data):
         user = User(
@@ -78,14 +84,15 @@ class CopropietarioSerializer(serializers.ModelSerializer):
     def create(self, validated_data):   
         print("joal")  
         unidad = validated_data.pop('unidad', None) 
+        password = validated_data.pop('password')  # 👉 la sacamos antes
         usuario = Usuario.objects.create(**validated_data)
-        usuario.set_password(validated_data['password'])
-        print(unidad)
+        usuario.set_password(password)
         usuario.save()
         
         if unidad:
             CopropietarioModel.objects.create(idUsuario=usuario, unidad=unidad)
-        else: CopropietarioModel.objects.create(idUsuario=usuario)
+        else:
+            CopropietarioModel.objects.create(idUsuario=usuario)
         return usuario
     
 class GuardiaSerializer(serializers.ModelSerializer):
