@@ -76,7 +76,7 @@ class RegisterView(generics.CreateAPIView):
             "error": 0,
             "message": "Usuario registrado correctamente",
             "values": serializer.data
-        }, status=status.HTTP_201_CREATED)
+        })
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -136,10 +136,10 @@ class LogoutView(APIView):
             auth_header = request.headers.get('Authorization')
             if not auth_header:
                 return Response({
-                    "Status": 2,
-                    "Error": 1,
+                    "status": 2,
+                    "error": 1,
                     "message": "No se proporcionó token de acceso"
-                }, status=status.HTTP_400_BAD_REQUEST)
+                })
 
             token_str = auth_header.split(" ")[1]  # "Bearer <token>"
             token = AccessToken(token_str)
@@ -149,17 +149,17 @@ class LogoutView(APIView):
                 token.blacklist()
 
             return Response({
-                "Status": 1,
-                "Error": 0,
+                "status": 1,
+                "error": 0,
                 "message": "Se cerró la sesión correctamente",
-            }, status=status.HTTP_205_RESET_CONTENT)
+            })
 
         except Exception as e:
             return Response({
-                "Status": 2,
-                "Error": 1,
+                "status": 2,
+                "error": 1,
                 "message": f"Error al cerrar la sesión: {str(e)}",
-            }, status=status.HTTP_400_BAD_REQUEST)
+            })
 # VER PERFIL
 
 class PerfilUsuarioView(APIView):

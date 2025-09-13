@@ -34,7 +34,7 @@ def crearUnidad(request):
                     'status':2, 
                     'error': 1,
                     'message': 'Ya existe una unidad con ese codigo',
-                    'data':None 
+                    'values':None 
                 })
             unidad = serializer.save() # crea en la bd
 
@@ -42,7 +42,7 @@ def crearUnidad(request):
                 'status': 1,
                 'error': 0,
                 'message': f'Unidad {unidad.codigo} creada exitosamente',
-                'data': UnidadSerializer(unidad).data
+                'values': UnidadSerializer(unidad).data
                 # ['id',
                 # 'codigo',
                 #  'bloque',
@@ -59,7 +59,7 @@ def crearUnidad(request):
                 'status': 2,
                 'error': 1,
                 'message': 'Datos invalidos para crear la unidad',
-                'data': serializer.errors
+                'values': serializer.errors
             })   
     except Exception as e:
         logger.error(f"Error al crear unidad: {str(e)}")
@@ -67,7 +67,7 @@ def crearUnidad(request):
             'status': 2,
             'error': 1,
             'message': 'Error interno del servidor al crear la unidad',
-            'data': None
+            'values': None
         }) 
 
 @api_view(['PUT'])
@@ -87,7 +87,7 @@ def editar_unidad(request, unidad_id):
                 'status':2, 
                 'error': 1,
                 'message': 'Ya existe una unidad con ese codigo',
-                'data':None 
+                'values':None 
             }) 
         serializer = UnidadSerializer(unidad, data=request.data, partial=True)
         #partial permite actualizaciones parciales, de algunos campos
@@ -98,7 +98,7 @@ def editar_unidad(request, unidad_id):
                 'status': 1,
                 'error': 0,
                 'message': f'Unidad {unidad_actualizada.codigo} actualizada exitosamente',
-                'data': UnidadSerializer(unidad_actualizada).data
+                'values': UnidadSerializer(unidad_actualizada).data
                 # ['id', 
                 # 'codigo', 
                 # 'bloque', 
@@ -115,14 +115,14 @@ def editar_unidad(request, unidad_id):
                 'status': 2,
                 'error': 1,
                 'message': 'Datos invalidos para actualizar la unidad',
-                'data': serializer.errors
+                'values': serializer.errors
             })
     except Unidad.DoesNotExist:
         return Response({
             'status': 2,
             'error': 1,
             'message': 'La unidad no encontrada',
-            'data': None
+            'values': None
         })
     except Exception as e:
         logger.error(f"Error al editar unidad:{unidad_id}: {str(e)}")
@@ -130,7 +130,7 @@ def editar_unidad(request, unidad_id):
             'status': 2,
             'error': 1,
             'message': 'Error interno del servidor al editar la unidad',
-            'data': None
+            'values': None
         })  
 
 @api_view(["PATCH"])
@@ -148,7 +148,7 @@ def cambiar_estado_unidad(request, unidad_id):
                 'status': 2,
                 'error': 1,
                 'message': 'Estado invalido. Debe ser "activa", "inactiva" o "mantenimiento"',
-                'data': None
+                'values': None
             })
         estado_anterior = unidad.estado
         unidad.estado = nuevo_estado
@@ -158,7 +158,7 @@ def cambiar_estado_unidad(request, unidad_id):
             'status': 1,
             'error': 0,
             'message': f'Estado de la unidad {unidad.codigo} cambiado de {estado_anterior} a {nuevo_estado} exitosamente',
-            'data': {
+            'values': {
                 'id_unidad': unidad.id,
                 'codigo': unidad.codigo,
                 'estado_anterior': estado_anterior,
@@ -170,7 +170,7 @@ def cambiar_estado_unidad(request, unidad_id):
             'status': 2,
             'error': 1,
             'message': 'La unidad no encontrada',
-            'data': None
+            'values': None
         })
     except Exception as e:
         logger.error(f"Error al cambiar estado de la unidad {unidad_id}: {str(e)}")
@@ -178,7 +178,7 @@ def cambiar_estado_unidad(request, unidad_id):
             'status': 2,
             'error': 1,
             'message': 'Error interno del servidor al cambiar el estado de la unidad',
-            'data': None
+            'values': None
         })
 
 @api_view(['GET'])
@@ -195,7 +195,7 @@ def listar_unidades(request):
             'status': 1,
             'error': 0,
             'message': f'Se encontraron {len(unidades)} unidades',
-            'data': serializer.data
+            'values': serializer.data
             # ['id',
             #  'codigo',
             #  'bloque', 
@@ -227,7 +227,7 @@ def obtener_unidad(request, unidad_id):
             'status': 1,
             'error': 0,
             'message': f'Detalles de la unidad {unidad.codigo} obtenidos exitosamente',
-            'data': serializer.data
+            'values': serializer.data
             # ['id', 
             # 'codigo',
             #  'bloque', 
@@ -245,7 +245,7 @@ def obtener_unidad(request, unidad_id):
             'status': 2,
             'error': 1,
             'message': 'La unidad no encontrada',
-            'data': None
+            'values': None
         })  
     except Exception as e:
         logger.error(f"Error al obtener unidad {unidad_id}: {str(e)}")
@@ -253,7 +253,7 @@ def obtener_unidad(request, unidad_id):
             'status': 2,
             'error': 1,
             'message': 'Error interno del servidor al obtener los detalles de la unidad',
-            'data': None
+            'values': None
         })
         
 @api_view(['POST'])
@@ -275,7 +275,7 @@ def registrar_vehiculo(request):
                     'status': 2,
                     'error': 1,
                     'message': 'Ya existe un vehículo registrado con esa placa',
-                    'data': None
+                    'values': None
                 })
             
             # Validar unicidad de tag_codigo
@@ -285,7 +285,7 @@ def registrar_vehiculo(request):
                     'status': 2,
                     'error': 1,
                     'message': 'Ya existe un vehículo registrado con ese código de tag',
-                    'data': None
+                    'values': None
                 })
             
             vehiculo = serializer.save()
@@ -294,14 +294,14 @@ def registrar_vehiculo(request):
                 'status': 1,
                 'error': 0,
                 'message': f'Vehículo {vehiculo.placa} registrado exitosamente con tag {vehiculo.tag_codigo}',
-                'data': VehiculoSerializer(vehiculo).data
+                'values': VehiculoSerializer(vehiculo).data
             })
         else:
             return Response({
                 'status': 2,
                 'error': 1,
                 'message': 'Datos inválidos para registrar el vehículo',
-                'data': serializer.errors
+                'values': serializer.errors
             })
             
     except Exception as e:
@@ -310,7 +310,7 @@ def registrar_vehiculo(request):
             'status': 2,
             'error': 1,
             'message': 'Error interno del servidor al registrar el vehículo',
-            'data': None
+            'values': None
         })
     
 @api_view(['PUT'])
@@ -331,7 +331,7 @@ def editar_vehiculo(request, vehiculo_id):
                 'status': 2,
                 'error': 1,
                 'message': 'Ya existe un vehículo con esa placa',
-                'data': None
+                'values': None
             })
         
         # Validar unicidad de tag_codigo (excluyendo el vehículo actual)
@@ -341,7 +341,7 @@ def editar_vehiculo(request, vehiculo_id):
                 'status': 2,
                 'error': 1,
                 'message': 'Ya existe un vehículo con ese código de tag',
-                'data': None
+                'values': None
             })
         
         serializer = VehiculoSerializer(vehiculo, data=request.data, partial=True)
@@ -352,14 +352,14 @@ def editar_vehiculo(request, vehiculo_id):
                 'status': 1,
                 'error': 0,
                 'message': f'Vehículo {vehiculo_actualizado.placa} actualizado exitosamente',
-                'data': VehiculoSerializer(vehiculo_actualizado).data
+                'values': VehiculoSerializer(vehiculo_actualizado).data
             })
         else:
             return Response({
                 'status': 2,
                 'error': 1,
                 'message': 'Datos inválidos para actualizar el vehículo',
-                'data': serializer.errors
+                'values': serializer.errors
             })
             
     except Vehiculo.DoesNotExist:
@@ -367,7 +367,7 @@ def editar_vehiculo(request, vehiculo_id):
             'status': 2,
             'error': 1,
             'message': 'El vehículo no fue encontrado',
-            'data': None
+            'values': None
         })
     except Exception as e:
         logger.error(f"Error al editar vehículo {vehiculo_id}: {str(e)}")
@@ -375,7 +375,7 @@ def editar_vehiculo(request, vehiculo_id):
             'status': 2,
             'error': 1,
             'message': 'Error interno del servidor al editar el vehículo',
-            'data': None
+            'values': None
         })
 
 @api_view(['PATCH'])
@@ -391,7 +391,7 @@ def cambiar_estado_vehiculo(request, vehiculo_id):
                 'status': 2,
                 'error': 1,
                 'message': 'Estado inválido. Debe ser "activo", "inactivo" o "bloqueado"',
-                'data': None
+                'values': None
             })
         
         estado_anterior = vehiculo.estado
@@ -402,7 +402,7 @@ def cambiar_estado_vehiculo(request, vehiculo_id):
             'status': 1,
             'error': 0,
             'message': f'Estado del vehículo {vehiculo.placa} cambiado de {estado_anterior} a {nuevo_estado} exitosamente',
-            'data': {
+            'values': {
                 'id_vehiculo': vehiculo.id,
                 'placa': vehiculo.placa,
                 'tag_codigo': vehiculo.tag_codigo,
@@ -416,7 +416,7 @@ def cambiar_estado_vehiculo(request, vehiculo_id):
             'status': 2,
             'error': 1,
             'message': 'El vehículo no fue encontrado',
-            'data': None
+            'values': None
         })
     except Exception as e:
         logger.error(f"Error al cambiar estado del vehículo {vehiculo_id}: {str(e)}")
@@ -424,7 +424,7 @@ def cambiar_estado_vehiculo(request, vehiculo_id):
             'status': 2,
             'error': 1,
             'message': 'Error interno del servidor al cambiar el estado del vehículo',
-            'data': None
+            'values': None
         })
 
 @api_view(['PATCH'])
@@ -446,7 +446,7 @@ def bloquear_acceso_vehiculo(request, vehiculo_id):
             'status': 1,
             'error': 0,
             'message': f'Acceso del vehículo {vehiculo.placa} {accion} exitosamente',
-            'data': {
+            'values': {
                 'id_vehiculo': vehiculo.id,
                 'placa': vehiculo.placa,
                 'tag_codigo': vehiculo.tag_codigo,
@@ -460,7 +460,7 @@ def bloquear_acceso_vehiculo(request, vehiculo_id):
             'status': 2,
             'error': 1,
             'message': 'El vehículo no fue encontrado',
-            'data': None
+            'values': None
         })
     except Exception as e:
         logger.error(f"Error al bloquear/desbloquear vehículo {vehiculo_id}: {str(e)}")
@@ -468,7 +468,7 @@ def bloquear_acceso_vehiculo(request, vehiculo_id):
             'status': 2,
             'error': 1,
             'message': 'Error interno del servidor al cambiar el acceso del vehículo',
-            'data': None
+            'values': None
         })
 
 @api_view(['GET'])
@@ -488,7 +488,7 @@ def listar_vehiculos(request):
             'status': 1,
             'error': 0,
             'message': f'Se encontraron {len(vehiculos)} vehículos',
-            'data': serializer.data
+            'values': serializer.data
         })
         
     except Exception as e:
@@ -497,7 +497,7 @@ def listar_vehiculos(request):
             'status': 2,
             'error': 1,
             'message': 'Error interno del servidor al listar los vehículos',
-            'data': None
+            'values': None
         })
 
 @api_view(['GET'])
@@ -512,7 +512,7 @@ def obtener_vehiculo(request, vehiculo_id):
             'status': 1,
             'error': 0,
             'message': f'Detalles del vehículo {vehiculo.placa} obtenidos exitosamente',
-            'data': serializer.data
+            'values': serializer.data
         })
         
     except Vehiculo.DoesNotExist:
@@ -520,7 +520,7 @@ def obtener_vehiculo(request, vehiculo_id):
             'status': 2,
             'error': 1,
             'message': 'El vehículo no fue encontrado',
-            'data': None
+            'values': None
         })
     except Exception as e:
         logger.error(f"Error al obtener vehículo {vehiculo_id}: {str(e)}")
@@ -528,7 +528,7 @@ def obtener_vehiculo(request, vehiculo_id):
             'status': 2,
             'error': 1,
             'message': 'Error interno del servidor al obtener los detalles del vehículo',
-            'data': None
+            'values': None
         })
 
 # ==================== VIEWS DE MASCOTAS ====================
@@ -549,7 +549,7 @@ def registrar_mascota(request):
                 'status': 1,
                 'error': 0,
                 'message': f'Mascota {mascota.nombre} registrada exitosamente',
-                'data': MascotaSerializer(mascota).data
+                'values': MascotaSerializer(mascota).data
             })
         else:
             return Response({
@@ -565,7 +565,7 @@ def registrar_mascota(request):
             'status': 2,
             'error': 1,
             'message': 'Error interno del servidor al registrar la mascota',
-            'data': None
+            'values': None
         })
 
 @api_view(['PUT'])
@@ -583,14 +583,14 @@ def editar_mascota(request, mascota_id):
                 'status': 1,
                 'error': 0,
                 'message': f'Mascota {mascota_actualizada.nombre} actualizada exitosamente',
-                'data': MascotaSerializer(mascota_actualizada).data
+                'values': MascotaSerializer(mascota_actualizada).data
             })
         else:
             return Response({
                 'status': 2,
                 'error': 1,
                 'message': 'Datos inválidos para actualizar la mascota',
-                'data': serializer.errors
+                'values': serializer.errors
             })
             
     except Mascota.DoesNotExist:
@@ -598,7 +598,7 @@ def editar_mascota(request, mascota_id):
             'status': 2,
             'error': 1,
             'message': 'La mascota no fue encontrada',
-            'data': None
+            'values': None
         })
     
 
@@ -618,7 +618,7 @@ def cambiar_estado_mascota(request, mascota_id):
                 'status': 2,
                 'error': 1,
                 'message': 'Debe especificar el estado activo (true/false)',
-                'data': None
+                'values': None
             })
         
         estado_anterior = mascota.activo
@@ -631,7 +631,7 @@ def cambiar_estado_mascota(request, mascota_id):
             'status': 1,
             'error': 0,
             'message': f'Mascota {mascota.nombre} {accion} exitosamente',
-            'data': {
+            'values': {
                 'id_mascota': mascota.id,
                 'nombre': mascota.nombre,
                 'estado_anterior': estado_anterior,
@@ -644,7 +644,7 @@ def cambiar_estado_mascota(request, mascota_id):
             'status': 2,
             'error': 1,
             'message': 'La mascota no fue encontrada',
-            'data': None
+            'values': None
         })
 
 @api_view(['GET'])
@@ -670,7 +670,7 @@ def listar_mascotas(request):
             'status': 1,
             'error': 0,
             'message': f'Se encontraron {len(mascotas)} mascotas',
-            'data': serializer.data
+            'values': serializer.data
             # unidad
             # activo 
             # acceso_bloqueado 
@@ -689,7 +689,7 @@ def listar_mascotas(request):
             'status': 2,
             'error': 1,
             'message': 'Error interno del servidor al listar las mascotas',
-            'data': None
+            'values': None
         })
 
 @api_view(['GET'])
@@ -704,7 +704,7 @@ def obtener_mascota(request, mascota_id):
             'status': 1,
             'error': 0,
             'message': f'Detalles de la mascota {mascota.nombre} obtenidos exitosamente',
-            'data': serializer.data
+            'values': serializer.data
             # Retorna: {
             #   'id': int,
             #   'nombre': str,
@@ -725,6 +725,6 @@ def obtener_mascota(request, mascota_id):
             'status': 2,
             'error': 1,
             'message': 'La mascota no fue encontrada',
-            'data': None
+            'values': None
         })
     

@@ -35,7 +35,7 @@ def mostrarVisitas(request):
         "status": 1,
         "error": 0,
         "message": "Visitas listadas correctamente",
-        "data": data
+        "values": data
     })
 # Create your views here.
 @api_view(['GET'])
@@ -112,7 +112,7 @@ def mostrarCalendarioAreasComunes(request):
         "status": 1,
         "error": 0,
         "message": "Calendario de áreas comunes",
-        "data": data
+        "values": data
     })
 
 @api_view(['PATCH'])
@@ -161,19 +161,19 @@ class AreaComunViewSet(viewsets.ModelViewSet):
         areas = self.get_queryset()
         serializer = self.get_serializer(areas, many=True)
         return Response({
-            "Status": 1,
-            "Error": 0,
+            "status": 1,
+            "error": 0,
             "message": "Áreas listadas correctamente",
             "values": serializer.data
         })
     def destroy(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or request.user.idRol.name != "Administrador":
+        if not request.user.is_authenticated or request.user.rol_id != 1:
             return Response({
-                "Status": 0,
-                "Error": 1,
+                "status": 0,
+                "error": 1,
                 "message": "No tienes permisos para eliminar áreas comunes",
                 "values": None
-            }, status=status.HTTP_403_FORBIDDEN)
+            })
         
         instance = self.get_object()
         instance.activa = False
@@ -181,32 +181,31 @@ class AreaComunViewSet(viewsets.ModelViewSet):
         instance.save()
 
         return Response({
-            "Status": 1,
-            "Error": 0,
+            "status": 1,
+            "error": 0,
             "message": f"Área con id {instance.pk} eliminada correctamente",
             "values": {}
-        }, status=status.HTTP_200_OK)
+        })
 
     def create(self, request, *args, **kwargs):
         #Validar si es Admin
-
-        if not request.user.is_authenticated or request.user.idRol.name != "Administrador":
+        if not request.user.is_authenticated or request.user.rol_id != 1:
             return Response({
-                "Status": 0,
-                "Error": 1,
+                "status": 0,
+                "error": 1,
                 "message": "No tienes permisos para crear áreas comunes",
-                "values":None
-            }, status=status.HTTP_403_FORBIDDEN)
+                "values": None
+            })
         
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response({
-            "Status": 1,
-            "Error": 0,
+            "status": 1,
+            "error": 0,
             "message": "Área creada correctamente",
             "values": serializer.data
-        }, status=status.HTTP_201_CREATED)
+        })
 
 
 class ReservaViewSet(viewsets.ModelViewSet):
@@ -219,8 +218,8 @@ class ReservaViewSet(viewsets.ModelViewSet):
         reservas = self.get_queryset()
         serializer = self.get_serializer(reservas, many=True)
         return Response({
-            "Status": 1,
-            "Error": 0,
+            "status": 1,
+            "error": 0,
             "message": "Reservas listadas correctamente",
             "values": serializer.data
         })
@@ -233,22 +232,22 @@ class ReservaViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response({
-            "Status": 1,
-            "Error": 0,
+            "status": 1,
+            "error": 0,
             "message": "Reserva creada correctamente",
             "values": serializer.data
-        }, status=status.HTTP_201_CREATED)
+        })
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def cancelar(self, request, pk=None):
         reserva = self.get_object()
         if reserva.estado == 'cancelada':
             return Response({
-                "Status": 2,
-                "Error": 1,
+                "status": 2,
+                "error": 1,
                 "message": "La reserva ya está cancelada",
                 "values": {}
-            }, status=status.HTTP_400_BAD_REQUEST)
+            })
         
         motivo = request.data.get('motivo_cancelacion', '')
         reserva.estado = 'cancelada'
@@ -258,8 +257,8 @@ class ReservaViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(reserva)
         return Response({
-            "Status": 1,
-            "Error": 0,
+            "status": 1,
+            "error": 0,
             "message": "Reserva cancelada correctamente",
-            "data": serializer.data
+            "values": serializer.data
             })

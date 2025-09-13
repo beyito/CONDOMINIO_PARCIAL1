@@ -46,7 +46,7 @@ def crearComunicado(request, administrador_id):
             "status": 2,
             "error": 1,
             "message": "Error al crear el comunicado",
-            "data": serializer.errors,
+            "values": serializer.errors,
         }
     )
 
