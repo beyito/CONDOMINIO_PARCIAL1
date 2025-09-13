@@ -1,7 +1,7 @@
 
 from rest_framework import generics, viewsets, status
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer
+from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer, GuardiaSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.views import APIView
@@ -38,7 +38,7 @@ class RegisterCopropietarioView(generics.CreateAPIView):
         })
 
 class RegisterGuardiaView(generics.CreateAPIView):
-    serializer_class = CopropietarioSerializer
+    serializer_class = GuardiaSerializer
     permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
