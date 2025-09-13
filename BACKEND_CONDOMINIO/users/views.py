@@ -1,14 +1,13 @@
 
 from rest_framework import generics, viewsets, status
-from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
 from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 
 User = get_user_model()
 
@@ -98,15 +97,15 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        # try:
-        serializer.is_valid(raise_exception=True)
-        # except Exception:
-        #     return Response({
-        #         "Status": 2,
-        #         "Error": 1,
-        #         "message": "Error al iniciar sesión",
-        #         "data": {}
-        #     })
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception:
+             return Response({
+                 "Status": 2,
+                 "Error": 1,
+                 "message": "Error al iniciar sesión",
+                 "data": {}
+             })
         
         return Response({
             "Status": 1,
@@ -121,17 +120,32 @@ class LogoutView(APIView):
 
     def post(self, request):
         try:
-            refresh_token = request.data["refresh"]
-            token = RefreshToken(refresh_token)
-            token.blacklist()
+            # Tomamos el access token del header Authorization
+            auth_header = request.headers.get('Authorization')
+            if not auth_header:
+                return Response({
+                    "Status": 2,
+                    "Error": 1,
+                    "message": "No se proporcionó token de acceso"
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            token_str = auth_header.split(" ")[1]  # "Bearer <token>"
+            token = AccessToken(token_str)
+
+            # Si tu configuración tiene blacklist habilitado, podemos invalidarlo
+            if hasattr(token, 'blacklist'):
+                token.blacklist()
+
             return Response({
                 "Status": 1,
                 "Error": 0,
-                "message": "Se cerro la sesión correctamente",}, status=status.HTTP_205_RESET_CONTENT)
-        except Exception:
+                "message": "Se cerró la sesión correctamente",
+            }, status=status.HTTP_205_RESET_CONTENT)
+
+        except Exception as e:
             return Response({
                 "Status": 2,
                 "Error": 1,
-                "message": "Error al cerrar la sesión",
-            },status=status.HTTP_400_BAD_REQUEST)
+                "message": f"Error al cerrar la sesión: {str(e)}",
+            }, status=status.HTTP_400_BAD_REQUEST)
         
