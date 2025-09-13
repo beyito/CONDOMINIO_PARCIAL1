@@ -3,15 +3,40 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view,action
 from rest_framework.response import Response
 from datetime import datetime
-from .models import AreaComun, Reserva
-from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer
+from .models import AreaComun, Reserva, AutorizacionVisita
+from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer, ListaVisitantesSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
+
 # #Crear Lista Invitados
 
 
 # @api_view(['POST'])
 # def crearListaInvitados(request):
 
+# MOSTRAR VISITAS PARA EL GUARDIA
+@api_view(['GET'])
+def mostrarVisitas(request):
+    visitas = AutorizacionVisita.objects.all()
+    visitas_serializadas = ListaVisitantesSerializer(visitas, many=True).data
+
+    data = []
+    for visita in visitas_serializadas:
+        data.append({
+            "nombre": visita["nombre"],
+            "apellido": visita["apellido"],
+            "CI": visita["ci"],
+            "fecha_inicio": visita["hora_inicio"],
+            "fecha_fin": visita["hora_fin"],
+            "motivo_visita": visita["motivo_visita"],
+            "estado": visita["estado"],
+        })
+
+    return Response({
+        "status": 1,
+        "error": 0,
+        "message": "Visitas listadas correctamente",
+        "data": data
+    })
 # Create your views here.
 @api_view(['GET'])
 def mostrarCalendarioAreasComunes(request):

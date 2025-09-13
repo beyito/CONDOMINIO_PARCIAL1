@@ -24,23 +24,26 @@ class _LoginPageState extends State<LoginPage> {
       _errorMessage = '';
     });
     try {
-      // final resAuth = await _authService.login(
-      //     _usernameController.text, _passwordController.text);
-      // if (resAuth.status == 1) {
-      //   // Login exitoso según auth_service.dart
-      //   context.go(
-      //       '/home/0'); //AQUI ES DONDE REDIRIJE AL HOME (0 cero indica el índice de navegación de las tres opciones [Inicio, Categorias, Favoritos])
-      // } else {
-      //   setState(() {
-      //     _errorMessage = resAuth.error ?? 'Error desconocido';
-      //   });
-      // }
-      final prefs = await SharedPreferences.getInstance();
+      final resAuth = await _authService.login(
+        _usernameController.text,
+        _passwordController.text,
+      );
+      if (resAuth.status == 1) {
+        // Login exitoso según auth_service.dart
+        context.go(
+          '/home/1',
+        ); //AQUI ES DONDE REDIRIJE AL HOME (0 cero indica el índice de navegación de las tres opciones [Inicio, Categorias, Favoritos])
+      } else {
+        setState(() {
+          _errorMessage = resAuth.error ?? 'Error desconocido';
+        });
+      }
+      // final prefs = await SharedPreferences.getInstance();
 
-      await prefs.setString('token', "token");
-      await prefs.setString('rol', "rol.toString()");
-      await prefs.setString('username', "usuario['username']");
-      context.go('/home/0');
+      // await prefs.setString('token', resAuth.token ?? '');
+      // await prefs.setString('rol', );
+      // await prefs.setString('username', );
+      // context.go('/home/0');
     } catch (e) {
       print('Error al conectar con el servidor: $e');
       setState(() {

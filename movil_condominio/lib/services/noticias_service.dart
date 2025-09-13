@@ -18,7 +18,7 @@ class NoticiasService {
       Uri.parse('$baseUrl/mostrarComunicados'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Token $token',
+        'Authorization': 'Bearer $token',
       },
     );
     print(response);

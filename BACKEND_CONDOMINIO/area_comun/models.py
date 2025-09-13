@@ -66,7 +66,13 @@ class AutorizacionVisita(models.Model):
     copropietario = models.ForeignKey(CopropietarioModel, on_delete=models.CASCADE)
     hora_inicio = models.DateTimeField()
     hora_fin = models.DateTimeField()
+    ESTADO_CHOICES = (
+        ('pendiente', 'Pendiente'),
+        ('en visita', 'En Visita'),
+        ('completada', 'Completada'),
+    )
     estado = models.CharField(max_length=20, default="Pendiente")
+    motivo_visita = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return f"{self.visitante} autorizado por {self.copropietario} de {self.hora_inicio} a {self.hora_fin}"
