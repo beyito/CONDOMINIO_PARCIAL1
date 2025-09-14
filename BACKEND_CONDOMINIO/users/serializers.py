@@ -88,38 +88,19 @@ class CopropietarioSerializer(serializers.ModelSerializer):
         else: CopropietarioModel.objects.create(idUsuario=usuario)
         return usuario
     
-# ESTO ES DE LA INMOBILIARIA
-    # def update(self, instance, validated_data):
-    #     # Actualizar campos de Usuario
-    #     instance.nombre = validated_data.get('nombre', instance.nombre)
-    #     instance.correo = validated_data.get('correo', instance.correo)
-    #     instance.telefono = validated_data.get('telefono', instance.telefono)
-    #     password = validated_data.get('password', None)
-    #     if password:
-    #         instance.password = password
-    #     instance.save()
-
-    #     # Actualizar campos de Agente
-    #     if hasattr(instance, 'agente'):
-    #         instance.agente.numero_licencia = validated_data.get('numero_licencia', instance.agente.numero_licencia)
-    #         instance.agente.experiencia = validated_data.get('experiencia', instance.agente.experiencia)
-    #         instance.agente.save()
-
-    #     return instance
-
 class GuardiaSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     turno = serializers.CharField(write_only=True, required = False)
     class Meta:
         model = Usuario
-        fields = ['username', 'nombre', 'email','ci', 'telefono', 'password', 'idRol', 'turno']
+        fields = ['username', 'nombre', 'ci', 'email', 'telefono', 'password', 'idRol', 'turno']
 
     def create(self, validated_data):   
-        print("joal")   
+        print("joal")  
+        turno = validated_data.pop('turno', None) 
         usuario = Usuario.objects.create(**validated_data)
         usuario.set_password(validated_data['password'])
-        usuario.save()
-        turno = validated_data.pop('turno', None)
+        print(turno)
         usuario.save()
         
         if turno:
