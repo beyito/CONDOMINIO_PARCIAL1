@@ -24,18 +24,16 @@ class CustomBottomNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      fixedColor: Colors.blueAccent,
       elevation: 0,
       currentIndex: currentBottomIndex,
       onTap: (value) => onItemTapped(context, value),
       items: const [
         // Podemos colocar más o quitar. La cantidad tiene que se el mismo que onItemTapped
+        BottomNavigationBarItem(icon: Icon(Icons.home_max), label: 'Noticias'),
         BottomNavigationBarItem(
-          icon: Icon(Icons.home_max),
-          label: 'Inicio',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.label_outline),
-          label: 'Categorías',
+          icon: Icon(Icons.people_alt_rounded),
+          label: 'Control de Visitas',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.favorite_outline),

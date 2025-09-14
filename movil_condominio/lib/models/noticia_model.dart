@@ -1,10 +1,10 @@
-//import 'package:movil_condominio/models/usuario_model.dart';
+//import 'package:flutter_inmobiliaria/models/usuario_model.dart';
 
 class NoticiaModel {
   final int? id;
   final String? titulo;
   final String? descripcion;
-  final String? imagenUrl;
+  final String? imagen_Url;
   final String? administrador;
   final String? creadoEn;
   final String? expiraEn;
@@ -13,7 +13,7 @@ class NoticiaModel {
     this.id,
     this.titulo,
     this.descripcion,
-    this.imagenUrl,
+    this.imagen_Url,
     required this.administrador,
     this.creadoEn,
     this.expiraEn = "",
@@ -24,7 +24,7 @@ class NoticiaModel {
       id: json['id'],
       titulo: json['titulo'],
       descripcion: json['descripcion'],
-      imagenUrl: json['imagen_url'],
+      imagen_Url: json['imagen_url'],
       administrador: json['administrador'],
       creadoEn: json['fecha_publicacion'],
       expiraEn: json['fecha_vencimiento'],
@@ -35,7 +35,7 @@ class NoticiaModel {
     'id': id,
     'titulo': titulo,
     'descripcion': descripcion,
-    'imagenUrl': imagenUrl,
+    'imagen_Url': imagen_Url,
     'administrador': administrador,
     'creadoEn': creadoEn,
     'expiraEn': expiraEn,

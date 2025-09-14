@@ -4,9 +4,10 @@ import 'package:movil_condominio/models/login_response.dart';
 import 'package:movil_condominio/models/usuario_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:movil_condominio/config/config_db.dart';
 
 class AuthService {
-  final String baseUrl = "http://10.0.2.2:8000/usuario";
+  final String baseUrl = '${Config.baseUrl}/usuario';
 
   // Login
   Future<LoginResponse> login(String username, String password) async {

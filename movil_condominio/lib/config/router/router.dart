@@ -52,7 +52,7 @@ final appRouter = GoRouter(
   ],
   redirect: (context, state) async {
     final loggedIn = await isLoggedIn();
-    final loggingIn = state.location.toString() == '/login';
+    final loggingIn = state.location == '/login';
 
     // Si no está logueado y NO está en login, lo mandamos a login
     if (!loggedIn && !loggingIn) {

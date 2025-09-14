@@ -19,7 +19,7 @@ class NoticiaWidget extends StatelessWidget {
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
             child: Image.network(
-              noticia.imagenUrl ?? "",
+              noticia.imagen_Url ?? "",
               width: double.infinity,
               height: 220,
               fit: BoxFit.cover,
@@ -54,7 +54,7 @@ class NoticiaWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
               noticia.descripcion ?? "",
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 13),
             ),
           ),
           const Spacer(),

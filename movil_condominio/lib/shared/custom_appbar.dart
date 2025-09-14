@@ -32,7 +32,7 @@ class _CustomAppbarState extends State<CustomAppbar> {
           child: Row(
             children: [
               const SizedBox(width: 3),
-              const Text('Mi inmobiliaria'),
+              const Text('Mi Condominio'),
               const Spacer(),
               PopupMenuButton<String>(
                 icon: const Icon(Icons.person, size: 28),
