@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view,action
 from rest_framework.response import Response
 from datetime import datetime
 from .models import AreaComun, Reserva, AutorizacionVisita
-from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer, ListaVisitantesSerializer
+from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer, ListaVisitantesSerializer, RegistroVisita
 from rest_framework.parsers import MultiPartParser, FormParser
 
 # #Crear Lista Invitados
@@ -17,14 +17,17 @@ from rest_framework.parsers import MultiPartParser, FormParser
 @api_view(['GET'])
 def mostrarVisitas(request):
     visitas = AutorizacionVisita.objects.all()
+    visitas.exclude(estado="Completado")
     visitas_serializadas = ListaVisitantesSerializer(visitas, many=True).data
-
+    print(ListaVisitantesSerializer(visitas, many=True).data)
     data = []
     for visita in visitas_serializadas:
         data.append({
+            "id": visita["id"],
+            "copropietario": visita["copropietario"],
             "nombre": visita["nombre"],
             "apellido": visita["apellido"],
-            "CI": visita["ci"],
+            # "CI": visita["ci"],
             "fecha_inicio": visita["hora_inicio"],
             "fecha_fin": visita["hora_fin"],
             "motivo_visita": visita["motivo_visita"],
@@ -37,6 +40,7 @@ def mostrarVisitas(request):
         "message": "Visitas listadas correctamente",
         "values": data
     })
+
 # Create your views here.
 @api_view(['GET'])
 def mostrarCalendarioAreasComunes(request):
@@ -117,6 +121,8 @@ def mostrarCalendarioAreasComunes(request):
 
 @api_view(['PATCH'])
 def marcarEntradaVisita(request):
+    print(request.data)
+    request.data["guardia_id"] = request.user.id
     serializer = MarcarEntradaSerializer(data=request.data)
     if serializer.is_valid():
         resultado = serializer.save()
@@ -136,6 +142,9 @@ def marcarEntradaVisita(request):
 
 @api_view(['PATCH'])
 def marcarSalidaVisita(request):
+    print(request.user.id)
+    print(request.data)
+    request.data["guardia_id"] = request.user.id
     serializer = MarcarSalidaSerializer(data=request.data)
     if serializer.is_valid():
         resultado = serializer.save()
@@ -223,6 +232,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
             "message": "Reservas listadas correctamente",
             "values": serializer.data
         })
+   
 
     def perform_create(self, serializer):
         serializer.save()
@@ -262,3 +272,4 @@ class ReservaViewSet(viewsets.ModelViewSet):
             "message": "Reserva cancelada correctamente",
             "values": serializer.data
             })
+ 

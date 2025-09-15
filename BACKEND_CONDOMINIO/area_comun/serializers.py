@@ -108,14 +108,15 @@ class ReservaSerializer(serializers.ModelSerializer):
 # REGISTRO DE VISITAS
 
 class ListaVisitantesSerializer(serializers.ModelSerializer):
-    copropietario = serializers.CharField(source='copropietario.nombre', read_only=True)
+    id = "id"
+    copropietario = serializers.CharField(source='copropietario.idUsuario.nombre', read_only=True)
     nombre = serializers.CharField(source='visitante.nombre', read_only=True)
     apellido = serializers.CharField(source='visitante.apellido', read_only=True)
     ci = serializers.CharField(source='visitante.ci', read_only=True)
-
+    motivo_visita = "motivo_visita"
     class Meta:
         model = AutorizacionVisita
-        fields = ['copropietario', 'nombre', 'apellido', 'ci', 'motivo_visita', 'hora_inicio', 'hora_fin', 'estado']
+        fields = ['id', 'copropietario', 'nombre', 'apellido', 'ci', 'motivo_visita', 'hora_inicio', 'hora_fin', 'estado']
 
 class MarcarEntradaSerializer(serializers.Serializer):
     guardia_id = serializers.IntegerField()
@@ -124,6 +125,7 @@ class MarcarEntradaSerializer(serializers.Serializer):
     def validate(self, data):
         print(data)
         print(data['autorizacion_id'])
+        print(data['guardia_id'])
         autorizacion = AutorizacionVisita.objects.filter(id=data['autorizacion_id']).first()
         guardia = GuardiaModel.objects.filter(idUsuario=data['guardia_id']).first()
         print (autorizacion)

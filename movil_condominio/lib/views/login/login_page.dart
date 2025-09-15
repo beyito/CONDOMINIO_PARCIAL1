@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movil_condominio/services/auth_service.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   static const name = 'login-screen';
@@ -29,25 +28,15 @@ class _LoginPageState extends State<LoginPage> {
         _passwordController.text,
       );
       if (resAuth.status == 1) {
-        // Login exitoso según auth_service.dart
-        context.go(
-          '/home/1',
-        ); //AQUI ES DONDE REDIRIJE AL HOME (0 cero indica el índice de navegación de las tres opciones [Inicio, Categorias, Favoritos])
+        context.go('/home/1');
       } else {
         setState(() {
           _errorMessage = resAuth.error ?? 'Error desconocido';
         });
       }
-      // final prefs = await SharedPreferences.getInstance();
-
-      // await prefs.setString('token', resAuth.token ?? '');
-      // await prefs.setString('rol', );
-      // await prefs.setString('username', );
-      // context.go('/home/0');
     } catch (e) {
-      print('Error al conectar con el servidor: $e');
       setState(() {
-        _errorMessage = 'Error al conectar con el servidor: $e';
+        _errorMessage = 'Error de conexión: $e';
       });
     }
 
@@ -59,38 +48,109 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Iniciar sesión")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(labelText: "Usuario"),
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: "Contraseña"),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            _isLoading
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: () async {
-                      await login(context);
-                    },
-                    child: const Text("Iniciar sesión"),
-                  ),
-            if (_errorMessage.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 12.0),
-                child: Text(
-                  _errorMessage,
-                  style: const TextStyle(color: Colors.red),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue.shade700, Colors.blue.shade200],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 8,
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.apartment,
+                      size: 80,
+                      color: Colors.blueAccent,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "Bienvenido al Condominio",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blueAccent,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    TextField(
+                      controller: _usernameController,
+                      decoration: InputDecoration(
+                        labelText: "Usuario",
+                        prefixIcon: const Icon(Icons.person),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        labelText: "Contraseña",
+                        prefixIcon: const Icon(Icons.lock),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                      ),
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 24),
+                    _isLoading
+                        ? const CircularProgressIndicator()
+                        : SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: () async => await login(context),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blueAccent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: const Text(
+                                "Iniciar sesión",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                    if (_errorMessage.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Text(
+                          _errorMessage,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
-          ],
+            ),
+          ),
         ),
       ),
     );

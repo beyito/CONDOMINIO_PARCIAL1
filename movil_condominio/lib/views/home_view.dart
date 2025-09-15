@@ -31,7 +31,7 @@ class HomeViewState extends State<HomeView> {
           'Noticias del Condominio',
           style: TextStyle(fontWeight: FontWeight.w700),
         ),
-        backgroundColor: Colors.green[700],
+        backgroundColor: Colors.blueAccent,
       ),
       body: FutureBuilder<List<NoticiaModel>>(
         future: noticias,
