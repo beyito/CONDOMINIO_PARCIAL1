@@ -6,6 +6,7 @@ import ProtectedRoute from '../components/ProtectedRoutes'
 import EstadisticasDashboard from '../pages/Dashboard/components/EstadisticasDashboard'
 import AreasComunes from '../pages/AreasComunes/AreasComunes'
 import UsuariosDashboard from '../pages/Usuarios/Usuarios'
+import Unidades from '../pages/Unidades/Unidades'
 
 function AppRoutes() {
   const { isAuthenticated, loading } = useAuth()
@@ -38,6 +39,7 @@ function AppRoutes() {
         <Route path='estadisticas' element={<EstadisticasDashboard />} />
         <Route path='areas' element={<AreasComunes />} />
         <Route path='usuarios' element={<UsuariosDashboard />} />
+        <Route path='unidades' element={<Unidades />} />
       </Route>
 
       <Route

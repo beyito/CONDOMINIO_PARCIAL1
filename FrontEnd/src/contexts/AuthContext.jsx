@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react'
+import React, { createContext, useReducer, useEffect } from 'react'
 import {
   login as apiLogin,
   logout as apiLogout,
@@ -79,7 +79,7 @@ const initialState = {
   user: storedAuth ? JSON.parse(storedAuth).user : null,
   accessToken: storedAuth ? JSON.parse(storedAuth).accessToken : null,
   refreshToken: storedAuth ? JSON.parse(storedAuth).refreshToken : null,
-  loading: storedAuth ? false : true, // si hay datos, ya no está "cargando"
+  loading: false, // si hay datos, ya no está "cargando"
   error: null
 }
 

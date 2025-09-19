@@ -1,40 +1,7 @@
 from rest_framework import serializers
 from .models import Unidad, Vehiculo, Mascota
 
-class UnidadSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Unidad
-        fields = '__all__'
-        read_only_fields = ["id", "created_at", "updated_at"]
-        
-    def validate_codigo(self, value):
-            """"Validar que el codigo no este vacio y este en mayusculas"""
-            if not value or len(value.strip()) == 0:
-                raise serializers.ValidationError("El codigo es obligatorio.")
-            return value.strip().upper()
-        
-    def validate_area_m2(self, value):
-            """
-            Validar que el area sea un valor positivo
-            """ 
-            
-            if value <= 0:
-                raise serializers.ValidationError("El area debe ser un valor positivo.")
-            return value
-    def validate_bloque(self, value):
-            """"Validar que el bloque no este vacio"""
-            if not value or len(value.strip()) == 0:
-                raise serializers.ValidationError("El bloque es obligatorio.")
-            return value.strip().upper()
-    def validate_piso(self, value):
-         """Validar que el piso sea un valor valido"""
-         if value is None: 
-                raise serializers.ValidationError("El piso es obligatorio.")
-         if value < 0:
-                raise serializers.ValidationError("El piso no puede ser negativo.")
-         return value
 
-    
 class VehiculoSerializer(serializers.ModelSerializer):
     
     class Meta:
@@ -101,4 +68,41 @@ class MascotaSerializer(serializers.ModelSerializer):
             if value is not None and value <= 0:
                 raise serializers.ValidationError("El peso debe ser un valor positivo.")
             return value
+    
+class UnidadSerializer(serializers.ModelSerializer):
+    vehiculos = VehiculoSerializer(many=True, read_only=True)
+    mascotas = MascotaSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Unidad
+        fields = '__all__'
+        read_only_fields = ["id", "created_at", "updated_at"]
+        
+    def validate_codigo(self, value):
+            """"Validar que el codigo no este vacio y este en mayusculas"""
+            if not value or len(value.strip()) == 0:
+                raise serializers.ValidationError("El codigo es obligatorio.")
+            return value.strip().upper()
+        
+    def validate_area_m2(self, value):
+            """
+            Validar que el area sea un valor positivo
+            """ 
+            
+            if value <= 0:
+                raise serializers.ValidationError("El area debe ser un valor positivo.")
+            return value
+    def validate_bloque(self, value):
+            """"Validar que el bloque no este vacio"""
+            if not value or len(value.strip()) == 0:
+                raise serializers.ValidationError("El bloque es obligatorio.")
+            return value.strip().upper()
+    def validate_piso(self, value):
+         """Validar que el piso sea un valor valido"""
+         if value is None: 
+                raise serializers.ValidationError("El piso es obligatorio.")
+         if value < 0:
+                raise serializers.ValidationError("El piso no puede ser negativo.")
+         return value
+
     

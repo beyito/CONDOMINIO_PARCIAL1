@@ -176,7 +176,7 @@ class AreaComunViewSet(viewsets.ModelViewSet):
             "values": serializer.data
         })
     def destroy(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or request.user.rol_id != 1:
+        if not request.user.is_authenticated or request.user.idRol_id != 1:
             return Response({
                 "status": 0,
                 "error": 1,
@@ -198,7 +198,7 @@ class AreaComunViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         #Validar si es Admin
-        if not request.user.is_authenticated or request.user.rol_id != 1:
+        if not request.user.is_authenticated or request.user.idRol_id != 1:
             return Response({
                 "status": 0,
                 "error": 1,

@@ -26,6 +26,12 @@ const menuItems = [
     path: '/dashboard/usuarios'
   },
   {
+    id: 'unidades',
+    icon: Building,
+    label: 'Unidades',
+    path: '/dashboard/unidades'
+  },
+  {
     id: 'areas',
     icon: MapPin,
     label: 'Áreas Comunes',
