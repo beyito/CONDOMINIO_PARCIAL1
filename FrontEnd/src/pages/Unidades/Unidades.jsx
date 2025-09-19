@@ -15,9 +15,8 @@ import { useApi } from '../../hooks/useApi'
 import ModalCrearUnidad from './components/ModalCrearUnidad'
 
 const Unidades = () => {
-  const [activeTab, setActiveTab] = useState('unidades')
   const [showModal, setShowModal] = useState(false)
-
+  const [showDetails, setShowDetails] = useState(false)
   const [selectedUnidad, setSelectedUnidad] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterEstado, setFilterEstado] = useState('todas')
@@ -32,13 +31,6 @@ const Unidades = () => {
   const unidades = data?.data?.values || []
 
   const estadosUnidad = ['activa', 'inactiva', 'mantenimiento']
-
-  const handleDelete = (id) => {
-    if (confirm('¿Está seguro que desea eliminar esta unidad?')) {
-      // Aquí deberías llamar a tu API para borrar la unidad
-      console.log('Eliminar unidad', id)
-    }
-  }
 
   const filteredUnidades = unidades.filter((unidad) => {
     const matchesSearch =
@@ -63,6 +55,16 @@ const Unidades = () => {
     }
   }
 
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center min-h-screen'>
+        <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500'></div>
+      </div>
+    )
+  } else if (error) {
+    return <div className='text-red-500'>Error al obtener las unidades</div>
+  }
+
   return (
     <div className='min-h-screen bg-gray-50'>
       <div className='max-w-7xl mx-auto'>
@@ -76,160 +78,135 @@ const Unidades = () => {
             condominio
           </p>
         </div>
-
-        {/* Tabs */}
-        <div className='bg-white rounded-lg shadow-sm mb-6'>
-          <div className='border-b border-gray-200'>
-            <nav className='flex space-x-8 px-6'>
-              <button
-                onClick={() => setActiveTab('unidades')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
-                  activeTab === 'unidades'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <Home size={20} />
-                <span>Unidades</span>
-              </button>
-            </nav>
-          </div>
-        </div>
-
         {/* Content */}
         <div className='bg-white rounded-lg shadow-sm'>
-          {activeTab === 'unidades' && (
-            <div className='p-6'>
-              {/* Filters and Actions */}
-              <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 mb-6'>
-                <div className='flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4'>
-                  <div className='relative'>
-                    <Search
-                      className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
-                      size={20}
-                    />
-                    <input
-                      type='text'
-                      placeholder='Buscar unidades...'
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className='pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-                    />
-                  </div>
-                  <select
-                    value={filterEstado}
-                    onChange={(e) => setFilterEstado(e.target.value)}
-                    className='px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-                  >
-                    <option value='todas'>Todos los estados</option>
-                    {estadosUnidad.map((estado) => (
-                      <option key={estado} value={estado}>
-                        {estado}
-                      </option>
-                    ))}
-                  </select>
+          <div className='p-6'>
+            {/* Filters and Actions */}
+            <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 mb-6'>
+              <div className='flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4'>
+                <div className='relative'>
+                  <Search
+                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+                    size={20}
+                  />
+                  <input
+                    type='text'
+                    placeholder='Buscar unidades...'
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className='pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                  />
                 </div>
-                <button
-                  onClick={() => {
-                    setSelectedUnidad(null)
-                    setShowModal(true)
-                  }}
-                  className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors'
+                <select
+                  value={filterEstado}
+                  onChange={(e) => setFilterEstado(e.target.value)}
+                  className='px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
                 >
-                  <Plus size={20} />
-                  <span>Nueva Unidad</span>
-                </button>
+                  <option value='todas'>Todos los estados</option>
+                  {estadosUnidad.map((estado) => (
+                    <option key={estado} value={estado}>
+                      {estado}
+                    </option>
+                  ))}
+                </select>
               </div>
+              <button
+                onClick={() => {
+                  setSelectedUnidad(null)
+                  setShowModal(true)
+                }}
+                className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors'
+              >
+                <Plus size={20} />
+                <span>Nueva Unidad</span>
+              </button>
+            </div>
 
-              {/* Unidades Grid */}
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-                {filteredUnidades.map((unidad) => (
-                  <div
-                    key={unidad.id}
-                    className='border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow'
-                  >
-                    <div className='flex justify-between items-start mb-3'>
-                      <div>
-                        <h3 className='text-lg font-semibold text-gray-900'>
-                          {unidad.codigo}
-                        </h3>
-                        <p className='text-sm text-gray-600'>
-                          Bloque {unidad.bloque} - {unidad.numero}
-                        </p>
-                      </div>
-                      <span
-                        className={`px-2 py-1 text-xs font-medium rounded-full ${getEstadoColor(
-                          unidad.estado
-                        )}`}
-                      >
-                        {unidad.estado}
-                      </span>
-                    </div>
-
-                    <div className='space-y-2 mb-4'>
-                      <p className='text-sm'>
-                        <span className='font-medium'>Piso:</span> {unidad.piso}
-                      </p>
-                      <p className='text-sm'>
-                        <span className='font-medium'>Área:</span>{' '}
-                        {unidad.area_m2} m²
-                      </p>
-                      <p className='text-sm'>
-                        <span className='font-medium'>Tipo:</span>{' '}
-                        {unidad.tipo_unidad}
+            {/* Unidades Grid */}
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+              {filteredUnidades.map((unidad) => (
+                <div
+                  key={unidad.id}
+                  className='border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow'
+                >
+                  <div className='flex justify-between items-start mb-3'>
+                    <div>
+                      <h3 className='text-lg font-semibold text-gray-900'>
+                        {unidad.codigo}
+                      </h3>
+                      <p className='text-sm text-gray-600'>
+                        Bloque {unidad.bloque} - {unidad.numero}
                       </p>
                     </div>
+                    <span
+                      className={`px-2 py-1 text-xs font-medium rounded-full ${getEstadoColor(
+                        unidad.estado
+                      )}`}
+                    >
+                      {unidad.estado}
+                    </span>
+                  </div>
 
-                    {/* Stats */}
-                    <div className='flex justify-between text-sm text-gray-600 mb-4'>
-                      <span className='flex items-center space-x-1'>
-                        <Users size={16} />
-                        <span>{unidad.residentes?.length || 0}</span>
-                      </span>
-                      <span className='flex items-center space-x-1'>
-                        <Car size={16} />
-                        <span>{unidad.vehiculos?.length || 0}</span>
-                      </span>
-                      <span className='flex items-center space-x-1'>
-                        <PawPrint size={16} />
-                        <span>{unidad.mascotas?.length || 0}</span>
-                      </span>
-                    </div>
+                  <div className='space-y-2 mb-4'>
+                    <p className='text-sm'>
+                      <span className='font-medium'>Piso:</span> {unidad.piso}
+                    </p>
+                    <p className='text-sm'>
+                      <span className='font-medium'>Área:</span>{' '}
+                      {unidad.area_m2} m²
+                    </p>
+                    <p className='text-sm'>
+                      <span className='font-medium'>Tipo:</span>{' '}
+                      {unidad.tipo_unidad}
+                    </p>
+                  </div>
 
-                    {/* Actions */}
-                    <div className='flex justify-between items-center'>
+                  {/* Stats */}
+                  <div className='flex justify-between text-sm text-gray-600 mb-4'>
+                    <span className='flex items-center space-x-1'>
+                      <Users size={16} />
+                      <span>{unidad.residentes?.length || 0}</span>
+                    </span>
+                    <span className='flex items-center space-x-1'>
+                      <Car size={16} />
+                      <span>{unidad.vehiculos?.length || 0}</span>
+                    </span>
+                    <span className='flex items-center space-x-1'>
+                      <PawPrint size={16} />
+                      <span>{unidad.mascotas?.length || 0}</span>
+                    </span>
+                  </div>
+
+                  {/* Actions */}
+                  <div className='flex justify-between items-center'>
+                    <button
+                      onClick={() => {
+                        setSelectedUnidad(unidad)
+                        setShowDetails(true)
+                      }}
+                      className='text-blue-600 hover:text-blue-800 text-sm font-medium'
+                    >
+                      Ver detalles
+                    </button>
+                    <div className='flex space-x-2'>
                       <button
-                        onClick={() => setSelectedUnidad(unidad)}
-                        className='text-blue-600 hover:text-blue-800 text-sm font-medium'
+                        onClick={() => {
+                          setShowModal(true)
+                          setSelectedUnidad(unidad)
+                        }}
+                        className='p-2 text-gray-400 hover:text-blue-600 transition-colors'
                       >
-                        Ver detalles
+                        <Edit size={16} />
                       </button>
-                      <div className='flex space-x-2'>
-                        <button
-                          onClick={() => {
-                            setShowModal(true)
-                            setSelectedUnidad(unidad)
-                          }}
-                          className='p-2 text-gray-400 hover:text-blue-600 transition-colors'
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(unidad.id)}
-                          className='p-2 text-gray-400 hover:text-red-600 transition-colors'
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
 
           {/* Detalles de Unidad */}
-          {selectedUnidad && (
+          {selectedUnidad && showDetails && (
             <div className='border-t border-gray-200 p-6'>
               <div className='flex justify-between items-center mb-4'>
                 <h3 className='text-xl font-semibold'>
