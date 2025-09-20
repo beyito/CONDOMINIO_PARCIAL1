@@ -28,8 +28,6 @@ export default function ModalCrearArea({ setShowModal, onSuccess }) {
     try {
       const response = await execute(formData)
       console.log('Área creada:', response.data)
-      setShowModal(false)
-      onSuccess()
       setApprovalModalOpen(true)
     } catch (err) {
       console.error('Error al crear área:', err)
@@ -141,7 +139,11 @@ export default function ModalCrearArea({ setShowModal, onSuccess }) {
       {/* Modales */}
       <ApprovalModal
         isOpen={approvalModalOpen}
-        onClose={() => setApprovalModalOpen(false)}
+        onClose={() => {
+          setApprovalModalOpen(false)
+          setShowModal(false)
+          onSuccess()
+        }}
         message='¡La operación se ha completado exitosamente! Todos los datos han sido guardados correctamente.'
       />
       <ErrorModal

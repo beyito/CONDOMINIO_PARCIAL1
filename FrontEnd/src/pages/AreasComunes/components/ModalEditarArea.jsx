@@ -28,8 +28,6 @@ export default function ModalEditarArea({ setShowModal, onSuccess, area }) {
     try {
       const response = await execute(area.id_area, formData)
       console.log('Área Editada:', response.data)
-      setShowModal(false)
-      onSuccess()
       setApprovalModalOpen(true)
     } catch (err) {
       console.error('Error al editar área:', err)
@@ -137,7 +135,11 @@ export default function ModalEditarArea({ setShowModal, onSuccess, area }) {
       {/* Modales */}
       <ApprovalModal
         isOpen={approvalModalOpen}
-        onClose={() => setApprovalModalOpen(false)}
+        onClose={() => {
+          setApprovalModalOpen(false)
+          setShowModal(false)
+          onSuccess()
+        }}
         message='¡La operación se ha completado exitosamente! Todos los datos han sido guardados correctamente.'
       />
       <ErrorModal

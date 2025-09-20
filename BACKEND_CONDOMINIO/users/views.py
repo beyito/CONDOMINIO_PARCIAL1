@@ -30,6 +30,7 @@ class RegisterCopropietarioView(generics.CreateAPIView):
                 "message": "Usuario registrado correctamente",
                 "values": serializer.data
             })
+        print("VALIDACION FALLIDA:", serializer.errors)
         return Response({
             "status": 2,
             "error": 1,
