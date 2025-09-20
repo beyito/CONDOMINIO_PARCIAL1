@@ -7,7 +7,7 @@ from .models import AreaComun, Reserva, AutorizacionVisita
 from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer, ListaVisitantesSerializer, RegistroVisita
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated,IsGuardia
+from rest_framework.permissions import IsAuthenticated,IsPersonal
 
 # #Crear Lista Invitados
 
@@ -17,7 +17,7 @@ from rest_framework.permissions import IsAuthenticated,IsGuardia
 
 # MOSTRAR VISITAS PARA EL GUARDIA
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsGuardia])
+@permission_classes([IsAuthenticated, IsPersonal])
 def mostrarVisitas(request):
     
     visitas = AutorizacionVisita.objects.exclude(estado="Completado")
@@ -125,7 +125,7 @@ def mostrarCalendarioAreasComunes(request):
 @api_view(['PATCH'])
 def marcarEntradaVisita(request):
     print(request.data)
-    request.data["guardia_id"] = request.user.id
+    request.data["personal_id"] = request.user.id
     serializer = MarcarEntradaSerializer(data=request.data)
     if serializer.is_valid():
         resultado = serializer.save()
@@ -147,7 +147,7 @@ def marcarEntradaVisita(request):
 def marcarSalidaVisita(request):
     print(request.user.id)
     print(request.data)
-    request.data["guardia_id"] = request.user.id
+    request.data["personal_id"] = request.user.id
     serializer = MarcarSalidaSerializer(data=request.data)
     if serializer.is_valid():
         resultado = serializer.save()

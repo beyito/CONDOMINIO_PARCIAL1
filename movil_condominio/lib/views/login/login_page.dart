@@ -35,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
 
         // Redirigir según rol
         if (rol == 'Guardia') {
-          context.go('/home/1'); //Poner pagina para el guardia
+          context.go('/home/1'); //Poner pagina para el personal
         } else if (rol == 'Copropietario') {
           context.go('/home/0'); // Poner pagina para el Copropietario
         } else {

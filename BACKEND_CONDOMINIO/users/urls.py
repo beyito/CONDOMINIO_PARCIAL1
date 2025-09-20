@@ -1,6 +1,6 @@
 # users/urls.py
 from django.urls import include, path
-from .views import RegisterView, UserViewSet, MyTokenObtainPairView, LogoutView, RegisterCopropietarioView, RegisterGuardiaView, PerfilUsuarioView
+from .views import RegisterView, UserViewSet, MyTokenObtainPairView, LogoutView, RegisterCopropietarioView, RegisterPersonalView, PerfilUsuarioView
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework import routers
 
@@ -17,6 +17,6 @@ urlpatterns = [
     path('perfil/', PerfilUsuarioView.as_view(), name='perfil'), #obtener el perfil del usuario logueado
     path('mostrarUsuarios/', UserViewSet.as_view({'get': 'list'}), name='mostrarUsuarios'), #listar todos los usuarios
     path('registrarCopropietario/', RegisterCopropietarioView.as_view(), name='registrarCopropietario'), #registro de copropietario
-    path('registrarGuardia/', RegisterGuardiaView.as_view(), name='registrarGuardia'), #registro de guardia
+    path('registrarPersonal/', RegisterPersonalView.as_view(), name='registrarPersonal'), #registro de personal, se le envía el tipo_personal
     path('api/v1/', include(router.urls)), #CRUD de los usuarios
 ]

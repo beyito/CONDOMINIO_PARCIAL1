@@ -2,6 +2,7 @@
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from unidad_pertenencia.models import Unidad
 
 # Esto tenias tu sebas
 # class Rol(models.Model):
@@ -72,7 +73,7 @@ class Usuario(AbstractUser):
         return self.username
 
 
-class GuardiaModel(models.Model):
+class PersonalModel(models.Model):
     idUsuario = models.OneToOneField(
         Usuario,
         on_delete=models.CASCADE,
@@ -86,10 +87,16 @@ class GuardiaModel(models.Model):
     )
     turno = models.CharField(max_length=50, choices=TURNO_CHOICES, null=True, blank=True)
     fecha_contratacion = models.DateField(auto_now_add=True, null=True)
+    PERSONAL_CHOICES = (
+        ('guardia', 'Guardia'),
+        ('limpieza', 'Limpieza'),
+        ('mantenimiento', 'Mantenimiento'),
+    )
+    tipo_personal = models.CharField(max_length=50, choices=PERSONAL_CHOICES, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
-        db_table = 'guardia'
+        db_table = 'personal'
 
 
 class CopropietarioModel(models.Model):
@@ -99,7 +106,7 @@ class CopropietarioModel(models.Model):
         primary_key=True,
         db_column="id"
     )
-    unidad = models.CharField(max_length=50, null=True, blank=True)  # Ejemplo: "Apto 101"
+    id_unidad = models.ForeignKey(Unidad, on_delete=models.RESTRICT, db_column="id_unidad",  blank=True, null=True)  # Ejemplo: "Apto 101"
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

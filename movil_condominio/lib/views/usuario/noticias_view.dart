@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:movil_condominio/functions/Funtions.dart';
 import 'package:movil_condominio/models/noticia_model.dart';
 import 'package:movil_condominio/services/noticias_service.dart';
 import 'package:movil_condominio/widgets/noticia_widget.dart';

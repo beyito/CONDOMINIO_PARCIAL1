@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from rest_framework import serializers
 from .models import AutorizacionVisita, RegistroVisitaModel, AreaComun, Reserva
-from users.models import CopropietarioModel, GuardiaModel, PersonaModel
+from users.models import CopropietarioModel, PersonalModel, PersonaModel
 from django.db.models import Q
 import requests
 
@@ -119,17 +119,17 @@ class ListaVisitantesSerializer(serializers.ModelSerializer):
         fields = ['id', 'copropietario', 'nombre', 'apellido', 'ci', 'motivo_visita', 'hora_inicio', 'hora_fin', 'estado']
 
 class MarcarEntradaSerializer(serializers.Serializer):
-    guardia_id = serializers.IntegerField()
+    personal_id = serializers.IntegerField()
     autorizacion_id = serializers.IntegerField()
 
     def validate(self, data):
         print(data)
         print(data['autorizacion_id'])
-        print(data['guardia_id'])
+        print(data['personal_id'])
         autorizacion = AutorizacionVisita.objects.filter(id=data['autorizacion_id']).first()
-        guardia = GuardiaModel.objects.filter(idUsuario=data['guardia_id']).first()
+        personal = PersonalModel.objects.filter(idUsuario=data['personal_id']).first()
         print (autorizacion)
-        print(guardia)
+        print(personal)
         
         if not autorizacion or autorizacion.estado != "Pendiente":
             raise serializers.ValidationError("No hay una autorización válida en este momento.")
@@ -138,7 +138,7 @@ class MarcarEntradaSerializer(serializers.Serializer):
 
     def save(self):
         autorizacion = self.validated_data['autorizacion']
-        guardia = GuardiaModel.objects.get(idUsuario=self.validated_data['guardia_id'])
+        personal = PersonalModel.objects.get(idUsuario=self.validated_data['personal_id'])
         visitante = PersonaModel.objects.get(id=autorizacion.visitante_id)
 
         from django.utils import timezone
@@ -146,7 +146,7 @@ class MarcarEntradaSerializer(serializers.Serializer):
 
         registro = RegistroVisitaModel.objects.create(
             autorizacion=autorizacion,
-            guardia=guardia,
+            personal=personal,
             fecha_entrada=ahora,
             fecha_salida=None
         )

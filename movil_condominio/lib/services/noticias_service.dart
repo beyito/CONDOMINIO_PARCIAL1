@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:movil_condominio/models/noticia_model.dart';
 import 'package:movil_condominio/models/response__model.dart';
-import 'package:movil_condominio/models/usuario_model.dart';
 import 'package:movil_condominio/services/auth_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:movil_condominio/config/config_db.dart';

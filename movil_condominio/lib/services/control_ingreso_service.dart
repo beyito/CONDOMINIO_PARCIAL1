@@ -66,7 +66,7 @@ class ControlIngresoService {
     }
   }
 
-  Future<ResponseModel> marcarEntrada(int autorizacion_id) async {
+  Future<ResponseModel> marcarEntrada(int autorizacionId) async {
     final token = await authService.getToken();
 
     if (token == null) throw Exception("Usuario no autenticado");
@@ -77,7 +77,7 @@ class ControlIngresoService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode({'autorizacion_id': autorizacion_id}),
+      body: jsonEncode({'autorizacion_id': autorizacionId}),
     );
 
     final ResponseModel resModel = ResponseModel.fromJson(
@@ -86,7 +86,7 @@ class ControlIngresoService {
     return ResponseModel(status: resModel.status, message: resModel.message);
   }
 
-  Future<ResponseModel> marcarSalida(int autorizacion_id) async {
+  Future<ResponseModel> marcarSalida(int autorizacionId) async {
     final token = await authService.getToken();
 
     if (token == null) throw Exception("Usuario no autenticado");
@@ -97,7 +97,7 @@ class ControlIngresoService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode({'autorizacion_id': autorizacion_id}),
+      body: jsonEncode({'autorizacion_id': autorizacionId}),
     );
 
     final ResponseModel resModel = ResponseModel.fromJson(

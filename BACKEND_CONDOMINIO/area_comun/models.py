@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from users.models import CopropietarioModel, PersonaModel, GuardiaModel
+from users.models import CopropietarioModel, PersonaModel, PersonalModel
 from users.models import Usuario as User
 
 
@@ -86,12 +86,12 @@ class AutorizacionVisita(models.Model):
 
 class RegistroVisitaModel(models.Model):
     autorizacion = models.ForeignKey(AutorizacionVisita, on_delete=models.CASCADE)
-    guardia = models.ForeignKey(GuardiaModel, on_delete=models.CASCADE)
+    personal = models.ForeignKey(PersonalModel, on_delete=models.CASCADE)
     fecha_entrada = models.DateTimeField(auto_now_add=True, null=True)
     fecha_salida = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"Visita de {self.autorizacion.visitante} a {self.autorizacion.copropietario} registrada por {self.guardia}"
+        return f"Visita de {self.autorizacion.visitante} a {self.autorizacion.copropietario} registrada por {self.personal}"
 
     class Meta:
         db_table = 'registro_visita'

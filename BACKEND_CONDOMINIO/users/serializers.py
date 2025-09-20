@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import GuardiaModel,Usuario,CopropietarioModel,Rol
+from .models import PersonalModel,Usuario,CopropietarioModel,Rol
 
 User = get_user_model()
 
@@ -58,7 +58,11 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['first_name'] = self.user.first_name
         data['last_name'] = self.user.last_name
         data['email'] = self.user.email
-        data['rol'] = self.user.idRol.name
+        if self.user.idRol.idRol > 2 : 
+            personal = PersonalModel.objects.get(idUsuario=self.user.id)  # ✅ Correcto          
+            data['rol'] = personal.tipo_personal 
+        else: 
+            data['rol'] = self.user.idRol.name
         data['is_staff'] = self.user.is_staff
         return data
     
@@ -95,22 +99,23 @@ class CopropietarioSerializer(serializers.ModelSerializer):
             CopropietarioModel.objects.create(idUsuario=usuario)
         return usuario
     
-class GuardiaSerializer(serializers.ModelSerializer):
+class PersonalSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     turno = serializers.CharField(write_only=True, required = False)
     class Meta:
         model = Usuario
-        fields = ['username', 'nombre', 'ci', 'email', 'telefono', 'password', 'idRol', 'turno']
+        fields = ['username', 'nombre', 'ci', 'email', 'telefono', 'password', 'idRol', 'turno', 'tipo_personal']
 
     def create(self, validated_data):   
         print("joal")  
         turno = validated_data.pop('turno', None) 
+        tipo_personal = validated_data.pop('tipo_personal',None)
         usuario = Usuario.objects.create(**validated_data)
         usuario.set_password(validated_data['password'])
         print(turno)
         usuario.save()
         
-        if turno:
-            GuardiaModel.objects.create(idUsuario=usuario, turno=turno)
-        else: GuardiaModel.objects.create(idUsuario=usuario)
+        if turno and tipo_personal:
+            PersonalModel.objects.create(idUsuario=usuario, turno=turno, tipo_personal=tipo_personal)
+        else: PersonalModel.objects.create(idUsuario=usuario)
         return usuario

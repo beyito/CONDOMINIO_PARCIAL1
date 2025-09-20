@@ -1,7 +1,7 @@
 
 from rest_framework import generics, viewsets, status
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer, GuardiaSerializer
+from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer, PersonalSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.views import APIView
@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 from rest_framework.exceptions import AuthenticationFailed
-from .models import Usuario
+from .models import PersonalModel
 from rest_framework.decorators import api_view
 User = get_user_model()
 
@@ -38,13 +38,13 @@ class RegisterCopropietarioView(generics.CreateAPIView):
             "errors": serializer.errors
         })
 
-class RegisterGuardiaView(generics.CreateAPIView):
-    serializer_class = GuardiaSerializer
+class RegisterPersonalView(generics.CreateAPIView):
+    serializer_class = PersonalSerializer
     permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
-        data['idRol'] = 3  # forzar el rol de guardia
+        data['idRol'] = 3  # forzar el rol de personal
         print(data)
         serializer = self.get_serializer(data=data)
         if serializer.is_valid():
@@ -169,7 +169,12 @@ class PerfilUsuarioView(APIView):
     def get(self, request):
         
         usuario = request.user  # ya es el usuario autenticado
-        print(usuario.idRol)
+        if usuario.idRol.idRol > 2 : 
+            personal = PersonalModel.objects.get(idUsuario=usuario.id)  # ✅ Correcto          
+            rol = personal.tipo_personal 
+        else: 
+            rol = usuario.idRol.name
+        print(usuario)
         return Response({
             "status": 1,
             "error": 0,
@@ -181,7 +186,7 @@ class PerfilUsuarioView(APIView):
                     "ci": usuario.ci,
                     "email": usuario.email,
                     "telefono": usuario.telefono,
-                    "rol": usuario.idRol.name,
+                    "rol": rol,
             }
         })
 
