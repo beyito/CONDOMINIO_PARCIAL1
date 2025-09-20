@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Unidad, Vehiculo, Mascota
+from users.serializers import ResidenteSerializer
 
 
 class VehiculoSerializer(serializers.ModelSerializer):
@@ -72,6 +73,7 @@ class MascotaSerializer(serializers.ModelSerializer):
 class UnidadSerializer(serializers.ModelSerializer):
     vehiculos = VehiculoSerializer(many=True, read_only=True)
     mascotas = MascotaSerializer(many=True, read_only=True)
+    residentes = ResidenteSerializer(many = True,read_only=True)
 
     class Meta:
         model = Unidad

@@ -7,6 +7,7 @@ urlpatterns = [
     path('unidades/<int:unidad_id>', views.obtener_unidad, name='obtener_unidad'),
     path('unidades/<int:unidad_id>/editar', views.editar_unidad, name='editar_unidad'),
     path('unidades/<int:unidad_id>/estado',views.cambiar_estado_unidad,name='cambiar_estado_unidad'),
+    path('unidades/inactivas', views.listar_unidades_inactivas, name='listar_unidades_inactivas'),
     # URLs para Vehículos
     path('vehiculos', views.listar_vehiculos, name='listar_vehiculos'),
     path('vehiculos/registrar', views.registrar_vehiculo, name='registrar_vehiculo'),

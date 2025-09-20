@@ -3,6 +3,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
 # Esto tenias tu sebas
 # class Rol(models.Model):
 #     name = models.CharField(max_length=20, unique=True)
@@ -120,3 +121,34 @@ class PersonaModel(models.Model):
 
     class Meta:
         db_table = 'persona'
+
+class Residente(models.Model):
+    ESTADOS = (
+        ("activo", "Activo"),
+        ("inactivo", "Inactivo"),
+    )
+
+    id_residente = models.AutoField(primary_key=True)  # PK autoincremental
+    nombre = models.CharField(max_length=150)
+    ci = models.CharField(max_length=20, unique=True, verbose_name="Carnet de Identidad")
+    telefono = models.CharField(max_length=20, blank=True, null=True)
+    correo = models.EmailField(unique=True)
+    # foto = models.ImageField(upload_to="residentes/fotos/", blank=True, null=True)
+    estado = models.CharField(max_length=10, choices=ESTADOS, default="activo")
+
+    # Relación con Unidad
+    id_unidad = models.ForeignKey(
+        "unidad_pertenencia.Unidad",  # asegúrate de tener el modelo Unidad creado
+        on_delete=models.SET_NULL,  # si se elimina la unidad, queda null
+        null=True,
+        related_name="residentes"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)  # opcional
+    updated_at = models.DateTimeField(auto_now=True)      # opcional
+
+    def __str__(self):
+        return f"{self.nombre} - {self.ci}"
+
+    class Meta:
+        db_table = "residente"

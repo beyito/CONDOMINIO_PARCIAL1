@@ -1,7 +1,7 @@
 
 from rest_framework import generics, viewsets, status
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer, GuardiaSerializer
+from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer, GuardiaSerializer, ResidenteSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.views import APIView
@@ -9,7 +9,8 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 from rest_framework.exceptions import AuthenticationFailed
-from .models import Usuario
+from .models import Usuario, Residente
+from unidad_pertenencia.models import Unidad
 from rest_framework.decorators import api_view
 User = get_user_model()
 
@@ -23,7 +24,27 @@ class RegisterCopropietarioView(generics.CreateAPIView):
         print(data)
         serializer = self.get_serializer(data=data)
         if serializer.is_valid():
-            serializer.save()  # llama automáticamente al create del serializer
+            usuario = serializer.save()  # crea el copropietario
+
+            # Crear Residente automáticamente
+            unidad_id = data.get('unidad')  # debe venir el ID de la unidad
+            if unidad_id:
+                try:
+                    unidad = Unidad.objects.get(id=unidad_id)
+                    # Cambiar estado a activa
+                    unidad.estado = "activa"
+                    unidad.save()
+
+                    Residente.objects.create(
+                        nombre=usuario.nombre,
+                        ci=usuario.ci,
+                        telefono=usuario.telefono,
+                        correo=usuario.email,
+                        estado='activo',
+                        id_unidad=unidad
+                    )
+                except Unidad.DoesNotExist:
+                    pass  # opcional: manejar error si la unidad no exist
             return Response({
                 "status": 1,
                 "error": 0,
@@ -184,7 +205,9 @@ class PerfilUsuarioView(APIView):
                     "rol": usuario.idRol.name,
             }
         })
-
+class ResidenteViewSet(viewsets.ModelViewSet):
+    queryset = Residente.objects.all().order_by("-created_at")
+    serializer_class = ResidenteSerializer
 
 
         

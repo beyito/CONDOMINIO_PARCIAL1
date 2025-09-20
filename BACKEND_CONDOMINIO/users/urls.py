@@ -1,11 +1,14 @@
 # users/urls.py
 from django.urls import include, path
-from .views import RegisterView, UserViewSet, MyTokenObtainPairView, LogoutView, RegisterCopropietarioView, RegisterGuardiaView, PerfilUsuarioView
+from .views import RegisterView, UserViewSet, MyTokenObtainPairView, LogoutView, RegisterCopropietarioView, RegisterGuardiaView, PerfilUsuarioView, ResidenteViewSet
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet, basename='users')
+
+routerResidente = routers.DefaultRouter()
+routerResidente.register(r'', ResidenteViewSet, basename='residentes')
 
 urlpatterns = [
     # ESTA RUTA REGISTRA UN USUARIO ADMINISTRADOR
@@ -19,4 +22,5 @@ urlpatterns = [
     path('registrarCopropietario/', RegisterCopropietarioView.as_view(), name='registrarCopropietario'), #registro de copropietario
     path('registrarGuardia/', RegisterGuardiaView.as_view(), name='registrarGuardia'), #registro de guardia
     path('api/v1/', include(router.urls)), #CRUD de los usuarios
+    path('residentes/',include(routerResidente.urls)), #CRUD de los residentes
 ]

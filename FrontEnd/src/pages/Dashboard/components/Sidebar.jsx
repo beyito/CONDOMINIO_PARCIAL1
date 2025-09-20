@@ -22,7 +22,7 @@ const menuItems = [
   {
     id: 'usuarios',
     icon: Users,
-    label: 'Residentes',
+    label: 'Usuarios',
     path: '/dashboard/usuarios'
   },
   {
