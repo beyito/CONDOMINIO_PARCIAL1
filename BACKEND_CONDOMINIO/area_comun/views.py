@@ -7,7 +7,8 @@ from .models import AreaComun, Reserva, AutorizacionVisita
 from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer, ListaVisitantesSerializer, RegistroVisita
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated,IsPersonal
+from rest_framework.permissions import IsAuthenticated
+from condominio.permissions import IsPersonal, IsCopropietario
 
 # #Crear Lista Invitados
 
