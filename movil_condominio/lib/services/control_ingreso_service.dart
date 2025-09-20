@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:movil_condominio/models/autorizacion_visita_model.dart';
-import 'package:movil_condominio/models/persona_model.dart';
 import 'package:movil_condominio/models/response__model.dart';
 import 'package:movil_condominio/services/auth_service.dart';
 import 'package:http/http.dart' as http;

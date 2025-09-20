@@ -38,8 +38,8 @@ class _LoginPageState extends State<LoginPage> {
           context.go('/home/1'); //Poner pagina para el personal
         } else if (rol == 'Copropietario') {
           context.go('/home/0'); // Poner pagina para el Copropietario
-        } else {
-          context.go('/home'); // ruta default
+        } else if (rol == 'Limpieza') {
+          context.go('/home/0'); // ruta default
         }
         // context.go('/home/1');
       } else {

@@ -38,12 +38,18 @@ class _HomePageState extends State<HomePage> {
           NoticiasView(),
           ControlIngresoView(),
           // placeholder
+          //TareasView(),
         ];
       } else if (_rol == 'Copropietario') {
         _viewRoutes = [
           NoticiasView(),
           //ReservasView(),
           //AreasComunesView(),
+        ];
+      } else if (_rol == 'Limpieza') {
+        _viewRoutes = [
+          NoticiasView(),
+          //TareasView(),
         ];
       }
     });

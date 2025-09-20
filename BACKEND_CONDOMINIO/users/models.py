@@ -2,7 +2,6 @@
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from unidad_pertenencia.models import Unidad
 
 # Esto tenias tu sebas
 # class Rol(models.Model):
@@ -106,7 +105,6 @@ class CopropietarioModel(models.Model):
         primary_key=True,
         db_column="id"
     )
-    id_unidad = models.ForeignKey(Unidad, on_delete=models.RESTRICT, db_column="id_unidad",  blank=True, null=True)  # Ejemplo: "Apto 101"
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

@@ -59,6 +59,7 @@ final appRouter = GoRouter(
       // 👇 Redirigimos al home/índice inicial según el rol
       if (rol == 'Guardia') return '/home/0'; // Control ingreso
       if (rol == 'Copropietario') return '/home/0'; // Inicio copropietario
+      if (rol == 'Limpieza') return '/home/0';
       return '/home/0';
     }
 

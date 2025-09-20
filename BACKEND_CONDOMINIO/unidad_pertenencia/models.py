@@ -1,5 +1,5 @@
 from django.db import models
-
+from users.models import CopropietarioModel
 
 # Create your models here.
 class Unidad(models.Model):
@@ -19,6 +19,7 @@ class Unidad(models.Model):
     numero = models.CharField(max_length=10)
     area_m2 = models.DecimalField(max_digits=8, decimal_places=2)
     estado = models.CharField(max_length=20, default="activa")
+    id_copropietario = models.ForeignKey(CopropietarioModel, on_delete=models.CASCADE, null=True, blank= True)# Ejemplo: "Apto 101"
     tipo_unidad = models.CharField(
         max_length=20,
         choices=TIPOS_UNIDAD,

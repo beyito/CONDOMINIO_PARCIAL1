@@ -37,6 +37,14 @@ class CustomBottomNavigation extends StatelessWidget {
         BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Reservas'),
         BottomNavigationBarItem(icon: Icon(Icons.apartment), label: 'Áreas'),
       ];
+    } else if (rol == 'Limpieza') {
+      items = const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Noticias Condominio',
+        ),
+        BottomNavigationBarItem(icon: Icon(Icons.task), label: 'Tareas'),
+      ];
     }
 
     return BottomNavigationBar(
