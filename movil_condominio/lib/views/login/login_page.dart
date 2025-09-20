@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movil_condominio/services/auth_service.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   static const name = 'login-screen';
@@ -28,7 +29,19 @@ class _LoginPageState extends State<LoginPage> {
         _passwordController.text,
       );
       if (resAuth.status == 1) {
-        context.go('/home/1');
+        //Aqui poner las condiciones de rol
+        final prefs = await SharedPreferences.getInstance();
+        final rol = prefs.getString('rol');
+
+        // Redirigir según rol
+        if (rol == 'Guardia') {
+          context.go('/home/1'); //Poner pagina para el guardia
+        } else if (rol == 'Copropietario') {
+          context.go('/home/0'); // Poner pagina para el Copropietario
+        } else {
+          context.go('/home'); // ruta default
+        }
+        // context.go('/home/1');
       } else {
         setState(() {
           _errorMessage = resAuth.error ?? 'Error desconocido';

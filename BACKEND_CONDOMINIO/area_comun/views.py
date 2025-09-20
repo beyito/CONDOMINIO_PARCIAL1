@@ -6,6 +6,8 @@ from datetime import datetime
 from .models import AreaComun, Reserva, AutorizacionVisita
 from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer, ListaVisitantesSerializer, RegistroVisita
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated,IsGuardia
 
 # #Crear Lista Invitados
 
@@ -15,9 +17,10 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 # MOSTRAR VISITAS PARA EL GUARDIA
 @api_view(['GET'])
+@permission_classes([IsAuthenticated, IsGuardia])
 def mostrarVisitas(request):
-    visitas = AutorizacionVisita.objects.all()
-    visitas.exclude(estado="Completado")
+    
+    visitas = AutorizacionVisita.objects.exclude(estado="Completado")
     visitas_serializadas = ListaVisitantesSerializer(visitas, many=True).data
     print(ListaVisitantesSerializer(visitas, many=True).data)
     data = []
