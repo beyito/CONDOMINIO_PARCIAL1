@@ -13,13 +13,16 @@ import {
 import { getUnidades } from '../../api/Unidades y Pertenencias/unidades_y_pertenencias'
 import { useApi } from '../../hooks/useApi'
 import ModalCrearUnidad from './components/ModalCrearUnidad'
+import ModalCrearResidente from './components/ModalCrearResidente'
 
 const Unidades = () => {
   const [showModal, setShowModal] = useState(false)
+  const [openMenuId, setOpenMenuId] = useState(null)
   const [showDetails, setShowDetails] = useState(false)
   const [selectedUnidad, setSelectedUnidad] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterEstado, setFilterEstado] = useState('todas')
+  const [showModalType, setShowModalType] = useState(null)
 
   const { data, loading, error, execute } = useApi(getUnidades)
 
@@ -29,6 +32,7 @@ const Unidades = () => {
 
   // datos desde el backend
   const unidades = data?.data?.values || []
+  console.log(unidades)
 
   const estadosUnidad = ['activa', 'inactiva', 'mantenimiento']
 
@@ -127,7 +131,7 @@ const Unidades = () => {
               {filteredUnidades.map((unidad) => (
                 <div
                   key={unidad.id}
-                  className='border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow'
+                  className='border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow relative'
                 >
                   <div className='flex justify-between items-start mb-3'>
                     <div>
@@ -138,13 +142,63 @@ const Unidades = () => {
                         Bloque {unidad.bloque} - {unidad.numero}
                       </p>
                     </div>
-                    <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${getEstadoColor(
-                        unidad.estado
-                      )}`}
-                    >
-                      {unidad.estado}
-                    </span>
+                    <div className='flex items-center space-x-2'>
+                      <span
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${getEstadoColor(
+                          unidad.estado
+                        )}`}
+                      >
+                        {unidad.estado}
+                      </span>
+
+                      <div className='relative inline-block text-left'>
+                        <button
+                          onClick={() =>
+                            setOpenMenuId(
+                              openMenuId === unidad.id ? null : unidad.id
+                            )
+                          }
+                          className='p-2 text-gray-400 hover:text-blue-600 rounded-full transition-colors'
+                        >
+                          ⋮
+                        </button>
+
+                        {openMenuId === unidad.id && (
+                          <div className='origin-top-right absolute right-0 mt-2 w-44 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10'>
+                            <div className='py-1'>
+                              <button
+                                onClick={() => {
+                                  setSelectedUnidad(unidad)
+                                  setOpenMenuId(null)
+                                  setShowModalType('residente')
+                                }}
+                                className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                              >
+                                Añadir Residente
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setSelectedUnidad(unidad)
+                                  setOpenMenuId(null)
+                                }}
+                                className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                              >
+                                Añadir Vehículo
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setSelectedUnidad(unidad)
+                                  setOpenMenuId(null)
+                                }}
+                                className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                              >
+                                Añadir Mascota
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                   <div className='space-y-2 mb-4'>
@@ -176,6 +230,7 @@ const Unidades = () => {
                       <span>{unidad.mascotas?.length || 0}</span>
                     </span>
                   </div>
+                  <div className='absolute top-4 right-4'></div>
 
                   {/* Actions */}
                   <div className='flex justify-between items-center'>
@@ -235,7 +290,7 @@ const Unidades = () => {
                         <div>
                           <p className='font-medium'>{residente.nombre}</p>
                           <p className='text-sm text-gray-600'>
-                            {residente.tipo}
+                            {residente.rol || 'Residente'}
                           </p>
                         </div>
                       </div>
@@ -297,6 +352,13 @@ const Unidades = () => {
             setShowModal={setShowModal}
             onSuccess={execute}
             unidad={selectedUnidad}
+          />
+        )}
+        {showModalType === 'residente' && selectedUnidad && (
+          <ModalCrearResidente
+            setShowModal={setShowModalType}
+            onSuccess={execute}
+            unidad={selectedUnidad.id}
           />
         )}
       </div>

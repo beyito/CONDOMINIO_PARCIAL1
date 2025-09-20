@@ -256,6 +256,27 @@ def obtener_unidad(request, unidad_id):
             'values': None
         })
         
+@api_view(['GET'])
+@permission_classes([])
+def listar_unidades_inactivas(request):
+    try:
+        unidades = Unidad.objects.filter(estado='inactiva').order_by('bloque', 'piso', 'numero')
+        serializer = UnidadSerializer(unidades, many=True)
+        return Response({
+            'status': 1,
+            'error': 0,
+            'message': f'Se encontraron {len(unidades)} unidades inactivas',
+            'values': serializer.data
+        })
+    except Exception as e:
+        logger.error(f"Error al listar unidades inactivas: {str(e)}")
+        return Response({
+            'status': 2,
+            'error': 1,
+            'message': 'Error interno del servidor al listar las unidades inactivas',
+            'values': None
+        })
+
 @api_view(['POST'])
 @permission_classes([])
 def registrar_vehiculo(request):

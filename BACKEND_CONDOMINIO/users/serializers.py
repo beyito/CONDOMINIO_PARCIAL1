@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import PersonalModel,Usuario,CopropietarioModel,Rol
+from .models import PersonalModel,Usuario,CopropietarioModel,Rol, Residente
 
 User = get_user_model()
 
@@ -119,3 +119,16 @@ class PersonalSerializer(serializers.ModelSerializer):
             PersonalModel.objects.create(idUsuario=usuario, turno=turno, tipo_personal=tipo_personal)
         else: PersonalModel.objects.create(idUsuario=usuario)
         return usuario
+    
+class ResidenteSerializer(serializers.ModelSerializer):
+    rol = serializers.SerializerMethodField()
+    class Meta:
+        model = Residente
+        fields = "__all__"
+        read_only_fields = ["id_residente", "created_at", "updated_at"]
+    def get_rol(self, obj):
+        try:
+            usuario = Usuario.objects.get(ci=obj.ci)
+            return usuario.idRol.name if usuario.idRol else None
+        except Usuario.DoesNotExist:
+            return None

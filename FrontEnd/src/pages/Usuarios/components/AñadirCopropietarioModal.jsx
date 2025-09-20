@@ -1,10 +1,18 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X, Home } from 'lucide-react'
 import { useApi } from '../../../hooks/useApi'
 import { postCopropietario } from '../../../api/usuarios/usuarios'
-
+import { getUnidadesInactivas } from '../../../api/Unidades y Pertenencias/unidades_y_pertenencias'
 const AñadirCopropietarioModal = ({ setShowModal, onSuccess }) => {
   const { error, loading, execute } = useApi(postCopropietario)
+  const { data, execute: execute2 } = useApi(getUnidadesInactivas)
+
+  useEffect(() => {
+    execute2()
+  }, [])
+
+  const unidadesInactivas = data?.data?.values
+  console.log(unidadesInactivas)
 
   const [formData, setFormData] = useState({
     username: '',
@@ -140,15 +148,21 @@ const AñadirCopropietarioModal = ({ setShowModal, onSuccess }) => {
             <label className='block text-sm font-medium text-gray-700 mb-1'>
               Unidad *
             </label>
-            <input
-              type='text'
+            <select
               name='unidad'
               value={formData.unidad}
               onChange={handleChange}
               required
-              placeholder='Ej: 101, A-5, etc.'
               className='w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
-            />
+            >
+              <option value=''>Seleccione una unidad</option>
+              {unidadesInactivas?.map((unidad) => (
+                <option key={unidad.id} value={unidad.id}>
+                  {unidad.codigo} - Bloque {unidad.bloque}, Piso {unidad.piso},
+                  Número {unidad.numero}
+                </option>
+              ))}
+            </select>
           </div>
 
           {error && (

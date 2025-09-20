@@ -12,3 +12,11 @@ export const putUnidades = async (data) => {
     const id_unidad = data.id
     return instancia.put(`unidadpertenencia/unidades/${id_unidad}/editar`, data);
 }
+
+export const getUnidadesInactivas = async () => {
+    return instancia.get("unidadpertenencia/unidades/inactivas");
+};
+
+export const postResidente = async (data) => {
+    return instancia.post("usuario/residentes/", data);
+}   
