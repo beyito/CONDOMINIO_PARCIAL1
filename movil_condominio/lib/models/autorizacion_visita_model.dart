@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'package:movil_condominio/models/persona_model.dart';
-
 class AutorizacionVisitaModel {
   final int? id;
   final DateTime? horaInicio;

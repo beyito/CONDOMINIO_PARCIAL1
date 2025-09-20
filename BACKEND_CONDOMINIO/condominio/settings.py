@@ -111,6 +111,7 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # tu frontend Vite
     "http://127.0.0.1:5173",
+    
 ]
 # Permitir cookies / credenciales
 CORS_ALLOW_CREDENTIALS = True

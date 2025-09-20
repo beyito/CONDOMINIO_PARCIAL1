@@ -2,44 +2,55 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class CustomBottomNavigation extends StatelessWidget {
-  final int currentBottomIndex;
-  const CustomBottomNavigation({super.key, required this.currentBottomIndex});
-  void onItemTapped(BuildContext context, int index) {
-    // Solo existe hasta el index 2 dentro de /home, se puede colocar más opciones según a los BottomNavigationBarItem que añadamos
-    switch (index) {
-      case 0:
-        context.go('/home/0');
-        break;
-      case 1:
-        context.go('/home/1');
-        break;
-      case 2:
-        context.go('/home/2');
-        break;
+  final int currentIndex;
+  final String rol;
+  const CustomBottomNavigation({
+    super.key,
+    required this.currentIndex,
+    required this.rol,
+  });
 
-      default:
-    }
+  void onItemTapped(BuildContext context, int index) {
+    context.go('/home/$index'); // 👈 así nunca sales del HomePage
   }
 
   @override
   Widget build(BuildContext context) {
+    List<BottomNavigationBarItem> items = [];
+    if (rol == 'Guardia') {
+      items = const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Noticias Condominio',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.login),
+          label: 'Control ingreso',
+        ),
+      ];
+    } else if (rol == 'Copropietario') {
+      items = const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Noticias Condominio',
+        ),
+        BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Reservas'),
+        BottomNavigationBarItem(icon: Icon(Icons.apartment), label: 'Áreas'),
+      ];
+    } else if (rol == 'Limpieza') {
+      items = const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Noticias Condominio',
+        ),
+        BottomNavigationBarItem(icon: Icon(Icons.task), label: 'Tareas'),
+      ];
+    }
+
     return BottomNavigationBar(
-      fixedColor: Colors.blueAccent,
-      elevation: 0,
-      currentIndex: currentBottomIndex,
-      onTap: (value) => onItemTapped(context, value),
-      items: const [
-        // Podemos colocar más o quitar. La cantidad tiene que se el mismo que onItemTapped
-        BottomNavigationBarItem(icon: Icon(Icons.home_max), label: 'Noticias'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.people_alt_rounded),
-          label: 'Control de Visitas',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.favorite_outline),
-          label: 'Favoritos',
-        ),
-      ],
+      currentIndex: currentIndex,
+      onTap: (index) => onItemTapped(context, index),
+      items: items,
     );
   }
 }

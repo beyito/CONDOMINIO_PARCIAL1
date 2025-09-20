@@ -23,7 +23,13 @@ class _ControlIngresoViewState extends State<ControlIngresoView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Solicitudes de Visita")),
+      appBar: AppBar(
+        title: const Text(
+          "Solicitudes de Visita",
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
+        backgroundColor: Colors.blueAccent,
+      ),
       body: FutureBuilder<List<AutorizacionVisitaModel>>(
         future: _futureVisitas,
         builder: (context, snapshot) {

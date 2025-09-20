@@ -3,14 +3,14 @@ import 'package:movil_condominio/models/noticia_model.dart';
 import 'package:movil_condominio/services/noticias_service.dart';
 import 'package:movil_condominio/widgets/noticia_widget.dart';
 
-class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+class NoticiasView extends StatefulWidget {
+  const NoticiasView({super.key});
 
   @override
-  HomeViewState createState() => HomeViewState();
+  NoticiasViewState createState() => NoticiasViewState();
 }
 
-class HomeViewState extends State<HomeView> {
+class NoticiasViewState extends State<NoticiasView> {
   final NoticiasService noticiasService = NoticiasService();
   late Future<List<NoticiaModel>> noticias;
 

@@ -1,5 +1,3 @@
-import 'package:movil_condominio/models/usuario_model.dart';
-
 class LoginResponse {
   final int? id;
   final int? status;
