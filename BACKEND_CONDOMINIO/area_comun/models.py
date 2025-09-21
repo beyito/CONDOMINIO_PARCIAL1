@@ -86,7 +86,7 @@ class AutorizacionVisita(models.Model):
 
 class RegistroVisitaModel(models.Model):
     autorizacion = models.ForeignKey(AutorizacionVisita, on_delete=models.CASCADE)
-    personal = models.ForeignKey(PersonalModel, on_delete=models.CASCADE)
+    personal = models.ForeignKey(PersonalModel, on_delete=models.CASCADE, null = True)
     fecha_entrada = models.DateTimeField(auto_now_add=True, null=True)
     fecha_salida = models.DateTimeField(null=True, blank=True)
 

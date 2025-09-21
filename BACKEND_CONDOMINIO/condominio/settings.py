@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'comunicacion',
     'gestion_expensas',
     'unidad_pertenencia',
+    'tareas',
 ]
 
 
@@ -87,7 +88,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'condominio',
         'USER': 'postgres',
-        'PASSWORD': 'password',
+        'PASSWORD': 'CObuchan8',
         'HOST': 'localhost',
         'PORT': '5432',
 
