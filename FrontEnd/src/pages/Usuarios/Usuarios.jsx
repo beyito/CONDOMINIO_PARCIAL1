@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Users, UserPlus, Shield, X, Loader2 } from 'lucide-react'
+import { Users, UserPlus, UserRoundPlus, X, Loader2 } from 'lucide-react'
 import { useApi } from '../../hooks/useApi'
 import { getUsuarios } from '../../api/usuarios/usuarios'
 import AñadirCopropietarioModal from './components/AñadirCopropietarioModal'
@@ -59,8 +59,8 @@ export default function UsuariosDashboard() {
             className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2'
             onClick={() => setShowModalGuardia(true)}
           >
-            <Shield className='w-4 h-4' />
-            <span>Nuevo Guardia</span>
+            <UserRoundPlus className='w-4 h-4' />
+            <span>Nuevo Personal</span>
           </button>
         </div>
       </div>

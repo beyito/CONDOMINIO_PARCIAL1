@@ -8,6 +8,14 @@ export const postCopropietario = async (data) => {
     return instancia.post('usuario/registrarCopropietario/', data);  
 }
 
-export const postGuardia = async (data) => {
-    return instancia.post('usuario/registrarGuardia/', data);  
+export const postPersonal = async (data) => {
+    return instancia.post('usuario/registrarPersonal/', data);  
+}
+
+export const getPersonal = async () => {
+    return instancia.get('usuario/personal/');  
+}
+
+export const updatePersonal = async (id, data) => {
+    return instancia.put(`usuario/personal/${id}/`, data);
 }

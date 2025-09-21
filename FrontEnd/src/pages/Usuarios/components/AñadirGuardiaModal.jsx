@@ -1,5 +1,5 @@
 import { X, Loader2 } from 'lucide-react'
-import { postGuardia } from '../../../api/usuarios/usuarios'
+import { postPersonal } from '../../../api/usuarios/usuarios'
 import { useApi } from '../../../hooks/useApi'
 import { useState } from 'react'
 
@@ -7,17 +7,18 @@ import ApprovalModal from '../../../components/AprovalModal'
 import ErrorModal from '../../../components/ErrorModal'
 
 export default function AñadirGuardiaModal({ setShowModal, onSuccess }) {
-  const { execute, loading, error } = useApi(postGuardia)
+  const { execute, loading, error } = useApi(postPersonal)
   const [approvalModalOpen, setApprovalModalOpen] = useState(false)
   const [errorModalOpen, setErrorModalOpen] = useState(false)
 
-  const [guardiaForm, setGuardiaForm] = useState({
+  const [personalForm, setPersonalForm] = useState({
     username: '',
     ci: '',
     nombre: '',
     email: '',
     telefono: '',
     turno: '',
+    tipo_personal: '',
     password: ''
   })
 
@@ -25,8 +26,8 @@ export default function AñadirGuardiaModal({ setShowModal, onSuccess }) {
     e.preventDefault()
 
     try {
-      const response = await execute(guardiaForm)
-      console.log('Guardia registrado:', response.data)
+      const response = await execute(personalForm)
+      console.log('Empleado registrado:', response.data)
 
       setShowModal(false)
       onSuccess?.()
@@ -66,14 +67,14 @@ export default function AñadirGuardiaModal({ setShowModal, onSuccess }) {
                 </label>
                 <input
                   type='text'
-                  value={guardiaForm.username}
+                  value={personalForm.username}
                   onChange={(e) =>
-                    setGuardiaForm((prev) => ({
+                    setPersonalForm((prev) => ({
                       ...prev,
                       username: e.target.value
                     }))
                   }
-                  placeholder='guardia1'
+                  placeholder='personal...'
                   className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
                   required
                 />
@@ -84,9 +85,9 @@ export default function AñadirGuardiaModal({ setShowModal, onSuccess }) {
                 </label>
                 <input
                   type='text'
-                  value={guardiaForm.ci}
+                  value={personalForm.ci}
                   onChange={(e) =>
-                    setGuardiaForm((prev) => ({ ...prev, ci: e.target.value }))
+                    setPersonalForm((prev) => ({ ...prev, ci: e.target.value }))
                   }
                   placeholder='87654321'
                   className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
@@ -101,9 +102,9 @@ export default function AñadirGuardiaModal({ setShowModal, onSuccess }) {
               </label>
               <input
                 type='text'
-                value={guardiaForm.nombre}
+                value={personalForm.nombre}
                 onChange={(e) =>
-                  setGuardiaForm((prev) => ({
+                  setPersonalForm((prev) => ({
                     ...prev,
                     nombre: e.target.value
                   }))
@@ -120,43 +121,45 @@ export default function AñadirGuardiaModal({ setShowModal, onSuccess }) {
               </label>
               <input
                 type='email'
-                value={guardiaForm.email}
+                value={personalForm.email}
                 onChange={(e) =>
-                  setGuardiaForm((prev) => ({ ...prev, email: e.target.value }))
+                  setPersonalForm((prev) => ({
+                    ...prev,
+                    email: e.target.value
+                  }))
                 }
                 placeholder='pedro@example.com'
                 className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
                 required
               />
             </div>
-
+            <div>
+              <label className='block text-sm font-medium text-gray-700 mb-1'>
+                Teléfono
+              </label>
+              <input
+                type='text'
+                value={personalForm.telefono}
+                onChange={(e) =>
+                  setPersonalForm((prev) => ({
+                    ...prev,
+                    telefono: e.target.value
+                  }))
+                }
+                placeholder='98765432'
+                className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                required
+              />
+            </div>
             <div className='grid grid-cols-2 gap-4'>
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-1'>
-                  Teléfono
-                </label>
-                <input
-                  type='text'
-                  value={guardiaForm.telefono}
-                  onChange={(e) =>
-                    setGuardiaForm((prev) => ({
-                      ...prev,
-                      telefono: e.target.value
-                    }))
-                  }
-                  placeholder='98765432'
-                  className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-                  required
-                />
-              </div>
               <div>
                 <label className='block text-sm font-medium text-gray-700 mb-1'>
                   Turno
                 </label>
                 <select
-                  value={guardiaForm.turno}
+                  value={personalForm.turno}
                   onChange={(e) =>
-                    setGuardiaForm((prev) => ({
+                    setPersonalForm((prev) => ({
                       ...prev,
                       turno: e.target.value
                     }))
@@ -170,6 +173,27 @@ export default function AñadirGuardiaModal({ setShowModal, onSuccess }) {
                   <option value='noche'>Noche</option>
                 </select>
               </div>
+              <div>
+                <label className='block text-sm font-medium text-gray-700 mb-1'>
+                  Tipo de Personal
+                </label>
+                <select
+                  value={personalForm.tipo_personal}
+                  onChange={(e) =>
+                    setPersonalForm((prev) => ({
+                      ...prev,
+                      tipo_personal: e.target.value
+                    }))
+                  }
+                  className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                  required
+                >
+                  <option value=''>Seleccionar Personal</option>
+                  <option value='guardia'>Guardia</option>
+                  <option value='limpieza'>Limpieza</option>
+                  <option value='mantenimiento'>Mantenimiento</option>
+                </select>
+              </div>
             </div>
 
             <div>
@@ -178,9 +202,9 @@ export default function AñadirGuardiaModal({ setShowModal, onSuccess }) {
               </label>
               <input
                 type='password'
-                value={guardiaForm.password}
+                value={personalForm.password}
                 onChange={(e) =>
-                  setGuardiaForm((prev) => ({
+                  setPersonalForm((prev) => ({
                     ...prev,
                     password: e.target.value
                   }))
