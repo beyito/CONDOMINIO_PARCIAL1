@@ -23,7 +23,10 @@ const menuItems = [
     id: 'usuarios',
     icon: Users,
     label: 'Usuarios',
-    path: '/dashboard/usuarios'
+    subItems: [
+      { id: 'copropietarios', label: 'Usuarios', path: '/dashboard/usuarios' },
+      { id: 'personal', label: 'Personal', path: '/dashboard/personal' }
+    ]
   },
   {
     id: 'unidades',
@@ -71,6 +74,7 @@ const menuItems = [
 
 export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [openSubMenu, setOpenSubMenu] = useState(null)
   //   const [activeSection, setActiveSection] = useState('dashboard')
 
   const navigate = useNavigate()
@@ -153,26 +157,51 @@ export default function Sidebar() {
       {/* Navigation Menu */}
       <nav className='flex-1 p-4 space-y-2'>
         {menuItems.map((item) => (
-          <NavLink
-            key={item.id}
-            to={item.path} // <-- la ruta de navegación de este item
-            end={item.path === '/dashboard'}
-            className={({ isActive }) =>
-              `w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
-                isActive
+          <div key={item.id}>
+            <button
+              onClick={() =>
+                item.subItems
+                  ? setOpenSubMenu(openSubMenu === item.id ? null : item.id)
+                  : navigate(item.path)
+              }
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
+                openSubMenu === item.id
                   ? 'bg-blue-50 text-blue-700 shadow-sm'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`
-            }
-          >
-            <item.icon className={`w-5 h-5 ${!sidebarOpen && 'mx-auto'}`} />
-            {sidebarOpen && (
-              <>
-                <span className='font-medium'>{item.label}</span>
-                <ChevronRight className='w-4 h-4 ml-auto' />
-              </>
+              }`}
+            >
+              <item.icon className={`w-5 h-5 ${!sidebarOpen && 'mx-auto'}`} />
+              {sidebarOpen && <span className='font-medium'>{item.label}</span>}
+              {item.subItems && sidebarOpen && (
+                <ChevronRight
+                  className={`w-4 h-4 ml-auto transition-transform ${
+                    openSubMenu === item.id ? 'rotate-90' : ''
+                  }`}
+                />
+              )}
+            </button>
+
+            {/* Submenu */}
+            {item.subItems && openSubMenu === item.id && sidebarOpen && (
+              <div className='ml-8 mt-1 space-y-1'>
+                {item.subItems.map((sub) => (
+                  <NavLink
+                    key={sub.id}
+                    to={sub.path}
+                    className={({ isActive }) =>
+                      `w-full block px-3 py-2 rounded-xl transition-all duration-200 ${
+                        isActive
+                          ? 'bg-blue-100 text-blue-700 shadow-sm'
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      }`
+                    }
+                  >
+                    {sub.label}
+                  </NavLink>
+                ))}
+              </div>
             )}
-          </NavLink>
+          </div>
         ))}
       </nav>
 

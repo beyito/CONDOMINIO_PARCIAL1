@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import PersonalModel,Usuario,CopropietarioModel,Rol, Residente
+from unidad_pertenencia.models import Unidad
 
 User = get_user_model()
 
@@ -77,31 +78,53 @@ class SetNewPasswordSerializer(serializers.Serializer):
 
 
 # PARTE DEL PROYECTO INMOBILIARIA
-
 class CopropietarioSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    unidad = serializers.CharField(write_only=True, required = False)
+    unidad = serializers.CharField(write_only=True, required=False)
+
     class Meta:
         model = Usuario
         fields = ['username', 'nombre', 'ci', 'email', 'telefono', 'password', 'idRol', 'unidad']
 
-    def create(self, validated_data):   
-        print("joal")  
-        unidad = validated_data.pop('unidad', None) 
-        password = validated_data.pop('password')  # 👉 la sacamos antes
+    def create(self, validated_data):
+        unidad_id = validated_data.pop('unidad', None)
+        password = validated_data.pop('password')
+
+        # Crear Usuario
         usuario = Usuario.objects.create(**validated_data)
         usuario.set_password(password)
         usuario.save()
-        
-        if unidad:
-            CopropietarioModel.objects.create(idUsuario=usuario, unidad=unidad)
-        else:
-            CopropietarioModel.objects.create(idUsuario=usuario)
+
+        # Crear Copropietario
+        copropietario = CopropietarioModel.objects.create(idUsuario=usuario)
+
+        # Si se pasó una unidad, asignarla al copropietario y crear residente
+        if unidad_id:
+            try:
+                unidad = Unidad.objects.get(id=unidad_id)
+                unidad.id_copropietario = copropietario
+                unidad.estado = "activa"
+                unidad.save()
+
+                # Crear Residente ligado a esa unidad
+                Residente.objects.create(
+                    nombre=usuario.nombre,
+                    ci=usuario.ci,
+                    telefono=usuario.telefono,
+                    correo=usuario.email,
+                    estado='activo',
+                    id_unidad=unidad
+                )
+            except Unidad.DoesNotExist:
+                pass
+
         return usuario
+
     
 class PersonalSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     turno = serializers.CharField(write_only=True, required = False)
+    tipo_personal = serializers.CharField(write_only=True, required=False)
     class Meta:
         model = Usuario
         fields = ['username', 'nombre', 'ci', 'email', 'telefono', 'password', 'idRol', 'turno', 'tipo_personal']
@@ -120,6 +143,31 @@ class PersonalSerializer(serializers.ModelSerializer):
         else: PersonalModel.objects.create(idUsuario=usuario)
         return usuario
     
+class PersonalListSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='idUsuario.id')
+    username = serializers.CharField(source='idUsuario.username')
+    nombre = serializers.CharField(source='idUsuario.nombre')
+    ci = serializers.CharField(source='idUsuario.ci')
+    email = serializers.EmailField(source='idUsuario.email')
+    telefono = serializers.CharField(source='idUsuario.telefono', allow_blank=True, allow_null=True)
+    rol_id = serializers.IntegerField(source='idUsuario.idRol.idRol')  # <- aquí el cambio
+    rol_name = serializers.CharField(source='idUsuario.idRol.name')    # nombre del rol
+
+    class Meta:
+        model = PersonalModel
+        fields = [
+            'id',
+            'username',
+            'nombre',
+            'ci',
+            'telefono',
+            'email',
+            'rol_id',
+            'rol_name',
+            'turno',
+            'tipo_personal',
+        ]
+
 class ResidenteSerializer(serializers.ModelSerializer):
     rol = serializers.SerializerMethodField()
     class Meta:

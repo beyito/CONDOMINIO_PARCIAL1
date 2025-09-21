@@ -7,6 +7,7 @@ import EstadisticasDashboard from '../pages/Dashboard/components/EstadisticasDas
 import AreasComunes from '../pages/AreasComunes/AreasComunes'
 import UsuariosDashboard from '../pages/Usuarios/Usuarios'
 import Unidades from '../pages/Unidades/Unidades'
+import PersonalDashboard from '../pages/Usuarios/Personal'
 
 function AppRoutes() {
   const { isAuthenticated, loading } = useAuth()
@@ -39,6 +40,7 @@ function AppRoutes() {
         <Route path='estadisticas' element={<EstadisticasDashboard />} />
         <Route path='areas' element={<AreasComunes />} />
         <Route path='usuarios' element={<UsuariosDashboard />} />
+        <Route path='personal' element={<PersonalDashboard />} />
         <Route path='unidades' element={<Unidades />} />
       </Route>
 

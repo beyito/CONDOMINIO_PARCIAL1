@@ -1,7 +1,7 @@
 
 from rest_framework import generics, viewsets, status
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer, PersonalSerializer, ResidenteSerializer
+from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer, PersonalSerializer, ResidenteSerializer, PersonalListSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.views import APIView
@@ -10,6 +10,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 from rest_framework.exceptions import AuthenticationFailed
 from .models import PersonalModel, Residente
+from unidad_pertenencia.models import Unidad
 from rest_framework.decorators import api_view
 User = get_user_model()
 
@@ -19,44 +20,25 @@ class RegisterCopropietarioView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
-        data['idRol'] = 2  # forzar el rol de copropietario
-        print(data)
+        data['idRol'] = 2  # rol de copropietario
         serializer = self.get_serializer(data=data)
+
         if serializer.is_valid():
-            usuario = serializer.save()  # crea el copropietario
-
-            # Crear Residente automáticamente
-            unidad_id = data.get('unidad')  # debe venir el ID de la unidad
-            if unidad_id:
-                try:
-                    unidad = Unidad.objects.get(id=unidad_id)
-                    # Cambiar estado a activa
-                    unidad.estado = "activa"
-                    unidad.save()
-
-                    Residente.objects.create(
-                        nombre=usuario.nombre,
-                        ci=usuario.ci,
-                        telefono=usuario.telefono,
-                        correo=usuario.email,
-                        estado='activo',
-                        id_unidad=unidad
-                    )
-                except Unidad.DoesNotExist:
-                    pass  # opcional: manejar error si la unidad no exist
+            usuario = serializer.save()
             return Response({
                 "status": 1,
                 "error": 0,
                 "message": "Usuario registrado correctamente",
                 "values": serializer.data
             })
-        print("VALIDACION FALLIDA:", serializer.errors)
+
         return Response({
             "status": 2,
             "error": 1,
             "message": "Usuario no se pudo registrar correctamente",
             "errors": serializer.errors
         })
+
 
 class RegisterPersonalView(generics.CreateAPIView):
     serializer_class = PersonalSerializer
@@ -81,7 +63,58 @@ class RegisterPersonalView(generics.CreateAPIView):
             "message": "Usuario no se pudo registrar correctamente",
             "errors": serializer.errors
         })
+    
+# Listar todo el personal
+class PersonalListView(generics.ListAPIView):
+    queryset = PersonalModel.objects.select_related('idUsuario').all()
+    serializer_class = PersonalListSerializer
+    permission_classes = [IsAuthenticated]
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            "status": 1,
+            "error": 0,
+            "message": "Lista de personal obtenida correctamente",
+            "values": serializer.data
+        })
+
+# Obtener o editar un personal específico
+class PersonalDetailView(generics.RetrieveUpdateAPIView):
+    queryset = PersonalModel.objects.select_related('idUsuario').all()
+    serializer_class = PersonalSerializer
+    lookup_field = 'idUsuario'  # porque tu PK es OneToOne con Usuario
+    permission_classes = [IsAuthenticated]
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response({
+            "status": 1,
+            "error": 0,
+            "message": "Personal obtenido correctamente",
+            "values": serializer.data
+        })
+
+    def update(self, request, *args, **kwargs):
+        personal = self.get_object()  # PersonalModel
+        usuario = personal.idUsuario  # Usuario real
+        serializer = self.get_serializer(usuario, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        # Actualizar campos de PersonalModel
+        personal.turno = request.data.get('turno', personal.turno)
+        personal.tipo_personal = request.data.get('tipo_personal', personal.tipo_personal)
+        personal.save()
+
+        return Response({
+            "status": 1,
+            "error": 0,
+            "message": "Personal actualizado correctamente",
+            "values": serializer.data
+        })
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer
