@@ -46,7 +46,7 @@ def mostrarVisitas(request):
     })
 
 # Create your views here.
-@api_view(['GET'])
+@api_view(['GET','POST'])
 def mostrarCalendarioAreasComunes(request):
     # Obtener fecha del body
     fecha_str = request.data.get("fecha")
@@ -277,3 +277,21 @@ class ReservaViewSet(viewsets.ModelViewSet):
             "values": serializer.data
             })
  
+# @api_view(['GET'])
+# def mostrarAreasComunes(request):
+
+#     serializer = AreaComunSerializer.list(data=request.data)
+#     if serializer.is_valid():
+#         resultado = serializer.save()
+#         visitante = resultado['visitante']
+#         registro = resultado['registro']
+#         return Response({
+#             "status": 1,
+#             "error": 0,
+#             "message": f"Salida registrada para {visitante.nombre} {visitante.apellido} a las {registro.fecha_salida}."
+#         })
+#     return Response({
+#         "status": 2,
+#         "error": 1,
+#         "message": serializer.errors
+#     })
