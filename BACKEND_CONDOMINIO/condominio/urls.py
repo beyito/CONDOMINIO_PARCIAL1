@@ -18,7 +18,13 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import include
 from rest_framework import routers
+from django.http import JsonResponse
+
+def home(request):
+    return JsonResponse({"status": "ok", "message": "Backend funcionando 🚀"})
+
 urlpatterns = [
+    path("", home),
     path('admin/', admin.site.urls),
     path('usuario/', include('users.urls')),
     path('areacomun/', include('area_comun.urls')),
