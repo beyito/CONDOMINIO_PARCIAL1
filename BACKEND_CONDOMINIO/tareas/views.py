@@ -5,11 +5,13 @@ from rest_framework.decorators import api_view,action
 from rest_framework.response import Response
 from datetime import datetime
 from .models import TareaPersonalModel, TareaModel
-from .serializers import TareaPersonalSerializer
+from .serializers import TareaPersonalSerializer, CrearTareaSerializer, TareaSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from condominio.permissions import IsPersonal, IsCopropietario
+from users.serializers import PersonalListSerializer
+from users.models import PersonalModel
 
 # Create your views here.
 
@@ -43,6 +45,97 @@ def mostrarTareasPersonal(request):
         "values": tareas_serializadas #data
     })
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def crearTarea(request):
+    serializer = CrearTareaSerializer(data=request.data)
+    if serializer.is_valid():
+        tarea = serializer.save()
+        return Response({
+            "status": 1,
+            "error": 0,
+            "message": "Tarea creada y asignada correctamente",
+            "tarea": serializer.data
+        })
+    return Response({
+        "status": 0,
+        "error": 1,
+        "message": "Error al crear tarea",
+        "details": serializer.errors
+    })
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def asignarPersonalTarea(request, tarea_id):
+    personal_ids = request.data.get('personal_ids', [])
+    try:
+        tarea = TareaModel.objects.get(id=tarea_id)
+    except TareaModel.DoesNotExist:
+        return Response({
+            "status": 0,
+            "error": 1,
+            "message": "La tarea no existe"
+        })
+
+    # Obtener todos los asignados actualmente
+    actuales = TareaPersonalModel.objects.filter(tarea=tarea)
+    
+    # Eliminar los que ya no están seleccionados
+    actuales.exclude(personal__idUsuario__in=personal_ids).delete()
+    
+
+    # Crear los nuevos asignados
+    for pid in personal_ids:
+        personal = PersonalModel.objects.get(idUsuario=pid)
+        TareaPersonalModel.objects.get_or_create(tarea=tarea, personal=personal)
+
+    return Response({
+        "status": 1,
+        "error": 0,
+        "message": "Personal actualizado correctamente"
+    })
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])  # o IsAdmin si quieres restringir
+def mostrarTodasTareas(request):
+    tareas = TareaModel.objects.all()
+
+    fecha = request.GET.get('fecha')
+    if fecha:
+        tareas = tareas.filter(tareapersonalmodel__fecha_asignacion=fecha)
+
+    tareas_serializadas = []
+    for tarea in tareas:
+        asignaciones = TareaPersonalModel.objects.filter(tarea=tarea)
+        asignaciones_serializadas = TareaPersonalSerializer(asignaciones, many=True).data
+        
+        # Estado general de la tarea (opcional)
+        if not asignaciones_serializadas:
+            estado_general = 'Sin Asignar'
+        elif all(a['estado'].lower() == 'hecho' for a in asignaciones_serializadas):
+            estado_general = 'hecho'
+        elif any(a['estado'].lower() == 'pendiente' for a in asignaciones_serializadas):
+            estado_general = 'pendiente'
+        else:
+            estado_general = 'Sin Asignar'
+
+
+
+        tareas_serializadas.append({
+            'id': tarea.id,
+            'titulo': tarea.titulo,
+            'descripcion': tarea.descripcion,
+            'fecha_creacion': tarea.fecha_creacion,
+            'frecuencia': tarea.frecuencia,
+            'estado': estado_general,
+            'asignaciones': asignaciones_serializadas
+        })
+
+    return Response({
+        "status": 1,
+        "error": 0,
+        "message": "Todas las tareas listadas correctamente",
+        "values": tareas_serializadas
+    })
 # # Create your views here.
 # @api_view(['GET'])
 # def mostrarCalendarioAreasComunes(request):

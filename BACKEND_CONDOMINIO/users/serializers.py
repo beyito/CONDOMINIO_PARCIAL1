@@ -7,14 +7,13 @@ from .models import PersonalModel,Usuario,CopropietarioModel,Rol, Residente
 from unidad_pertenencia.models import Unidad
 
 User = get_user_model()
-
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True, 
         required=True, 
         validators=[validate_password]
     )
-    rol_name = serializers.SerializerMethodField() #campo extra a devolver
+    rol_name = serializers.SerializerMethodField()  # campo extra a devolver
 
     class Meta:
         model = User
@@ -29,6 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'password', 
             'idRol',
+            'estado',     # esto devuelve el valor normal
             'rol_name'
         ]
 
@@ -45,7 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
             email=validated_data.get('email', ''),
             idRol=validated_data.get('idRol', Rol.objects.get(idRol=1))
         )
-        user.set_password(validated_data['password'])  # 🔑 contraseña encriptada
+        user.set_password(validated_data['password'])
         user.save()
         return user
 
@@ -152,6 +152,7 @@ class PersonalListSerializer(serializers.ModelSerializer):
     telefono = serializers.CharField(source='idUsuario.telefono', allow_blank=True, allow_null=True)
     rol_id = serializers.IntegerField(source='idUsuario.idRol.idRol')  # <- aquí el cambio
     rol_name = serializers.CharField(source='idUsuario.idRol.name')    # nombre del rol
+    estado = serializers.CharField(source='idUsuario.estado')
 
     class Meta:
         model = PersonalModel
@@ -165,6 +166,7 @@ class PersonalListSerializer(serializers.ModelSerializer):
             'rol_id',
             'rol_name',
             'turno',
+            'estado',
             'tipo_personal',
         ]
 

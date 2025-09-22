@@ -47,10 +47,10 @@ const menuItems = [
     path: '/dashboard/seguridad'
   },
   {
-    id: 'mantenimiento',
+    id: 'Tareas',
     icon: Wrench,
-    label: 'Mantenimiento',
-    path: '/dashboard/mantenimiento'
+    label: 'Tareas',
+    path: '/dashboard/tareas'
   },
   {
     id: 'finanzas',
@@ -158,28 +158,47 @@ export default function Sidebar() {
       <nav className='flex-1 p-4 space-y-2'>
         {menuItems.map((item) => (
           <div key={item.id}>
-            <button
-              onClick={() =>
-                item.subItems
-                  ? setOpenSubMenu(openSubMenu === item.id ? null : item.id)
-                  : navigate(item.path)
-              }
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
-                openSubMenu === item.id
-                  ? 'bg-blue-50 text-blue-700 shadow-sm'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`}
-            >
-              <item.icon className={`w-5 h-5 ${!sidebarOpen && 'mx-auto'}`} />
-              {sidebarOpen && <span className='font-medium'>{item.label}</span>}
-              {item.subItems && sidebarOpen && (
-                <ChevronRight
-                  className={`w-4 h-4 ml-auto transition-transform ${
-                    openSubMenu === item.id ? 'rotate-90' : ''
-                  }`}
-                />
-              )}
-            </button>
+            {item.subItems ? (
+              <button
+                onClick={() =>
+                  setOpenSubMenu(openSubMenu === item.id ? null : item.id)
+                }
+                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
+                  openSubMenu === item.id
+                    ? 'bg-blue-50 text-blue-700 shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+              >
+                <item.icon className={`w-5 h-5 ${!sidebarOpen && 'mx-auto'}`} />
+                {sidebarOpen && (
+                  <span className='font-medium'>{item.label}</span>
+                )}
+                {sidebarOpen && (
+                  <ChevronRight
+                    className={`w-4 h-4 ml-auto transition-transform ${
+                      openSubMenu === item.id ? 'rotate-90' : ''
+                    }`}
+                  />
+                )}
+              </button>
+            ) : (
+              <NavLink
+                to={item.path}
+                end
+                className={({ isActive }) =>
+                  `w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
+                    isActive
+                      ? 'bg-blue-50 text-blue-700 shadow-sm'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`
+                }
+              >
+                <item.icon className={`w-5 h-5 ${!sidebarOpen && 'mx-auto'}`} />
+                {sidebarOpen && (
+                  <span className='font-medium'>{item.label}</span>
+                )}
+              </NavLink>
+            )}
 
             {/* Submenu */}
             {item.subItems && openSubMenu === item.id && sidebarOpen && (
