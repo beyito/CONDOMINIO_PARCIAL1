@@ -47,8 +47,8 @@ export default function LoginForm() {
 
     if (!formData.password.trim()) {
       newErrors.password = 'La contraseña es requerida'
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'La contraseña debe tener al menos 6 caracteres'
+    } else if (formData.password.length < 3) {
+      newErrors.password = 'La contraseña debe tener al menos 3 caracteres'
     }
 
     setErrors(newErrors)
