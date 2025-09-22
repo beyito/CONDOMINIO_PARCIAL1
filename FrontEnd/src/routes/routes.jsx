@@ -8,6 +8,7 @@ import AreasComunes from '../pages/AreasComunes/AreasComunes'
 import UsuariosDashboard from '../pages/Usuarios/Usuarios'
 import Unidades from '../pages/Unidades/Unidades'
 import PersonalDashboard from '../pages/Usuarios/Personal'
+import Tareas from '../pages/Tareas/Tareas'
 
 function AppRoutes() {
   const { isAuthenticated, loading } = useAuth()
@@ -42,6 +43,7 @@ function AppRoutes() {
         <Route path='usuarios' element={<UsuariosDashboard />} />
         <Route path='personal' element={<PersonalDashboard />} />
         <Route path='unidades' element={<Unidades />} />
+        <Route path='tareas' element={<Tareas />} />
       </Route>
 
       <Route
