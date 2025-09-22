@@ -112,9 +112,9 @@ SIMPLE_JWT = {
 }
 ###CORS
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # tu frontend Vite
-    "http://127.0.0.1:5173",
-    
+    "http://localhost:5173",  # localhost
+    "http://127.0.0.1:5173",    # movil
+    "https://staging.d31m3gtx8emy11.amplifyapp.com",# tu frontend Vite
 ]
 # Permitir cookies / credenciales
 CORS_ALLOW_CREDENTIALS = True
