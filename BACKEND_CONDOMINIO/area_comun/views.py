@@ -399,7 +399,7 @@ def adjuntarComprobante(request, id_reserva):
             "message": "No se envió ninguna imagen"
         })
 
-    api_key = "a383ca2bd672523a12512032b8fdd4cd"  # Reemplaza con tu clave real
+    api_key = "8d18e4a7c02bd81c54d5c190ceddfdd9"  # Reemplaza con tu clave real
     files = {'image': (imagen.name, imagen, imagen.content_type)}
 
     response = requests.post(
