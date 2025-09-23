@@ -37,7 +37,7 @@ class ReservaService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      if (data["status"] == 1) {
+      if (data["Status"] == 1) {
         return true;
       } else {
         throw Exception(data["message"] ?? "Error al crear la reserva");

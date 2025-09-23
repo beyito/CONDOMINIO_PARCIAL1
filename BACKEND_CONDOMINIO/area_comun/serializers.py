@@ -60,34 +60,7 @@ class ReservaSerializer(serializers.ModelSerializer):
         hora_inicio = data['hora_inicio']
         hora_fin = data['hora_fin']
         area = data['area_comun']
-
-        # Combinar fecha y hora
-        inicio_datetime = datetime.combine(fecha, hora_inicio)
-        fin_datetime = datetime.combine(fecha, hora_fin)
-
-        # Convertir a datetime consciente de la zona horaria
-        inicio_datetime = timezone.make_aware(inicio_datetime, timezone.get_current_timezone())
-        fin_datetime = timezone.make_aware(fin_datetime, timezone.get_current_timezone())
-
-        ahora_local = timezone.localtime()
-
-        # 🔹 Validación: 24 horas antes
-        if inicio_datetime < ahora_local + timedelta(hours=24):
-            raise serializers.ValidationError({
-                "Status": 0,
-                "Error": 1,
-                "message": "Las reservas deben realizarse al menos 24 horas antes.",
-                "data": None
-            })
-
-        # 🔹 Validación: fin > inicio
-        if fin_datetime <= inicio_datetime:
-            raise serializers.ValidationError({
-                "Status": 0,
-                "Error": 1,
-                "message": "La hora de fin debe ser posterior a la hora de inicio.",
-                "data": None
-            })
+       
 
         # 🔹 Validación: solapamiento de reservas
         solapadas = Reserva.objects.filter(

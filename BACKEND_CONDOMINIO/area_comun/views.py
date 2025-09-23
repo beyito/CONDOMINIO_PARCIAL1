@@ -2,14 +2,13 @@ from django.utils import timezone
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view,action
 from rest_framework.response import Response
-from datetime import datetime
+from datetime import datetime, timedelta
 from .models import AreaComun, Reserva, AutorizacionVisita
 from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer, ListaVisitantesSerializer, RegistroVisita
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from condominio.permissions import IsPersonal, IsCopropietario
-
 # #Crear Lista Invitados
 
 
@@ -251,6 +250,36 @@ class ReservaViewSet(viewsets.ModelViewSet):
                 "status": 0,
                 "error": 1,
                 "message": f"Área '{area_nombre}' no existe"
+            })
+        fecha = data['fecha']
+        hora_inicio = data['hora_inicio']
+        hora_fin = data['hora_fin']
+        area = data['area_comun']
+
+        # Combinar fecha y hora
+        inicio_datetime = datetime.combine(fecha, hora_inicio)
+        fin_datetime = datetime.combine(fecha, hora_fin)
+        inicio_datetime = timezone.make_aware(inicio_datetime, timezone.get_current_timezone())
+        fin_datetime = timezone.make_aware(fin_datetime, timezone.get_current_timezone())
+
+        ahora_local = timezone.localtime()
+
+        # 🔹 Validación: 24 horas antes
+        if inicio_datetime < ahora_local + timedelta(hours=24):
+            return Response({
+                "status": 0,
+                "error": 1,
+                "message": "Las reservas deben realizarse al menos 24 horas antes.",
+                "data": None
+            })
+
+        # 🔹 Validación: fin > inicio
+        if fin_datetime <= inicio_datetime:
+            return Response({
+                "status": 0,
+                "error": 1,
+                "message": "La hora de fin debe ser posterior a la hora de inicio.",
+                "data": None
             })
         data = request.data.copy()  # crea un diccionario mutable
         data['area_comun'] = area.id_area  # agrega o modifica lo que necesites
