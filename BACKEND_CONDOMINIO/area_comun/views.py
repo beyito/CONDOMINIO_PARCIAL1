@@ -251,19 +251,17 @@ class ReservaViewSet(viewsets.ModelViewSet):
                 "error": 1,
                 "message": f"Área '{area_nombre}' no existe"
             })
-        fecha = request.data.get('fecha')
-        hora_inicio = request.data.get('hora_inicio')
-        hora_fin = request.data.get('hora_fin')
 
-        # Combinar fecha y hora
-        inicio_datetime = datetime.combine(fecha, hora_inicio)
-        fin_datetime = datetime.combine(fecha, hora_fin)
-        inicio_datetime = timezone.make_aware(inicio_datetime, timezone.get_current_timezone())
-        fin_datetime = timezone.make_aware(fin_datetime, timezone.get_current_timezone())
+        # Parsear fecha y horas
+        fecha_obj = datetime.strptime(request.data.get('fecha'), "%Y-%m-%d").date()
+        hora_inicio_obj = datetime.strptime(request.data.get('hora_inicio'), "%H:%M").time()
+        hora_fin_obj = datetime.strptime(request.data.get('hora_fin'), "%H:%M").time()
+
+        inicio_datetime = timezone.make_aware(datetime.combine(fecha_obj, hora_inicio_obj))
+        fin_datetime = timezone.make_aware(datetime.combine(fecha_obj, hora_fin_obj))
 
         ahora_local = timezone.localtime()
 
-        # 🔹 Validación: 24 horas antes
         if inicio_datetime < ahora_local + timedelta(hours=24):
             return Response({
                 "status": 0,
@@ -272,7 +270,6 @@ class ReservaViewSet(viewsets.ModelViewSet):
                 "data": None
             })
 
-        # 🔹 Validación: fin > inicio
         if fin_datetime <= inicio_datetime:
             return Response({
                 "status": 0,
@@ -280,17 +277,13 @@ class ReservaViewSet(viewsets.ModelViewSet):
                 "message": "La hora de fin debe ser posterior a la hora de inicio.",
                 "data": None
             })
-        data = request.data.copy()  # crea un diccionario mutable
-        data['area_comun'] = area.id_area  # agrega o modifica lo que necesites
+
+        data = request.data.copy()
+        data['area_comun'] = area.id_area
+
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-
-        # serializer = self.get_serializer(data=request.data)
-        # serializer.is_valid(raise_exception=True)
-
-        # # Pasar el area al save directamente
-        # serializer.save(area_comun=area)
 
         return Response({
             "status": 1,
@@ -298,6 +291,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
             "message": "Reserva creada correctamente",
             "values": serializer.data
         })
+
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def cancelar(self, request, pk=None):
