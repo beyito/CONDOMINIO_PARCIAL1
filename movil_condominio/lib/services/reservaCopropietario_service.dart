@@ -44,7 +44,7 @@ class ReservaCopropietarioService {
     final token = await authService.getToken();
     if (token == null) throw Exception("Usuario no autenticado");
 
-    var uri = Uri.parse('$baseUrl/adjuntarComprobante/$idReserva');
+    var uri = Uri.parse('$baseUrl/adjuntarComprobante/$idReserva/');
 
     var request = http.MultipartRequest('PATCH', uri);
 
