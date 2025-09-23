@@ -3,6 +3,7 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view,action
 from rest_framework.response import Response
 from datetime import datetime, timedelta
+from users.models import CopropietarioModel
 from .models import AreaComun, Reserva, AutorizacionVisita
 from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer, ListaVisitantesSerializer, RegistroVisita
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -244,6 +245,14 @@ class ReservaViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         area_nombre = request.data.get("area_comun")
         try:
+            copropietario = CopropietarioModel.objects.get(idUsuario=request.user)
+        except CopropietarioModel.DoesNotExist:
+            return Response({
+                "status": 0,
+                "error": 1,
+                "message": "El usuario logueado no es un copropietario"
+            })
+        try:
             area = AreaComun.objects.get(nombre_area=area_nombre)
         except AreaComun.DoesNotExist:
             return Response({
@@ -280,7 +289,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
 
         data = request.data.copy()
         data['area_comun'] = area.id_area
-
+        data['usuario'] = copropietario.idUsuario
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
