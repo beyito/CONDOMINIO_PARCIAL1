@@ -23,7 +23,7 @@ class ReservaService {
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode({
-        "area": area,
+        "area_comun": area,
         "fecha":
             "${fecha.year}-${fecha.month.toString().padLeft(2, '0')}-${fecha.day.toString().padLeft(2, '0')}",
         "hora_inicio": horaInicio,

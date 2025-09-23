@@ -27,21 +27,22 @@ class ReservaSerializer(serializers.ModelSerializer):
         read_only_fields = ['usuario']
 
     def create(self, validated_data):
+        if imagen:
         # 1️⃣ Sacar la imagen del validated_data
-        imagen = validated_data.pop('imagen')
+            imagen = validated_data.pop('imagen')
 
         # 2️⃣ Subir la imagen a ImgBB
-        api_key = "8d18e4a7c02bd81c54d5c190ceddfdd9" # Reemplazar con tu propia API key de ImgBB
-        files = {'image': imagen.read()}
-        response = requests.post(
-            f'https://api.imgbb.com/1/upload?key={api_key}',
-            files=files
-        )
-        if response.status_code == 200:
-            url = response.json()['data']['url']
-            validated_data['url_comprobante'] = url
-        else:
-            raise serializers.ValidationError("Error subiendo la imagen a ImgBB")
+            api_key = "8d18e4a7c02bd81c54d5c190ceddfdd9" # Reemplazar con tu propia API key de ImgBB
+            files = {'image': imagen.read()}
+            response = requests.post(
+               f'https://api.imgbb.com/1/upload?key={api_key}',
+              files=files
+            )
+            if response.status_code == 200:
+               url = response.json()['data']['url']
+               validated_data['url_comprobante'] = url
+            else:
+                raise serializers.ValidationError("Error subiendo la imagen a ImgBB")
 
         # 3️⃣ Obtener el Copropietario del usuario logueado
         usuario_actual = self.context['request'].user
