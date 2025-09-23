@@ -316,11 +316,9 @@ class _ReservaPageState extends State<ReservaView> {
                               );
                             }
                           } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text("Error al crear la reserva: $e"),
-                              ),
-                            );
+                            ScaffoldMessenger.of(
+                              context,
+                            ).showSnackBar(SnackBar(content: Text("$e")));
                           }
                         }
                       }
