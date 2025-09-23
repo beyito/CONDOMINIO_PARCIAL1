@@ -251,10 +251,9 @@ class ReservaViewSet(viewsets.ModelViewSet):
                 "error": 1,
                 "message": f"Área '{area_nombre}' no existe"
             })
-        fecha = data['fecha']
-        hora_inicio = data['hora_inicio']
-        hora_fin = data['hora_fin']
-        area = data['area_comun']
+        fecha = request.data.get('fecha')
+        hora_inicio = request.data.get('hora_inicio')
+        hora_fin = request.data.get('hora_fin')
 
         # Combinar fecha y hora
         inicio_datetime = datetime.combine(fecha, hora_inicio)
