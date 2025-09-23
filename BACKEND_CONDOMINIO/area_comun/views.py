@@ -243,7 +243,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
         serializer.save()
 
     def create(self, request, *args, **kwargs):
-        area_nombre = request.data.get("area")
+        area_nombre = request.data.get("area_comun")
         try:
             area = AreaComun.objects.get(nombre_area=area_nombre)
         except AreaComun.DoesNotExist:
