@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movil_condominio/services/calendario_service.dart';
+import 'package:movil_condominio/services/reserva_service.dart';
 
 class ReservaView extends StatefulWidget {
   final String area;
@@ -247,11 +248,81 @@ class _ReservaPageState extends State<ReservaView> {
                         final inicio = horarioSeleccionado['inicio']!;
                         final fin = horarioSeleccionado['fin']!;
 
-                        print(
-                          "Reservar ${widget.area} de ${inicio.hour.toString().padLeft(2, '0')}:${inicio.minute.toString().padLeft(2, '0')} "
-                          "a ${fin.hour.toString().padLeft(2, '0')}:${fin.minute.toString().padLeft(2, '0')} "
-                          "el ${widget.fecha}",
+                        // Mostrar cuadro de texto para el motivo
+                        final nota = await showDialog<String>(
+                          context: context,
+                          builder: (context) {
+                            String texto = "";
+                            return AlertDialog(
+                              title: const Text("Motivo de la reserva"),
+                              content: TextField(
+                                decoration: const InputDecoration(
+                                  hintText: "Escribe el motivo...",
+                                ),
+                                onChanged: (value) {
+                                  texto = value;
+                                },
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, null),
+                                  child: const Text("Cancelar"),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    if (texto.trim().isEmpty) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Debe ingresar un motivo",
+                                          ),
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    Navigator.pop(context, texto);
+                                  },
+                                  child: const Text("Aceptar"),
+                                ),
+                              ],
+                            );
+                          },
                         );
+
+                        final reservaService = ReservaService();
+
+                        if (nota != null && nota.isNotEmpty) {
+                          final inicioStr =
+                              "${inicio.hour.toString().padLeft(2, '0')}:${inicio.minute.toString().padLeft(2, '0')}";
+                          final finStr =
+                              "${fin.hour.toString().padLeft(2, '0')}:${fin.minute.toString().padLeft(2, '0')}";
+
+                          try {
+                            final ok = await reservaService.crearReserva(
+                              area: widget.area,
+                              fecha: widget.fecha,
+                              horaInicio: inicioStr,
+                              horaFin: finStr,
+                              nota: nota,
+                            );
+
+                            if (ok) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Reserva creada con éxito"),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Error al crear la reserva: $e"),
+                              ),
+                            );
+                          }
+                        }
                       }
                     },
 

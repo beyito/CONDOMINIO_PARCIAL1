@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from datetime import datetime
 from .models import AreaComun, Reserva, AutorizacionVisita
 from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer, ListaVisitantesSerializer, RegistroVisita
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from condominio.permissions import IsPersonal, IsCopropietario
@@ -225,7 +225,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
     queryset = Reserva.objects.all()
     serializer_class = ReservaSerializer
     permission_classes = [permissions.IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser] 
+    parser_classes = [JSONParser, MultiPartParser, FormParser] 
 
     def list(self, request, *args, **kwargs):
         reservas = self.get_queryset()
@@ -239,7 +239,9 @@ class ReservaViewSet(viewsets.ModelViewSet):
    
 
     def perform_create(self, serializer):
-        serializer.save()
+        area = self.request.data.get("area")
+        area_id = AreaComun.objects.get(nombre_area=area)
+        serializer.save(usuario=self.request.user, area=area_id)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
