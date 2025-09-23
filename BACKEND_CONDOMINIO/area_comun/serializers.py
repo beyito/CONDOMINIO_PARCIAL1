@@ -27,9 +27,8 @@ class ReservaSerializer(serializers.ModelSerializer):
         read_only_fields = ['usuario']
 
     def create(self, validated_data):
+        imagen = validated_data.pop('imagen', None)
         if imagen:
-        # 1️⃣ Sacar la imagen del validated_data
-            imagen = validated_data.pop('imagen')
 
         # 2️⃣ Subir la imagen a ImgBB
             api_key = "8d18e4a7c02bd81c54d5c190ceddfdd9" # Reemplazar con tu propia API key de ImgBB
