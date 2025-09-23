@@ -5,6 +5,7 @@ import 'package:movil_condominio/services/auth_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:movil_condominio/config/config_db.dart';
 import 'dart:io';
+import 'package:http_parser/http_parser.dart'; // para MediaType
 
 class ReservaCopropietarioService {
   final String baseUrl = '${Config.baseUrl}/areacomun';
@@ -36,56 +37,42 @@ class ReservaCopropietarioService {
     }
   }
 
-  Future<void> adjuntarComprobante(int idReserva, File imagen) async {
+  Future<Map<String, dynamic>> adjuntarComprobante(
+    int idReserva,
+    File imagen,
+  ) async {
     final token = await authService.getToken();
     if (token == null) throw Exception("Usuario no autenticado");
-    // final uri = Uri.parse('$baseUrl/adjuntarComprobante/$idReserva/');
-    // var request = http.MultipartRequest('PATCH', uri);
 
-    // // Agregar archivo
-    // request.files.add(
-    //   http.MultipartFile(
-    //     'imagen', // nombre del campo que espera tu backend
-    //     imagen.readAsBytes().asStream(),
-    //     imagen.lengthSync(),
-    //     filename: imagen.path.split("/").last,
-    //     contentType: MediaType('image', 'jpeg'), // o png según tu caso
-    //   ),
-    // );
+    var uri = Uri.parse('$baseUrl/adjuntarComprobante/$idReserva');
 
-    // // Si necesitas headers de autenticación
-    // request.headers.addAll({
-    //   'Authorization': 'Bearer $token', // o Bearer
-    // });
-    // print("LLEGA HASTA AQUI");
-    // var response = await request.send();
+    var request = http.MultipartRequest('PATCH', uri);
 
-    // if (response.statusCode == 200) {
-    //   print("Imagen subida correctamente");
-    // } else {
-    //   throw Exception("Error al subir comprobante: ${response.statusCode}");
-    // }
-
-    var request = http.MultipartRequest(
-      'PATCH',
-      Uri.parse('$baseUrl/adjuntarComprobante/$idReserva/'),
-    );
+    // Header de autorización
     request.headers['Authorization'] = 'Bearer $token';
+
+    // Agregar el archivo
     request.files.add(
       http.MultipartFile(
-        'imagen',
+        'imagen', // nombre del campo que espera tu backend
         imagen.readAsBytes().asStream(),
         imagen.lengthSync(),
         filename: imagen.path.split("/").last,
+        contentType: MediaType('image', 'jpeg'), // o 'png' según tu imagen
       ),
     );
-    var response = await request.send();
-    var responseString = await response.stream.bytesToString();
 
-    // Convertir el string a JSON
-    var responseJson = jsonDecode(responseString);
+    // Enviar petición
+    var streamedResponse = await request.send();
 
-    // Ahora puedes acceder a tu campo
-    print(responseJson['message']);
+    // Obtener respuesta completa
+    var response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 200) {
+      // Tu backend devuelve un JSON con status, error, message, url_comprobante
+      return jsonDecode(response.body);
+    } else {
+      throw Exception("Error al subir comprobante: ${response.statusCode}");
+    }
   }
 }

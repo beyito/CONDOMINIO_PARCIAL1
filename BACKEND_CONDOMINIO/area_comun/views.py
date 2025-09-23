@@ -394,7 +394,7 @@ def adjuntarComprobante(request, id_reserva):
     imagen = request.FILES.get('imagen')
     if imagen:
         api_key = "8d18e4a7c02bd81c54d5c190ceddfdd9"
-        files = {'image': imagen.read()}
+        files = {'image': (imagen.name, imagen, imagen.content_type)}
         response = requests.post(
             f'https://api.imgbb.com/1/upload?key={api_key}',
             files=files

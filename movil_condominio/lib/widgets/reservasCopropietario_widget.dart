@@ -196,10 +196,17 @@ class _ReservasCopropietarioWidgetState
                 if (pickedFile == null) return;
                 File file = File(pickedFile!.path);
                 if (reserva.id_reserva != null) {
-                  await _service.adjuntarComprobante(
+                  final result = await _service.adjuntarComprobante(
                     reserva.id_reserva as int,
                     file,
                   );
+                  if (result['status'] == 1) {
+                    print(
+                      "Comprobante adjuntado correctamente: ${result['url_comprobante']}",
+                    );
+                  } else {
+                    print("Error: ${result['message']}");
+                  }
                 }
                 setState(() {
                   _futureReservas = _service.mostrarReservasCopropietario();
