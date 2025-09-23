@@ -400,6 +400,7 @@ def adjuntarComprobante(request, id_reserva):
             files=files
         )
         if response.status_code == 200:
+            print("POSITIVO")
             url = response.json()['data']['url']
             reserva.url_comprobante = url
             reserva.save()

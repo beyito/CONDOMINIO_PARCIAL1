@@ -5,7 +5,6 @@ import 'package:movil_condominio/services/auth_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:movil_condominio/config/config_db.dart';
 import 'dart:io';
-import 'package:http_parser/http_parser.dart';
 
 class ReservaCopropietarioService {
   final String baseUrl = '${Config.baseUrl}/areacomun';
@@ -81,5 +80,12 @@ class ReservaCopropietarioService {
       ),
     );
     var response = await request.send();
+    var responseString = await response.stream.bytesToString();
+
+    // Convertir el string a JSON
+    var responseJson = jsonDecode(responseString);
+
+    // Ahora puedes acceder a tu campo
+    print(responseJson['message']);
   }
 }
