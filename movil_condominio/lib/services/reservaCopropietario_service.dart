@@ -58,7 +58,7 @@ class ReservaCopropietarioService {
     request.headers.addAll({
       'Authorization': 'Bearer $token', // o Bearer
     });
-
+    print("LLEGA HASTA AQUI");
     var response = await request.send();
 
     if (response.statusCode == 200) {
