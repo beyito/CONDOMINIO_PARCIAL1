@@ -93,15 +93,20 @@ class ListaVisitantesSerializer(serializers.ModelSerializer):
 
 class ListaReservasSerializer(serializers.ModelSerializer):
     id_reserva = "id_reserva"
+    id_areacomun =  serializers.IntegerField(source='area_comun.id_area', read_only=True)
+    nombre_area = serializers.CharField(source='area_comun.nombre_area', read_only=True)
     usuario = "usuario"
     fecha = "fecha"
     hora_inicio = "hora_inicio"
     hora_fin = "hora_fin"
     estado = "estado"
     nota = "nota"
+    url_comprobante = "url_comprobante"
+    cancelada_en = "cancelada_en"
+    motivo_cancelacion = "motivo_cancelacion"
     class Meta:
         model = Reserva
-        fields = ['id_reserva','usuario', 'fecha','hora_inicio','hora_fin','estado' ,'nota']
+        fields = ['id_reserva','usuario','id_areacomun', 'nombre_area',  'fecha','hora_inicio','hora_fin','estado' ,'nota', 'cancelada_en', 'motivo_cancelacion', 'url_comprobante' ]
 
 class MarcarEntradaSerializer(serializers.Serializer):
     personal_id = serializers.IntegerField()
