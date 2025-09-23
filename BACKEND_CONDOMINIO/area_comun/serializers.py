@@ -18,8 +18,8 @@ class RegistroVisita(serializers.ModelSerializer):
         fields = '__all__'
 
 class ReservaSerializer(serializers.ModelSerializer):
-    imagen = serializers.ImageField(write_only=True, required=True)
-    area_comun = serializers.PrimaryKeyRelatedField(queryset=AreaComun.objects.all())
+    imagen = serializers.ImageField(write_only=True, required=False)
+    area_comun = serializers.PrimaryKeyRelatedField(queryset=AreaComun.objects.all(), required=False)
 
     class Meta:
         model = Reserva
