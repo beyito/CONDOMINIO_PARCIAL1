@@ -1,7 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:movil_condominio/models/reserva_model.dart';
-// import 'package:movil_condominio/models/areacomun_model.dart';
-// import 'package:movil_condominio/services/areacomun_service.dart';
 import 'package:movil_condominio/services/reservaCopropietario_service.dart';
 
 class ReservasCopropietarioWidget extends StatefulWidget {
@@ -15,19 +15,18 @@ class ReservasCopropietarioWidget extends StatefulWidget {
 class _ReservasCopropietarioWidgetState
     extends State<ReservasCopropietarioWidget> {
   final ReservaCopropietarioService _service = ReservaCopropietarioService();
-
-  late Future<List<ReservaModel>> _futureAreas;
+  late Future<List<ReservaModel>> _futureReservas;
 
   @override
   void initState() {
     super.initState();
-    _futureAreas = _service.mostrarReservasCopropietario();
+    _futureReservas = _service.mostrarReservasCopropietario();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<ReservaModel>>(
-      future: _futureAreas,
+      future: _futureReservas,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -61,28 +60,58 @@ class _ReservasCopropietarioWidgetState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      reserva.nombre_area.toString(),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          reserva.nombre_area.toString(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        Text(
+                          reserva.estado ?? "",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: reserva.estado?.toLowerCase() == "cancelada"
+                                ? Colors.red
+                                : Colors.green,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 6),
                     Text(
                       "Horario: ${reserva.hora_inicio} - ${reserva.hora_fin}",
                     ),
                     Text("Día: ${reserva.fecha}"),
-                    Text("Estado de la Reserva: ${reserva.estado}"),
                     Text("Motivo de la Reserva: ${reserva.nota}"),
                     const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        ElevatedButton(
-                          onPressed: () async {},
-                          child: const Text("Adjuntar Comprobante"),
-                        ),
+                        // Botón Cancelar
+                        if (reserva.estado?.toLowerCase() != "cancelada")
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                230,
+                                108,
+                                99,
+                              ),
+                            ),
+                            onPressed: () => _showCancelarDialog(reserva),
+                            child: const Text("Cancelar Reserva"),
+                          ),
+                        const SizedBox(height: 8),
+                        // Botón Adjuntar Comprobante
+                        if (reserva.estado?.toLowerCase() == "pendiente")
+                          ElevatedButton(
+                            onPressed: () => _showAdjuntarDialog(reserva),
+                            child: const Text("Adjuntar Comprobante"),
+                          ),
                       ],
                     ),
                   ],
@@ -92,6 +121,96 @@ class _ReservasCopropietarioWidgetState
           },
         );
       },
+    );
+  }
+
+  // ----------------- DIALOGO CANCELAR -----------------
+  void _showCancelarDialog(ReservaModel reserva) {
+    final TextEditingController motivoController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Cancelar Reserva"),
+        content: TextField(
+          controller: motivoController,
+          decoration: const InputDecoration(
+            hintText: "Ingrese el motivo de cancelación",
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancelar"),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final motivo = motivoController.text.trim();
+              if (motivo.isEmpty) return;
+              // await _service.cancelarReserva(reserva.id_reserva, motivo);
+              setState(() {
+                _futureReservas = _service.mostrarReservasCopropietario();
+              });
+              Navigator.pop(context);
+            },
+            child: const Text("Confirmar"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ----------------- DIALOGO ADJUNTAR -----------------
+  void _showAdjuntarDialog(ReservaModel reserva) async {
+    XFile? pickedFile;
+    final ImagePicker picker = ImagePicker();
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setStateDialog) => AlertDialog(
+          title: const Text("Adjuntar Comprobante"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  pickedFile = await picker.pickImage(
+                    source: ImageSource.gallery,
+                  );
+                  setStateDialog(() {}); // ✅ actualiza solo el diálogo
+                },
+                child: const Text("Seleccionar Imagen"),
+              ),
+              if (pickedFile != null)
+                Text("Archivo seleccionado: ${pickedFile!.name}"),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancelar"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (pickedFile == null) return;
+                File file = File(pickedFile!.path);
+                if (reserva.id_reserva != null) {
+                  await _service.adjuntarComprobante(
+                    reserva.id_reserva as int,
+                    file,
+                  );
+                }
+                setState(() {
+                  _futureReservas = _service.mostrarReservasCopropietario();
+                });
+                Navigator.pop(context);
+              },
+              child: const Text("Subir"),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

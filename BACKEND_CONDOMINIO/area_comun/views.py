@@ -10,6 +10,8 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from condominio.permissions import IsPersonal, IsCopropietario
+import requests
+
 # #Crear Lista Invitados
 
 
@@ -354,3 +356,68 @@ def mostrarReservasCopropietario(request):
         "message": "Reservas obtenidas correctamente",
         "values": serializer.data
     })
+
+@api_view(['PATCH'])
+def cancelarReserva(request, id_reserva):
+    try:
+        reserva = Reserva.objects.get(id_reserva=id_reserva)
+    except Reserva.DoesNotExist:
+        return Response ({
+            "status": 2,
+            "error": 1,
+            "message": "no existe ninguna reserva con ese id"
+        })
+    reserva.estado = 'cancelada'
+    motivo_cancelacion = request.data.get('motivo_cancelacion')
+    if motivo_cancelacion :
+        reserva.motivo_cancelacion = motivo_cancelacion
+    reserva.cancelada_en = datetime.now()
+    reserva.save()
+    return Response({
+            "status": 1,
+            "error": 0,
+            "message": f"La reserva con id: {reserva.id_reserva} a sido cancelada."
+        })
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def adjuntarComprobante(request, id_reserva):
+    try:
+        reserva = Reserva.objects.get(id_reserva=id_reserva)
+    except Reserva.DoesNotExist:
+        return Response({
+            "status": 0,
+            "error": 1,
+            "message": "Reserva no encontrada"
+        })
+
+    imagen = request.FILES.get('imagen')
+    if imagen:
+        api_key = "TU_API_KEY"
+        files = {'image': imagen.read()}
+        response = requests.post(
+            f'https://api.imgbb.com/1/upload?key={api_key}',
+            files=files
+        )
+        if response.status_code == 200:
+            url = response.json()['data']['url']
+            reserva.url_comprobante = url
+            reserva.save()
+            return Response({
+                "status": 1,
+                "error": 0,
+                "message": "Comprobante adjuntado correctamente",
+                "url_comprobante": url
+            })
+        else:
+            return Response({
+                "status": 0,
+                "error": 1,
+                "message": "Error subiendo la imagen a ImgBB"
+            })
+    else:
+        return Response({
+            "status": 0,
+            "error": 1,
+            "message": "No se envió ninguna imagen"
+        })
