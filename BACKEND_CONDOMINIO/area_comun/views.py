@@ -239,14 +239,26 @@ class ReservaViewSet(viewsets.ModelViewSet):
    
 
     def perform_create(self, serializer):
-        area = self.request.data.get("area")
-        area_id = AreaComun.objects.get(nombre_area=area)
-        serializer.save(usuario=self.request.user, area=area_id)
+        
+        serializer.save()
 
     def create(self, request, *args, **kwargs):
+        area_nombre = request.data.get("area")
+        try:
+            area = AreaComun.objects.get(nombre_area=area_nombre)
+        except AreaComun.DoesNotExist:
+            return Response({
+                "status": 0,
+                "error": 1,
+                "message": f"Área '{area_nombre}' no existe"
+            })
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+
+        # Pasar el area al save directamente
+        serializer.save(area_comun=area)
+
         return Response({
             "status": 1,
             "error": 0,

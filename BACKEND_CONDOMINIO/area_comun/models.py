@@ -34,7 +34,7 @@ class AreaComun(models.Model):
 class Reserva(models.Model):
     id_reserva = models.AutoField(primary_key=True)
     usuario = models.ForeignKey(CopropietarioModel, on_delete=models.CASCADE, related_name="reservas")
-    area_comun = models.ForeignKey(AreaComun, on_delete=models.CASCADE, related_name="reservas")
+    area_comun = models.ForeignKey(AreaComun, on_delete=models.CASCADE, related_name="reservas", null=True, blank=True)
     
     fecha = models.DateField(null=True, blank=True)
     hora_inicio = models.TimeField(null=True, blank=True)
