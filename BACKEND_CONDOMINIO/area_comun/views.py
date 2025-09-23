@@ -252,12 +252,17 @@ class ReservaViewSet(viewsets.ModelViewSet):
                 "error": 1,
                 "message": f"Área '{area_nombre}' no existe"
             })
-
-        serializer = self.get_serializer(data=request.data)
+        data = request.data.copy()  # crea un diccionario mutable
+        data['area_comun'] = area.id_area  # agrega o modifica lo que necesites
+        serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-        # Pasar el area al save directamente
-        serializer.save(area_comun=area)
+        # serializer = self.get_serializer(data=request.data)
+        # serializer.is_valid(raise_exception=True)
+
+        # # Pasar el area al save directamente
+        # serializer.save(area_comun=area)
 
         return Response({
             "status": 1,
