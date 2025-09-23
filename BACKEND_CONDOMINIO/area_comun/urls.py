@@ -16,6 +16,7 @@ urlpatterns = [
     # path('crearListaInvitados<int:copropietario_id>', views.crearListaInvitados, name='crearListaInvitados'),
     #LISTAR VISITAS PARA EL GUARDIA
     path('mostrarVisitas', views.mostrarVisitas, name='mostrarVisitas'),
+    path('mostrarReservasCopropietario', views.mostrarReservasCopropietario, name = 'mostrarReservasCopropietario'),
     #path('detalleVisita/<int: idVisita>', views.mostrarDetalleVisita, name='mostrarDetalleVisitas'),
 ]
 

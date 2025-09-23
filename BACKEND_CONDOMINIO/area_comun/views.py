@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from datetime import datetime, timedelta
 from users.models import CopropietarioModel
 from .models import AreaComun, Reserva, AutorizacionVisita
-from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer, ListaVisitantesSerializer, RegistroVisita
+from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer, ListaVisitantesSerializer, RegistroVisita, ListaReservasSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -77,7 +77,7 @@ def mostrarCalendarioAreasComunes(request):
         reservas = Reserva.objects.filter(
             area_comun=area,
             fecha=fecha,
-            estado='confirmada'  # Solo considerar reservas confirmadas
+            estado__in=['confirmada', 'pendiente']   # Solo considerar reservas confirmadas
         ).order_by("hora_inicio")
 
         ocupados = []
@@ -327,21 +327,30 @@ class ReservaViewSet(viewsets.ModelViewSet):
             "values": serializer.data
             })
  
-# @api_view(['GET'])
-# def mostrarAreasComunes(request):
-
-#     serializer = AreaComunSerializer.list(data=request.data)
-#     if serializer.is_valid():
-#         resultado = serializer.save()
-#         visitante = resultado['visitante']
-#         registro = resultado['registro']
-#         return Response({
-#             "status": 1,
-#             "error": 0,
-#             "message": f"Salida registrada para {visitante.nombre} {visitante.apellido} a las {registro.fecha_salida}."
-#         })
-#     return Response({
-#         "status": 2,
-#         "error": 1,
-#         "message": serializer.errors
-#     })
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def mostrarReservasCopropietario(request):
+     # 🔹 El usuario logueado está en request.user
+    usuario_actual = request.user  
+    try:
+        copropietario = CopropietarioModel.objects.get(idUsuario = usuario_actual.id)
+    except CopropietarioModel.DoesNotExist:
+        return Response({
+        "status": 2,
+        "error": 1,
+        "message": "no existe el copropietario",
+        "values": []
+    })
+    # 🔹 Filtrar las reservas por el idUsuario
+    # print(copropietario)
+    hoy = timezone.localdate()
+    reservas = Reserva.objects.filter(usuario=copropietario,fecha__gte=hoy)
+    
+    # print(reservas)
+    serializer = ListaReservasSerializer(reservas, many=True)
+    return Response({
+        "status": 1,
+        "error": 0,
+        "message": "Reservas obtenidas correctamente",
+        "values": serializer.data
+    })

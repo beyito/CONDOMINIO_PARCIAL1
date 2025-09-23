@@ -91,6 +91,18 @@ class ListaVisitantesSerializer(serializers.ModelSerializer):
         model = AutorizacionVisita
         fields = ['id', 'copropietario', 'nombre', 'apellido', 'ci', 'motivo_visita', 'hora_inicio', 'hora_fin', 'estado']
 
+class ListaReservasSerializer(serializers.ModelSerializer):
+    id_reserva = "id_reserva"
+    usuario = "usuario"
+    fecha = "fecha"
+    hora_inicio = "hora_inicio"
+    hora_fin = "hora_fin"
+    estado = "estado"
+    nota = "nota"
+    class Meta:
+        model = Reserva
+        fields = ['id_reserva','usuario', 'fecha','hora_inicio','hora_fin','estado' ,'nota']
+
 class MarcarEntradaSerializer(serializers.Serializer):
     personal_id = serializers.IntegerField()
     autorizacion_id = serializers.IntegerField()
