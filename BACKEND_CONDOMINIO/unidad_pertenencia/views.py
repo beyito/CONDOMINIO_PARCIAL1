@@ -287,6 +287,7 @@ def registrar_vehiculo(request):
     mandar id de la unidad ACTIVA """
     try:
         serializer = VehiculoSerializer(data=request.data)
+        print(request.data)
         
         if serializer.is_valid():
             # Validar unicidad de placa
@@ -299,22 +300,12 @@ def registrar_vehiculo(request):
                     'values': None
                 })
             
-            # Validar unicidad de tag_codigo
-            tag_codigo = serializer.validated_data.get('tag_codigo')
-            if Vehiculo.objects.filter(tag_codigo=tag_codigo).exists():
-                return Response({
-                    'status': 2,
-                    'error': 1,
-                    'message': 'Ya existe un vehículo registrado con ese código de tag',
-                    'values': None
-                })
-            
             vehiculo = serializer.save()
             
             return Response({
                 'status': 1,
                 'error': 0,
-                'message': f'Vehículo {vehiculo.placa} registrado exitosamente con tag {vehiculo.tag_codigo}',
+                'message': f'Vehículo {vehiculo.placa} registrado exitosamente ',
                 'values': VehiculoSerializer(vehiculo).data
             })
         else:

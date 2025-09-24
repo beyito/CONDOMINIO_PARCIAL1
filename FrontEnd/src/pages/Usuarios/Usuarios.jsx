@@ -1,24 +1,33 @@
 import { useState, useEffect } from 'react'
-import { Users, UserPlus, UserRoundPlus, X, Loader2 } from 'lucide-react'
+import {
+  Users,
+  UserPlus,
+  UserRoundPlus,
+  X,
+  Loader2,
+  Pencil
+} from 'lucide-react'
 import { useApi } from '../../hooks/useApi'
 import { getUsuarios } from '../../api/usuarios/usuarios'
 import AñadirCopropietarioModal from './components/AñadirCopropietarioModal'
 import AñadirGuardiaModal from './components/AñadirGuardiaModal'
+import EditarUsuarioModal from './components/EditarUsuarioModal'
 
 export default function UsuariosDashboard() {
   const [filterRole, setFilterRole] = useState('all')
   const [showModalCopropietario, setShowModalCopropietario] = useState(false)
   const [showModalGuardia, setShowModalGuardia] = useState(false)
+  const [showModalEditar, setShowModalEditar] = useState(false)
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null)
 
   const { data, error, loading, execute } = useApi(getUsuarios)
 
   useEffect(() => {
     execute()
   }, [])
-  // Obtenemos directamente el array de áreas
+
   const usuarios = data?.data?.values || []
   console.log(usuarios)
-
   const filteredUsuarios =
     filterRole === 'all'
       ? usuarios
@@ -81,38 +90,47 @@ export default function UsuariosDashboard() {
       </div>
 
       {/* Tabla de usuarios */}
-      {loading ? (
-        <p>Cargando usuarios...</p>
-      ) : (
-        <div className='overflow-x-auto'>
-          <table className='min-w-full bg-white border border-gray-200 rounded-xl'>
-            <thead className='bg-gray-100'>
-              <tr>
-                <th className='px-4 py-2 text-left'>ID</th>
-                <th className='px-4 py-2 text-left'>Usuario</th>
-                <th className='px-4 py-2 text-left'>Nombre</th>
-                <th className='px-4 py-2 text-left'>CI</th>
-                <th className='px-4 py-2 text-left'>Teléfono</th>
-                <th className='px-4 py-2 text-left'>Email</th>
-                <th className='px-4 py-2 text-left'>Rol</th>
+      <div className='overflow-x-auto'>
+        <table className='min-w-full bg-white border border-gray-200 rounded-xl'>
+          <thead className='bg-gray-100'>
+            <tr>
+              <th className='px-4 py-2 text-left'>ID</th>
+              <th className='px-4 py-2 text-left'>Usuario</th>
+              <th className='px-4 py-2 text-left'>Nombre</th>
+              <th className='px-4 py-2 text-left'>CI</th>
+              <th className='px-4 py-2 text-left'>Teléfono</th>
+              <th className='px-4 py-2 text-left'>Email</th>
+              <th className='px-4 py-2 text-left'>Rol</th>
+              <th className='px-4 py-2 text-left'>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredUsuarios.map((u) => (
+              <tr key={u.id} className='border-t border-gray-100'>
+                <td className='px-4 py-2'>{u.id}</td>
+                <td className='px-4 py-2'>{u.username}</td>
+                <td className='px-4 py-2'>{u.nombre || ''}</td>
+                <td className='px-4 py-2'>{u.ci}</td>
+                <td className='px-4 py-2'>{u.telefono || ''}</td>
+                <td className='px-4 py-2'>{u.email}</td>
+                <td className='px-4 py-2'>{u.rol_name}</td>
+                <td className='px-4 py-2'>
+                  <button
+                    className='text-indigo-600 hover:text-indigo-800 flex items-center space-x-1'
+                    onClick={() => {
+                      setUsuarioSeleccionado(u)
+                      setShowModalEditar(true)
+                    }}
+                  >
+                    <Pencil className='w-4 h-4' />
+                    <span>Editar</span>
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {filteredUsuarios.map((u) => (
-                <tr key={u.id} className='border-t border-gray-100'>
-                  <td className='px-4 py-2'>{u.id}</td>
-                  <td className='px-4 py-2'>{u.username}</td>
-                  <td className='px-4 py-2'>{u.nombre || ''}</td>
-                  <td className='px-4 py-2'>{u.ci}</td>
-                  <td className='px-4 py-2'>{u.telefono || ''}</td>
-                  <td className='px-4 py-2'>{u.email}</td>
-                  <td className='px-4 py-2'>{u.rol_name}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Modales */}
       {showModalCopropietario && (
@@ -124,6 +142,13 @@ export default function UsuariosDashboard() {
       {showModalGuardia && (
         <AñadirGuardiaModal
           setShowModal={setShowModalGuardia}
+          onSuccess={execute}
+        />
+      )}
+      {showModalEditar && usuarioSeleccionado && (
+        <EditarUsuarioModal
+          usuario={usuarioSeleccionado}
+          setShowModal={setShowModalEditar}
           onSuccess={execute}
         />
       )}
