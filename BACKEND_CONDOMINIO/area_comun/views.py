@@ -384,26 +384,22 @@ def cancelarReserva(request, id_reserva):
 def adjuntarComprobante(request, id_reserva):
     try:
         reserva = Reserva.objects.get(id_reserva=id_reserva)
-    except Reserva.DoesNotExist:
-        return Response({
-            "status": 0,
-            "error": 1,
-            "message": "Reserva no encontrada"
-        })
 
-    imagen = request.FILES.get('imagen')
-    if imagen:
+        if 'imagen' not in request.FILES:
+            return Response({"status": 0, "message": "No se envió la imagen"})
+
+        imagen = request.FILES['imagen']  # 👈 este nombre debe coincidir con Flutter
         reserva.url_comprobante = imagen
         reserva.save()
+
         return Response({
             "status": 1,
-            "error": 0,
-            "message": "Comprobante adjuntado correctamente",
-            "url_comprobante": reserva.url_comprobante.url
+            "message": "Comprobante subido correctamente",
+            "url_comprobante": reserva.comprobante.url if reserva.comprobante else None
         })
-    else:
-        return Response({
-            "status": 0,
-            "error": 1,
-            "message": "No se envió ninguna imagen"
-        })
+
+    except Reserva.DoesNotExist:
+        return Response({"status": 0, "message": "Reserva no encontrada"})
+    except Exception as e:
+        return Response({"status": 0, "message": str(e)})
+
