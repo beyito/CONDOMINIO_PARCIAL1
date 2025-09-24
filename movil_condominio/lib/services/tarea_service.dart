@@ -34,4 +34,30 @@ class TareaService {
       throw Exception(resModel.message ?? "Error al obtener tareas");
     }
   }
+
+  Future<List<TareaModel>> marcarTarea(int id) async {
+    final token = await authService.getToken();
+
+    if (token == null) throw Exception("Usuario no autenticado");
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/marcarTareaRealizada/$id'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    // Parsea a ResponseModel
+    final ResponseModel resModel = ResponseModel.fromJson(
+      jsonDecode(response.body),
+    );
+
+    if (resModel.status == 1 && resModel.values != null) {
+      // Asume que values es una lista de reservas
+      final List<dynamic> lista = resModel.values as List<dynamic>;
+      return lista.map((item) => TareaModel.fromJson(item)).toList();
+    } else {
+      throw Exception(resModel.message ?? "Error al marcar la tareas");
+    }
+  }
 }

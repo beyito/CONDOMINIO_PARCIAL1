@@ -6,6 +6,7 @@ import 'package:movil_condominio/views/usuario/noticias_view.dart';
 import 'package:movil_condominio/views/area_comun/areacomun_view.dart';
 import '../views/control_ingreso/control_ingreso_view.dart';
 import '../views/reserva/reservasCopropietario_view.dart';
+import '../views/tarea/tarea_views.dart';
 //import '../views/areas_comunes/areas_comunes_view.dart';
 
 class HomePage extends StatefulWidget {
@@ -39,7 +40,7 @@ class _HomePageState extends State<HomePage> {
           NoticiasView(),
           ControlIngresoView(),
           // placeholder
-          //TareasView(),
+          TareaView(),
         ];
       } else if (_rol == 'Copropietario') {
         _viewRoutes = [
@@ -48,10 +49,7 @@ class _HomePageState extends State<HomePage> {
           AreasComunesView(),
         ];
       } else if (_rol == 'Limpieza') {
-        _viewRoutes = [
-          NoticiasView(),
-          //TareasView(),
-        ];
+        _viewRoutes = [NoticiasView(), TareaView()];
       }
     });
   }
