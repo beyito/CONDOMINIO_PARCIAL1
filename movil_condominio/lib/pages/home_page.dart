@@ -36,12 +36,7 @@ class _HomePageState extends State<HomePage> {
 
       // Definir las vistas según el rol
       if (_rol == 'Guardia') {
-        _viewRoutes = [
-          NoticiasView(),
-          ControlIngresoView(),
-          // placeholder
-          TareaView(),
-        ];
+        _viewRoutes = [NoticiasView(), ControlIngresoView(), TareaView()];
       } else if (_rol == 'Copropietario') {
         _viewRoutes = [
           NoticiasView(),

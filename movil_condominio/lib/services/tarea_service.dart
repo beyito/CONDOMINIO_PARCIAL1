@@ -35,7 +35,7 @@ class TareaService {
     }
   }
 
-  Future<List<TareaModel>> marcarTarea(int id) async {
+  Future<String> marcarTarea(int id) async {
     final token = await authService.getToken();
 
     if (token == null) throw Exception("Usuario no autenticado");
@@ -52,12 +52,10 @@ class TareaService {
       jsonDecode(response.body),
     );
 
-    if (resModel.status == 1 && resModel.values != null) {
-      // Asume que values es una lista de reservas
-      final List<dynamic> lista = resModel.values as List<dynamic>;
-      return lista.map((item) => TareaModel.fromJson(item)).toList();
+    if (resModel.status == 1) {
+      return resModel.message ?? "Operación exitosa";
     } else {
-      throw Exception(resModel.message ?? "Error al marcar la tareas");
+      throw Exception(resModel.message ?? "Error al marcar tarea");
     }
   }
 }
