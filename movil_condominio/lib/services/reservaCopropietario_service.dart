@@ -44,35 +44,29 @@ class ReservaCopropietarioService {
     final token = await authService.getToken();
     if (token == null) throw Exception("Usuario no autenticado");
 
-    var uri = Uri.parse('$baseUrl/adjuntarComprobante/$idReserva/');
+    var request = http.MultipartRequest(
+      'PATCH',
+      Uri.parse('$baseUrl/adjuntarComprobante/$idReserva/'),
+    );
 
-    var request = http.MultipartRequest('PATCH', uri);
-
-    // Header de autorización
     request.headers['Authorization'] = 'Bearer $token';
 
-    // Agregar el archivo
     request.files.add(
       http.MultipartFile(
-        'imagen', // nombre del campo que espera tu backend
+        'imagen', // este nombre debe coincidir con request.FILES.get('imagen') en Django
         imagen.readAsBytes().asStream(),
         imagen.lengthSync(),
         filename: imagen.path.split("/").last,
-        contentType: MediaType('image', 'jpeg'), // o 'png' según tu imagen
       ),
     );
 
-    // Enviar petición
-    var streamedResponse = await request.send();
-
-    // Obtener respuesta completa
-    var response = await http.Response.fromStream(streamedResponse);
+    var response = await request.send();
+    var responseData = await http.Response.fromStream(response);
 
     if (response.statusCode == 200) {
-      // Tu backend devuelve un JSON con status, error, message, url_comprobante
-      return jsonDecode(response.body);
+      return jsonDecode(responseData.body); // ✅ Devuelve Map<String, dynamic>
     } else {
-      throw Exception("Error al subir comprobante: ${response.statusCode}");
+      throw Exception("Error al subir comprobante: ${responseData.body}");
     }
   }
 }

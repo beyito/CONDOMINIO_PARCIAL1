@@ -19,7 +19,8 @@ from django.urls import path
 from django.urls import include
 from rest_framework import routers
 from django.http import JsonResponse
-
+from django.conf.urls.static import static
+from django.conf import settings
 def home(request):
     return JsonResponse({"status": "ok", "message": "Backend funcionando 🚀"})
 
@@ -32,4 +33,4 @@ urlpatterns = [
     path('gestionexpensas/', include('gestion_expensas.urls')),
     path('unidadpertenencia/', include('unidad_pertenencia.urls')),
     path('tareas/', include('tareas.urls')),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

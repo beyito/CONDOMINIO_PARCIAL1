@@ -161,6 +161,7 @@ class _ReservasCopropietarioWidgetState
   }
 
   // ----------------- DIALOGO ADJUNTAR -----------------
+  // ----------------- DIALOGO ADJUNTAR -----------------
   void _showAdjuntarDialog(ReservaModel reserva) async {
     XFile? pickedFile;
     final ImagePicker picker = ImagePicker();
@@ -194,20 +195,35 @@ class _ReservasCopropietarioWidgetState
             ElevatedButton(
               onPressed: () async {
                 if (pickedFile == null) return;
+
                 File file = File(pickedFile!.path);
+
                 if (reserva.id_reserva != null) {
                   final result = await _service.adjuntarComprobante(
                     reserva.id_reserva as int,
                     file,
                   );
+
+                  // ✅ Manejar respuesta del backend
                   if (result['status'] == 1) {
-                    print(
-                      "Comprobante adjuntado correctamente: ${result['url_comprobante']}",
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          "✅ Comprobante subido: ${result['url_comprobante']}",
+                        ),
+                        backgroundColor: Colors.green,
+                      ),
                     );
                   } else {
-                    print("Error: ${result['message']}");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("❌ Error: ${result['message']}"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
                   }
                 }
+
                 setState(() {
                   _futureReservas = _service.mostrarReservasCopropietario();
                 });

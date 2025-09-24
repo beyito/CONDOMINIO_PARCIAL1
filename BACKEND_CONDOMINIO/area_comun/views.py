@@ -392,45 +392,18 @@ def adjuntarComprobante(request, id_reserva):
         })
 
     imagen = request.FILES.get('imagen')
-    if not imagen:
+    if imagen:
+        reserva.url_comprobante = imagen
+        reserva.save()
+        return Response({
+            "status": 1,
+            "error": 0,
+            "message": "Comprobante adjuntado correctamente",
+            "url_comprobante": reserva.url_comprobante.url
+        })
+    else:
         return Response({
             "status": 0,
             "error": 1,
             "message": "No se envió ninguna imagen"
         })
-
-    api_key = "a383ca2bd672523a12512032b8fdd4cd"  # Reemplaza con tu clave real
-    files = {'image': (imagen.name, imagen, imagen.content_type)}
-
-    response = requests.post(
-        f'https://api.imgbb.com/1/upload?key={api_key}',
-        files=files
-    )
-
-    if response.status_code != 200:
-        return Response({
-            "status": 0,
-            "error": 1,
-            "message": f"Error subiendo la imagen a ImgBB: {response.text}"
-        })
-
-    data = response.json()
-    if not data.get('success', False):
-        return Response({
-            "status": 0,
-            "error": 1,
-            "message": "Error subiendo la imagen a ImgBB"
-        })
-
-    # Guardamos la URL directa de la imagen
-    url = data['data']['url']  # o data['data']['image']['url'] según prefieras
-    reserva.url_comprobante = url
-    reserva.save()
-
-    return Response({
-        "status": 1,
-        "error": 0,
-        "message": "Comprobante adjuntado correctamente",
-        "url_comprobante": url
-    })
-
