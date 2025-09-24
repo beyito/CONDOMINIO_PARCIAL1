@@ -9,6 +9,7 @@ import UsuariosDashboard from '../pages/Usuarios/Usuarios'
 import Unidades from '../pages/Unidades/Unidades'
 import PersonalDashboard from '../pages/Usuarios/Personal'
 import Tareas from '../pages/Tareas/Tareas'
+import ComunicadosPage from '../pages/Comunicados/ComunicadosPage'
 
 function AppRoutes() {
   const { isAuthenticated, loading } = useAuth()
@@ -44,6 +45,7 @@ function AppRoutes() {
         <Route path='personal' element={<PersonalDashboard />} />
         <Route path='unidades' element={<Unidades />} />
         <Route path='tareas' element={<Tareas />} />
+        <Route path='comunicados' element={<ComunicadosPage />} />
       </Route>
 
       <Route

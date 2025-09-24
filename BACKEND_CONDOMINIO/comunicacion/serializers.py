@@ -7,6 +7,7 @@ class ListarComunicadoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comunicado
         fields = [
+            "id",
             "titulo",
             "descripcion",
             "fecha_publicacion",
@@ -24,6 +25,7 @@ class ComunicadoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comunicado
         fields = [
+            "id",
             "titulo",
             "descripcion",
             "imagen_url",
