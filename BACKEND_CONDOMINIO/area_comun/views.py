@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from condominio.permissions import IsPersonal, IsCopropietario
 import requests
 from django.conf import settings
-
+import os
 # #Crear Lista Invitados
 
 
@@ -381,8 +381,7 @@ def cancelarReserva(request, id_reserva):
             "message": f"La reserva con id: {reserva.id_reserva} a sido cancelada."
         })
 
-import os
-from django.conf import settings
+
 
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])
