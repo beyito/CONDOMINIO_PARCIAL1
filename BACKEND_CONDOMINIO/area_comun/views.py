@@ -395,7 +395,7 @@ def adjuntarComprobante(request, id_reserva):
         return Response({
             "status": 1,
             "message": "Comprobante subido correctamente",
-            "url_comprobante": reserva.comprobante.url if reserva.comprobante else None
+            "url_comprobante": reserva.url_comprobante if reserva.url_comprobante else None
         })
 
     except Reserva.DoesNotExist:
