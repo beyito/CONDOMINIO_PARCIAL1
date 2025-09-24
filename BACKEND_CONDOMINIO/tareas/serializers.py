@@ -8,12 +8,13 @@ import requests
 
 class TareaPersonalSerializer(serializers.ModelSerializer):
     tarea = serializers.CharField(source= 'tarea.titulo')
+    tarea_id = serializers.IntegerField(source= 'tarea.id')
     descripcion = serializers.CharField(source = 'tarea.descripcion')
     personal = serializers.CharField(source= 'personal.idUsuario.nombre')
     personal_id = serializers.IntegerField(source='personal.idUsuario.id')
     class Meta:
         model = TareaPersonalModel
-        fields = ['id', 'tarea','descripcion', 'personal', 'fecha_asignacion', 'hora_realizacion', 'estado', 'personal_id']
+        fields = ['id', 'tarea_id', 'tarea','descripcion', 'personal', 'fecha_asignacion', 'hora_realizacion', 'estado', 'personal_id']
 
 class TareaSerializer(serializers.ModelSerializer):
     asignaciones = TareaPersonalSerializer(source='tareapersonalmodel_set', many=True) 
