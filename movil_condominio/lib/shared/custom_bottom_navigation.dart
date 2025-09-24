@@ -27,6 +27,7 @@ class CustomBottomNavigation extends StatelessWidget {
           icon: Icon(Icons.login),
           label: 'Control ingreso',
         ),
+        BottomNavigationBarItem(icon: Icon(Icons.task), label: 'Tareas'),
       ];
     } else if (rol == 'Copropietario') {
       items = const [

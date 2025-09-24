@@ -347,7 +347,7 @@ def mostrarReservasCopropietario(request):
     })
     # 🔹 Filtrar las reservas por el idUsuario
     # print(copropietario)
-    hoy = timezone.localdate()
+    hoy = timezone.now().date()
     reservas = Reserva.objects.filter(usuario=copropietario,fecha__gte=hoy)
     
     # print(reservas)

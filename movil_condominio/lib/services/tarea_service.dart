@@ -34,4 +34,28 @@ class TareaService {
       throw Exception(resModel.message ?? "Error al obtener tareas");
     }
   }
+
+  Future<String> marcarTarea(int id) async {
+    final token = await authService.getToken();
+
+    if (token == null) throw Exception("Usuario no autenticado");
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/marcarTareaRealizada/$id'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    // Parsea a ResponseModel
+    final ResponseModel resModel = ResponseModel.fromJson(
+      jsonDecode(response.body),
+    );
+
+    if (resModel.status == 1) {
+      return resModel.message ?? "Operación exitosa";
+    } else {
+      throw Exception(resModel.message ?? "Error al marcar tarea");
+    }
+  }
 }
