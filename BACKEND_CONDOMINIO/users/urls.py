@@ -23,6 +23,6 @@ urlpatterns = [
     path('registrarPersonal/', RegisterPersonalView.as_view(), name='registrarPersonal'), #registro de personal, se le envía el tipo_personal
     path('personal/', PersonalListView.as_view(), name='personal-list'),
     path('personal/<int:idUsuario>/', PersonalDetailView.as_view(), name='personal-detail'),
-    path('api/v1/', include(router.urls)), #CRUD de los usuarios
+    path('usuarios/', include(router.urls)), #CRUD de los usuarios
     path('residentes/',include(routerResidente.urls)), #CRUD de los residentes
 ]

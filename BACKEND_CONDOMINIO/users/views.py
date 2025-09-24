@@ -1,7 +1,7 @@
 
 from rest_framework import generics, viewsets, status
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer, PersonalSerializer, ResidenteSerializer, PersonalListSerializer
+from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer, PersonalSerializer, ResidenteSerializer, PersonalListSerializer, UserUpdateSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.views import APIView
@@ -146,6 +146,10 @@ class UserViewSet(viewsets.ModelViewSet):
             "message": "Usuarios listados correctamente",
             "values": serializer.data
         })
+    def get_serializer_class(self):
+        if self.action in ['update', 'partial_update']:
+            return UserUpdateSerializer
+        return UserSerializer
 
 
 class MyTokenObtainPairView(TokenObtainPairView):

@@ -71,9 +71,6 @@ class Vehiculo(Pertenencia):
     marca = models.CharField(max_length=50)
     modelo = models.CharField(max_length=50)
     color = models.CharField(max_length=30, blank=True)
-    tag_codigo = models.CharField(
-        max_length=50, unique=True, help_text="Código unico del tag de acceso"
-    )
     estado = models.CharField(max_length=20, choices=ESTADOS_VEHICULO, default="activo")
     tipo_vehiculo = models.CharField(
         max_length=20, choices=TIPOS_VEHICULO, default="automovil"

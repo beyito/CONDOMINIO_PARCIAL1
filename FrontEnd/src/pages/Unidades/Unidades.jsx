@@ -14,6 +14,8 @@ import { getUnidades } from '../../api/Unidades y Pertenencias/unidades_y_perten
 import { useApi } from '../../hooks/useApi'
 import ModalCrearUnidad from './components/ModalCrearUnidad'
 import ModalCrearResidente from './components/ModalCrearResidente'
+import ModalCrearVehiculo from './components/ModalCrearVehiculo'
+import ModalCrearMascota from './components/MascotaModal'
 
 const Unidades = () => {
   const [showModal, setShowModal] = useState(false)
@@ -23,11 +25,13 @@ const Unidades = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterEstado, setFilterEstado] = useState('todas')
   const [showModalType, setShowModalType] = useState(null)
+  const [editingItem, setEditingItem] = useState(null)
 
   const { data, loading, error, execute } = useApi(getUnidades)
 
   useEffect(() => {
     execute()
+    setShowDetails(false)
   }, [])
 
   // datos desde el backend
@@ -180,6 +184,7 @@ const Unidades = () => {
                                 onClick={() => {
                                   setSelectedUnidad(unidad)
                                   setOpenMenuId(null)
+                                  setShowModalType('vehiculo')
                                 }}
                                 className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
                               >
@@ -189,6 +194,7 @@ const Unidades = () => {
                                 onClick={() => {
                                   setSelectedUnidad(unidad)
                                   setOpenMenuId(null)
+                                  setShowModalType('mascota')
                                 }}
                                 className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
                               >
@@ -315,6 +321,15 @@ const Unidades = () => {
                             {vehiculo.marca} {vehiculo.modelo}
                           </p>
                         </div>
+                        <button
+                          onClick={() => {
+                            setEditingItem(vehiculo)
+                            setShowModalType('vehiculo')
+                          }}
+                          className='text-blue-600 hover:text-blue-800 text-sm font-medium'
+                        >
+                          Editar
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -334,9 +349,18 @@ const Unidades = () => {
                         <div>
                           <p className='font-medium'>{mascota.nombre}</p>
                           <p className='text-sm text-gray-600'>
-                            {mascota.tipo} - {mascota.raza}
+                            {mascota.tipo_mascota} - {mascota.raza}
                           </p>
                         </div>
+                        <button
+                          onClick={() => {
+                            setEditingItem(mascota)
+                            setShowModalType('mascota')
+                          }}
+                          className='text-blue-600 hover:text-blue-800 text-sm font-medium'
+                        >
+                          Editar
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -346,7 +370,7 @@ const Unidades = () => {
           )}
         </div>
 
-        {/* Modal */}
+        {/* Modales de creación / edición */}
         {showModal && (
           <ModalCrearUnidad
             setShowModal={setShowModal}
@@ -359,6 +383,34 @@ const Unidades = () => {
             setShowModal={setShowModalType}
             onSuccess={execute}
             unidad={selectedUnidad.id}
+          />
+        )}
+        {showModalType === 'vehiculo' && selectedUnidad && (
+          <ModalCrearVehiculo
+            setShowModal={() => {
+              setShowModalType(null)
+              setEditingItem(null)
+            }}
+            onSuccess={() => {
+              execute()
+              setEditingItem(null)
+            }}
+            unidad={selectedUnidad.id}
+            vehiculo={editingItem || null}
+          />
+        )}
+        {showModalType === 'mascota' && selectedUnidad && (
+          <ModalCrearMascota
+            setShowModal={() => {
+              setShowModalType(null)
+              setEditingItem(null)
+            }}
+            onSuccess={() => {
+              execute()
+              setEditingItem(null)
+            }}
+            unidad={selectedUnidad.id}
+            mascota={editingItem || null}
           />
         )}
       </div>

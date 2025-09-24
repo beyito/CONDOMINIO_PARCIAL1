@@ -22,17 +22,6 @@ class VehiculoSerializer(serializers.ModelSerializer):
                 "La placa debe tener entre 3 y 10 caracteres.")
         return value
         
-    def validate_tag_codigo(self, value):
-        """"Validar que el tag_codigo no este vacio"""
-        if not value or len(value.strip()) == 0:
-            raise serializers.ValidationError("El tag_codigo es obligatorio.")
-        value = value.strip()
-
-        if len(value) < 4:
-            raise serializers.ValidationError(
-                 "El codigo del tag debe tener al menos 4 caracteres."
-                 )
-        return value
     
     def validate_unidad(self, value):
         """Validar que la unidad exista"""
