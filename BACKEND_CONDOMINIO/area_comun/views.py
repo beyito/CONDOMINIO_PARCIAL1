@@ -289,8 +289,9 @@ class ReservaViewSet(viewsets.ModelViewSet):
                 "message": "La hora de fin debe ser posterior a la hora de inicio.",
                 "data": None
             })
-
         data = request.data.copy()
+        if not area.requiere_pago:
+            data['estado'] = "confirmada"
         data['area_comun'] = area.id_area
         data['usuario'] = copropietario.idUsuario
         serializer = self.get_serializer(data=data)
