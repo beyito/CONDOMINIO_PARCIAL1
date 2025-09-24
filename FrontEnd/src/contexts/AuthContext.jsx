@@ -168,6 +168,7 @@ export const AuthProvider = ({ children }) => {
         payload: {
           user: {
             username: values.username,
+            id: values.id,
             first_name: values.first_name,
             last_name: values.last_name,
             email: values.email,
@@ -209,6 +210,7 @@ export const AuthProvider = ({ children }) => {
         payload: {
           user: {
             username: values.username,
+            id: values.id,
             first_name: values.first_name,
             last_name: values.last_name,
             email: values.email,

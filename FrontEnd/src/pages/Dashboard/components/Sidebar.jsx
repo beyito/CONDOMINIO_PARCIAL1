@@ -15,7 +15,8 @@ import {
   Building,
   User,
   LogOut,
-  X
+  X,
+  MessageSquare
 } from 'lucide-react'
 const menuItems = [
   { id: 'dashboard', icon: Home, label: 'Dashboard', path: '/dashboard' },
@@ -41,16 +42,16 @@ const menuItems = [
     path: '/dashboard/areas'
   },
   {
-    id: 'seguridad',
-    icon: Shield,
-    label: 'Seguridad',
-    path: '/dashboard/seguridad'
-  },
-  {
     id: 'Tareas',
     icon: Wrench,
     label: 'Tareas',
     path: '/dashboard/tareas'
+  },
+  {
+    id: 'comunicados',
+    icon: MessageSquare, // puedes usar Mail, MessageSquare, Megaphone, etc. de lucide-react
+    label: 'Comunicados',
+    path: '/dashboard/comunicados'
   },
   {
     id: 'finanzas',
@@ -63,12 +64,6 @@ const menuItems = [
     icon: Zap,
     label: 'Dispositivos IoT',
     path: '/dashboard/smart'
-  },
-  {
-    id: 'configuracion',
-    icon: Settings,
-    label: 'Configuración',
-    path: '/dashboard/configuracion'
   }
 ]
 

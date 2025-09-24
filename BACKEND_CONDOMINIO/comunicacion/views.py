@@ -65,3 +65,71 @@ def ListarComunicado(request):
         }
     )
 
+# ----------------------------------
+# EDITAR COMUNICADO
+# ----------------------------------
+@api_view(["PUT"])
+def editarComunicado(request, comunicado_id, administrador_id):
+    try:
+        admin = Usuario.objects.get(id=administrador_id)
+    except Usuario.DoesNotExist:
+        return Response({"status": 2, "error": 1, "message": "Usuario no encontrado"})
+
+    if not admin.es_admin():
+        return Response({"status": 2, "error": 1, "message": "Usuario no es administrador válido."})
+
+    try:
+        comunicado = Comunicado.objects.get(id=comunicado_id)
+    except Comunicado.DoesNotExist:
+        return Response({"status": 2, "error": 1, "message": "Comunicado no encontrado"})
+
+    data = request.data.copy()
+    data["administrador"] = administrador_id  # aseguramos que siga siendo del admin
+
+    serializer = ComunicadoSerializer(comunicado, data=data, partial=True)  # partial permite actualizar algunos campos
+    if serializer.is_valid():
+        comunicado = serializer.save()
+        return Response({
+            "status": 1,
+            "error": 0,
+            "message": "Comunicado actualizado correctamente",
+            "values": ComunicadoSerializer(comunicado).data
+        })
+    return Response({
+        "status": 2,
+        "error": 1,
+        "message": "Error al actualizar comunicado",
+        "values": serializer.errors
+    })
+
+
+# ----------------------------------
+# ELIMINAR COMUNICADO
+# ----------------------------------
+@api_view(["DELETE"])
+def eliminarComunicado(request, comunicado_id, administrador_id):
+    try:
+        admin = Usuario.objects.get(id=administrador_id)
+    except Usuario.DoesNotExist:
+        return Response({"status": 2, "error": 1, "message": "Usuario no encontrado"})
+
+    if not admin.es_admin():
+        return Response({"status": 2, "error": 1, "message": "Usuario no es administrador válido."})
+
+    try:
+        comunicado = Comunicado.objects.get(id=comunicado_id)
+    except Comunicado.DoesNotExist:
+        return Response({"status": 2, "error": 1, "message": "Comunicado no encontrado"})
+
+    # Opción 1: eliminar físicamente
+    # comunicado.delete()
+
+    # Opción 2: marcar como inactivo (recomendado)
+    comunicado.activo = False
+    comunicado.save()
+
+    return Response({
+        "status": 1,
+        "error": 0,
+        "message": "Comunicado eliminado correctamente"
+    })
