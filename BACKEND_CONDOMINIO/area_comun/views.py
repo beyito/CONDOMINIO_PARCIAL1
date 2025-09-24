@@ -11,6 +11,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from condominio.permissions import IsPersonal, IsCopropietario
 import requests
+from django.conf import settings
 
 # #Crear Lista Invitados
 
@@ -379,6 +380,9 @@ def cancelarReserva(request, id_reserva):
             "message": f"La reserva con id: {reserva.id_reserva} a sido cancelada."
         })
 
+import os
+from django.conf import settings
+
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])
 def adjuntarComprobante(request, id_reserva):
@@ -388,14 +392,26 @@ def adjuntarComprobante(request, id_reserva):
         if 'imagen' not in request.FILES:
             return Response({"status": 0, "message": "No se envió la imagen"})
 
-        imagen = request.FILES['imagen']  # 👈 este nombre debe coincidir con Flutter
-        reserva.url_comprobante = imagen
+        imagen = request.FILES['imagen']  # 👈 nombre que envía Flutter
+
+        # Carpeta donde guardar los comprobantes
+        carpeta = os.path.join(settings.MEDIA_ROOT, 'comprobantes')
+        os.makedirs(carpeta, exist_ok=True)
+
+        # Ruta completa para guardar el archivo
+        ruta_guardado = os.path.join(carpeta, imagen.name)
+        with open(ruta_guardado, 'wb+') as f:
+            for chunk in imagen.chunks():
+                f.write(chunk)
+
+        # Guardar la ruta relativa en la BD
+        reserva.url_comprobante = f'comprobantes/{imagen.name}'
         reserva.save()
 
         return Response({
             "status": 1,
             "message": "Comprobante subido correctamente",
-            "url_comprobante": reserva.url_comprobante if reserva.url_comprobante else None
+            "url_comprobante": reserva.url_comprobante
         })
 
     except Reserva.DoesNotExist:
