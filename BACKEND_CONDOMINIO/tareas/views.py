@@ -12,6 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from condominio.permissions import IsPersonal, IsCopropietario
 from users.serializers import PersonalListSerializer
 from users.models import PersonalModel
+from django.db import transaction
 
 # Create your views here.
 
@@ -63,11 +64,21 @@ def crearTarea(request):
         "message": "Error al crear tarea",
         "details": serializer.errors
     })
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def asignarPersonalTarea(request, tarea_id):
     personal_ids = request.data.get('personal_ids', [])
+    fecha = request.data.get('fecha')  # fecha que viene del frontend
+
+    print("datos que llegan:", request.data)
+
+    if not fecha:
+        return Response({
+            "status": 0,
+            "error": 1,
+            "message": "La fecha es obligatoria"
+        })
+
     try:
         tarea = TareaModel.objects.get(id=tarea_id)
     except TareaModel.DoesNotExist:
@@ -77,23 +88,28 @@ def asignarPersonalTarea(request, tarea_id):
             "message": "La tarea no existe"
         })
 
-    # Obtener todos los asignados actualmente
-    actuales = TareaPersonalModel.objects.filter(tarea=tarea)
+    # Obtener asignaciones actuales solo para esa fecha
+    actuales = TareaPersonalModel.objects.filter(tarea=tarea, fecha_asignacion=fecha)
     
-    # Eliminar los que ya no están seleccionados
+    # Eliminar los que ya no están seleccionados para esa fecha
     actuales.exclude(personal__idUsuario__in=personal_ids).delete()
-    
 
-    # Crear los nuevos asignados
+    # Crear los nuevos asignados solo para esa fecha
     for pid in personal_ids:
         personal = PersonalModel.objects.get(idUsuario=pid)
-        TareaPersonalModel.objects.get_or_create(tarea=tarea, personal=personal)
+        TareaPersonalModel.objects.get_or_create(
+            tarea=tarea,
+            personal=personal,
+            fecha_asignacion=fecha  # ⚠️ IMPORTANTE
+        )
 
     return Response({
         "status": 1,
         "error": 0,
         "message": "Personal actualizado correctamente"
     })
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])  # o IsAdmin si quieres restringir
 def mostrarTodasTareas(request):

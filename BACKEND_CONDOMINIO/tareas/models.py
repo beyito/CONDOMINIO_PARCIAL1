@@ -18,7 +18,7 @@ class TareaModel(models.Model):
 class TareaPersonalModel(models.Model):
     tarea = models.ForeignKey(TareaModel, on_delete=models.CASCADE)
     personal = models.ForeignKey(PersonalModel, on_delete=models.CASCADE)
-    fecha_asignacion =  models.DateField(auto_now_add=True)
+    fecha_asignacion = models.DateField()  
     hora_realizacion = models.TimeField(null=True, blank=True)
     ESTADO_CHOICES = (
         ('pendiente', 'Pendiente'),
