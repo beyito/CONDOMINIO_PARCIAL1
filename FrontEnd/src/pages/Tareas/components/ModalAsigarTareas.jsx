@@ -3,28 +3,33 @@ import { useApi } from '../../../hooks/useApi'
 import { getPersonal } from '../../../api/usuarios/usuarios'
 import { asignarTarea } from '../../../api/tareas/tareas'
 import { X, Users } from 'lucide-react'
-
 import ErrorModal from '../../../components/ErrorModal'
 
-export default function ModalAsignarTarea({ tarea, setShowModal, onSuccess }) {
+export default function ModalAsignarTarea({
+  tarea,
+  fechaSeleccionada,
+  setShowModal,
+  onSuccess
+}) {
   const { data, loading, error, execute } = useApi(getPersonal)
   const [selectedPersonals, setSelectedPersonals] = useState([])
   const [errorModal, setErrorModal] = useState(false)
   const { execute: asignar } = useApi(asignarTarea)
 
   useEffect(() => {
-    execute() // Cargar todos los personales
+    execute() // cargar todo el personal
 
-    // Inicializar seleccionados si la tarea ya tiene asignaciones
-    if (tarea.asignaciones) {
-      const currentIds = tarea.asignaciones.map((a) => a.personal_id)
+    if (tarea.asignaciones && fechaSeleccionada) {
+      const asignacionesFecha = tarea.asignaciones.filter(
+        (a) => a.fecha_asignacion === fechaSeleccionada
+      )
+      const currentIds = asignacionesFecha.map((a) => a.personal_id)
       setSelectedPersonals(currentIds)
     }
-  }, [tarea])
-  console.log('tarea: ', tarea)
-  console.log('id de personal: ', selectedPersonals)
+  }, [tarea, fechaSeleccionada])
+
   const personalData = data?.data?.values || []
-  console.log(personalData)
+
   const togglePersonal = (id) => {
     setSelectedPersonals((prev) =>
       prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
@@ -33,19 +38,24 @@ export default function ModalAsignarTarea({ tarea, setShowModal, onSuccess }) {
 
   const handleAsignar = async () => {
     try {
-      await asignar(tarea.id, selectedPersonals)
+      // Enviar solo los seleccionados de la fecha actual
+      await asignar(tarea.id, {
+        fecha: fechaSeleccionada,
+        personalIds: selectedPersonals // coincide con lo que espera asignarTarea
+      })
+
       onSuccess()
       setShowModal(false)
     } catch (err) {
       console.error(err)
-      alert('Error al asignar la tarea')
+      setErrorModal(true)
     }
   }
 
   return (
     <div className='fixed inset-0 bg-black/20 flex items-center justify-center p-4 z-50'>
       <div className='bg-white rounded-xl p-6 w-full max-w-md relative shadow-lg'>
-        {/* Cerrar */}
+        {/* Botón cerrar */}
         <button
           className='absolute top-3 right-3 text-gray-500 hover:text-gray-700'
           onClick={() => setShowModal(false)}
@@ -55,7 +65,9 @@ export default function ModalAsignarTarea({ tarea, setShowModal, onSuccess }) {
 
         <h2 className='text-lg font-bold mb-4 flex items-center space-x-2'>
           <Users className='w-5 h-5' />
-          <span>Asignar Tarea: {tarea.titulo}</span>
+          <span>
+            Editar asignaciones de "{tarea.titulo}" ({fechaSeleccionada})
+          </span>
         </h2>
 
         {loading && <p>Cargando personal...</p>}
@@ -94,14 +106,15 @@ export default function ModalAsignarTarea({ tarea, setShowModal, onSuccess }) {
           className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full transition-colors'
           onClick={handleAsignar}
         >
-          Asignar Seleccionados
+          Guardar Asignaciones
         </button>
       </div>
+
       {errorModal && (
         <ErrorModal
           isOpen={errorModal}
           onClose={() => setErrorModal(false)}
-          message={error}
+          message={'Error al asignar la tarea'}
         />
       )}
     </div>
