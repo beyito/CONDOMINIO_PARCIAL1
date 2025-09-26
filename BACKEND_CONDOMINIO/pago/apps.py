@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class GestionExpensasConfig(AppConfig):
+class PagoConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'gestion_expensas'
+    name = 'pago'

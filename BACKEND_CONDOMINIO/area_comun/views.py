@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from datetime import datetime, timedelta
 from users.models import CopropietarioModel
 from .models import AreaComun, Reserva, AutorizacionVisita
+from pago.models import PagoModel
 from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer, ListaVisitantesSerializer, RegistroVisita, ListaReservasSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import api_view, permission_classes
@@ -292,8 +293,16 @@ class ReservaViewSet(viewsets.ModelViewSet):
         data = request.data.copy()
         if not area.requiere_pago:
             data['estado'] = "confirmada"
+        else:
+            tiempo_reserva = fin_datetime - inicio_datetime
+            pago = PagoModel.objects.create(
+            monto=area.precio_por_bloque * tiempo_reserva.total_seconds() / 3600,
+            descripcion = f"Se quiere reservar: {area.nombre_area} por {tiempo_reserva} horas",
+            fecha_emision=timezone.now().date()  # opcional si no usas auto_now_add
+            )
         data['area_comun'] = area.id_area
         data['usuario'] = copropietario.idUsuario
+        data['pago'] = pago
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -383,39 +392,39 @@ def cancelarReserva(request, id_reserva):
 
 
 
-@api_view(['PATCH'])
-@permission_classes([IsAuthenticated])
-def adjuntarComprobante(request, id_reserva):
-    try:
-        reserva = Reserva.objects.get(id_reserva=id_reserva)
+# @api_view(['PATCH'])
+# @permission_classes([IsAuthenticated])
+# def adjuntarComprobante(request, id_reserva):
+#     try:
+#         reserva = Reserva.objects.get(id_reserva=id_reserva)
 
-        if 'imagen' not in request.FILES:
-            return Response({"status": 0, "message": "No se envió la imagen"})
+#         if 'imagen' not in request.FILES:
+#             return Response({"status": 0, "message": "No se envió la imagen"})
 
-        imagen = request.FILES['imagen']  # 👈 nombre que envía Flutter
+#         imagen = request.FILES['imagen']  # 👈 nombre que envía Flutter
 
-        # Carpeta donde guardar los comprobantes
-        carpeta = os.path.join(settings.MEDIA_ROOT, 'comprobantes')
-        os.makedirs(carpeta, exist_ok=True)
+#         # Carpeta donde guardar los comprobantes
+#         carpeta = os.path.join(settings.MEDIA_ROOT, 'comprobantes')
+#         os.makedirs(carpeta, exist_ok=True)
 
-        # Ruta completa para guardar el archivo
-        ruta_guardado = os.path.join(carpeta, imagen.name)
-        with open(ruta_guardado, 'wb+') as f:
-            for chunk in imagen.chunks():
-                f.write(chunk)
+#         # Ruta completa para guardar el archivo
+#         ruta_guardado = os.path.join(carpeta, imagen.name)
+#         with open(ruta_guardado, 'wb+') as f:
+#             for chunk in imagen.chunks():
+#                 f.write(chunk)
 
-        # Guardar la ruta relativa en la BD
-        reserva.url_comprobante = f'comprobantes/{imagen.name}'
-        reserva.save()
+#         # Guardar la ruta relativa en la BD
+#         reserva.url_comprobante = f'comprobantes/{imagen.name}'
+#         reserva.save()
 
-        return Response({
-            "status": 1,
-            "message": "Comprobante subido correctamente",
-            "url_comprobante": reserva.url_comprobante
-        })
+#         return Response({
+#             "status": 1,
+#             "message": "Comprobante subido correctamente",
+#             "url_comprobante": reserva.url_comprobante
+#         })
 
-    except Reserva.DoesNotExist:
-        return Response({"status": 0, "message": "Reserva no encontrada"})
-    except Exception as e:
-        return Response({"status": 0, "message": str(e)})
+#     except Reserva.DoesNotExist:
+#         return Response({"status": 0, "message": "Reserva no encontrada"})
+#     except Exception as e:
+#         return Response({"status": 0, "message": str(e)})
 
