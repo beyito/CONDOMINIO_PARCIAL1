@@ -277,10 +277,10 @@ class ReservaViewSet(viewsets.ModelViewSet):
         hora_inicio_obj = datetime.strptime(request.data.get('hora_inicio'), "%H:%M").time()
         hora_fin_obj = datetime.strptime(request.data.get('hora_fin'), "%H:%M").time()
 
-        inicio_datetime = timezone.make_aware(datetime.combine(fecha_obj, hora_inicio_obj))
-        fin_datetime = timezone.make_aware(datetime.combine(fecha_obj, hora_fin_obj))
+        inicio_datetime = datetime.combine(fecha_obj, hora_inicio_obj)
+        fin_datetime = datetime.combine(fecha_obj, hora_fin_obj)
 
-        ahora_local = timezone.localtime()
+        ahora_local = timezone.now()
 
         if inicio_datetime < ahora_local + timedelta(hours=24):
             return Response({
@@ -309,7 +309,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
             )
         data['area_comun'] = area.id_area
         data['usuario'] = copropietario.idUsuario
-        data['pago'] = pago
+        data['pago'] = pago.id
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
