@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from users.models import CopropietarioModel, PersonaModel, PersonalModel
+from pago.models import PagoModel
 from users.models import Usuario as User
 
 
@@ -35,11 +36,11 @@ class Reserva(models.Model):
     id_reserva = models.AutoField(primary_key=True)
     usuario = models.ForeignKey(CopropietarioModel, on_delete=models.CASCADE, related_name="reservas")
     area_comun = models.ForeignKey(AreaComun, on_delete=models.CASCADE, related_name="reservas", null=True, blank=True)
-    
+    pago = models.ForeignKey(PagoModel, on_delete=models.SET_NULL, null=True, blank=True, related_name='reservas')
     fecha = models.DateField(null=True, blank=True)
     hora_inicio = models.TimeField(null=True, blank=True)
     hora_fin = models.TimeField(null=True, blank=True)
-    url_comprobante = models.URLField(null=True, blank=True)
+    # url_comprobante = models.URLField(null=True, blank=True)
 
     ESTADO_CHOICES = (
         ('pendiente', 'Pendiente'),

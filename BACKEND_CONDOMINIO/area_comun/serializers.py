@@ -18,39 +18,21 @@ class RegistroVisita(serializers.ModelSerializer):
         fields = '__all__'
 
 class ReservaSerializer(serializers.ModelSerializer):
-    imagen = serializers.ImageField(write_only=True, required=False)
     area_comun = serializers.PrimaryKeyRelatedField(queryset=AreaComun.objects.all(), required=False)
-
     class Meta:
         model = Reserva
         fields = '__all__'
         read_only_fields = ['usuario']
 
     def create(self, validated_data):
-        imagen = validated_data.pop('imagen', None)
-        if imagen:
-
-        # 2️⃣ Subir la imagen a ImgBB
-            api_key = "8d18e4a7c02bd81c54d5c190ceddfdd9" # Reemplazar con tu propia API key de ImgBB
-            files = {'image': imagen.read()}
-            response = requests.post(
-               f'https://api.imgbb.com/1/upload?key={api_key}',
-              files=files
-            )
-            if response.status_code == 200:
-               url = response.json()['data']['url']
-               validated_data['url_comprobante'] = url
-            else:
-                raise serializers.ValidationError("Error subiendo la imagen a ImgBB")
-
-        # 3️⃣ Obtener el Copropietario del usuario logueado
+        # 1 Obtener el Copropietario del usuario logueado
         usuario_actual = self.context['request'].user
         try:
             copropietario = CopropietarioModel.objects.get(idUsuario=usuario_actual)
         except CopropietarioModel.DoesNotExist:
             raise serializers.ValidationError("El usuario logueado no es un copropietario.")
 
-        # 4️⃣ Crear la reserva
+        # 2 Crear la reserva
         reserva = Reserva.objects.create(usuario=copropietario, **validated_data)
         return reserva
 
@@ -95,13 +77,14 @@ class ListaReservasSerializer(serializers.ModelSerializer):
     id_reserva = "id_reserva"
     id_areacomun =  serializers.IntegerField(source='area_comun.id_area', read_only=True)
     nombre_area = serializers.CharField(source='area_comun.nombre_area', read_only=True)
+    pago_id = serializers.IntegerField(source='pago.id', read_only=True)
     usuario = "usuario"
     fecha = "fecha"
     hora_inicio = "hora_inicio"
     hora_fin = "hora_fin"
     estado = "estado"
     nota = "nota"
-    url_comprobante = "url_comprobante"
+    url_comprobante = serializers.IntegerField(source='pago.url_comprobante', read_only=True)
     cancelada_en = "cancelada_en"
     motivo_cancelacion = "motivo_cancelacion"
     class Meta:
