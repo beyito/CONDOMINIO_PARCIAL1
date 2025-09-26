@@ -15,7 +15,88 @@ class ListaPersonasViewState extends State<ListaPersonasView> {
   @override
   void initState() {
     super.initState();
-    _personasFuture = _service.fetchPersonas();
+    _cargarPersonas();
+  }
+
+  void _cargarPersonas() {
+    setState(() {
+      _personasFuture = _service.fetchPersonas();
+    });
+  }
+
+  // 👉 Modal para agregar nueva persona
+  void _agregarPersona() async {
+    final nombreController = TextEditingController();
+    final apellidoController = TextEditingController();
+    final documentoController = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Agregar nueva persona'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: nombreController,
+                  decoration: InputDecoration(labelText: 'Nombre'),
+                ),
+                TextField(
+                  controller: apellidoController,
+                  decoration: InputDecoration(labelText: 'Apellido'),
+                ),
+                TextField(
+                  controller: documentoController,
+                  decoration: InputDecoration(labelText: 'CI'),
+                  keyboardType: TextInputType.number,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (nombreController.text.isNotEmpty &&
+                    apellidoController.text.isNotEmpty &&
+                    documentoController.text.isNotEmpty) {
+                  final success = await _service.crearPersona(
+                    nombre: nombreController.text,
+                    apellido: apellidoController.text,
+                    documento: documentoController.text,
+                  );
+
+                  if (success) {
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('✅ Persona agregada')),
+                      );
+                      _cargarPersonas(); // refrescar lista
+                    }
+                  } else {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('❌ No se pudo agregar')),
+                      );
+                    }
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('⚠️ Completa todos los campos')),
+                  );
+                }
+              },
+              child: Text('Guardar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _invitarCondominio(Persona persona) async {
@@ -34,7 +115,6 @@ class ListaPersonasViewState extends State<ListaPersonasView> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Fecha Inicio
                     ListTile(
                       title: Text(
                         fechaInicio == null
@@ -68,8 +148,6 @@ class ListaPersonasViewState extends State<ListaPersonasView> {
                         }
                       },
                     ),
-
-                    // Fecha Fin
                     ListTile(
                       title: Text(
                         fechaFin == null
@@ -103,8 +181,6 @@ class ListaPersonasViewState extends State<ListaPersonasView> {
                         }
                       },
                     ),
-
-                    // Motivo
                     TextField(
                       controller: motivoController,
                       decoration: InputDecoration(
@@ -135,7 +211,7 @@ class ListaPersonasViewState extends State<ListaPersonasView> {
 
                   if (success) {
                     if (context.mounted) {
-                      Navigator.pop(context); // cerrar modal
+                      Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('✅ Se invitó exitosamente')),
                       );
@@ -164,7 +240,15 @@ class ListaPersonasViewState extends State<ListaPersonasView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Personas registradas')),
+      appBar: AppBar(
+        title: Text('Personas registradas'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: _agregarPersona, // 👉 botón + arriba
+          ),
+        ],
+      ),
       body: FutureBuilder<List<Persona>>(
         future: _personasFuture,
         builder: (context, snapshot) {
@@ -183,13 +267,54 @@ class ListaPersonasViewState extends State<ListaPersonasView> {
             itemBuilder: (context, index) {
               final persona = personas[index];
               return Card(
-                margin: EdgeInsets.all(8),
-                child: ListTile(
-                  title: Text('${persona.nombre} ${persona.apellido}'),
-                  subtitle: Text('CI: ${persona.documento}'),
-                  trailing: ElevatedButton(
-                    onPressed: () => _invitarCondominio(persona),
-                    child: Text('Invitar al condominio'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                elevation: 3,
+                margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Padding(
+                  padding: const EdgeInsets.all(14.0),
+                  child: Row(
+                    children: [
+                      // Columna con datos de la persona
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${persona.nombre} ${persona.apellido}',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 6),
+                            Text(
+                              'CI: ${persona.documento}',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Botón de invitar
+                      ElevatedButton(
+                        onPressed: () => _invitarCondominio(persona),
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
+                        ),
+                        child: Text('Invitar'),
+                      ),
+                    ],
                   ),
                 ),
               );

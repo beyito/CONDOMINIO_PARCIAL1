@@ -54,4 +54,30 @@ class PersonaService {
       return false;
     }
   }
+
+  Future<bool> crearPersona({
+    required String nombre,
+    required String apellido,
+    required String documento,
+  }) async {
+    final token = await authService.getToken();
+    final response = await http.post(
+      Uri.parse('$baseUrl/registrarPersona/'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'nombre': nombre,
+        'apellido': apellido,
+        'documento': documento,
+      }),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

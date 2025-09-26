@@ -13,9 +13,24 @@ class CustomAppbar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _CustomAppbarState extends State<CustomAppbar> {
+  String? rolUsuario;
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarRol();
+  }
+
+  Future<void> _cargarRol() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      rolUsuario = prefs.getString('rol'); // 👈 Aquí guardaste el rol al login
+    });
+  }
+
   Future<void> _logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear(); // o solo elimina el token si prefieres
+    await prefs.clear();
     if (context.mounted) {
       context.go('/login');
     }
@@ -40,34 +55,47 @@ class _CustomAppbarState extends State<CustomAppbar> {
                   if (value == 'perfil') {
                     context.go('/home/0/perfil');
                   } else if (value == 'personas') {
-                    context.go('/home/0/personas'); // 👈 Aquí defines tu ruta
+                    context.go('/home/0/personas');
                   } else if (value == 'logout') {
                     await _logout(context);
                   }
                 },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 'perfil',
-                    child: ListTile(
-                      leading: Icon(Icons.account_circle),
-                      title: Text('Mi perfil'),
+                itemBuilder: (context) {
+                  final items = <PopupMenuEntry<String>>[
+                    const PopupMenuItem(
+                      value: 'perfil',
+                      child: ListTile(
+                        leading: Icon(Icons.account_circle),
+                        title: Text('Mi perfil'),
+                      ),
                     ),
-                  ),
-                  const PopupMenuItem(
-                    value: 'personas', // 👈 Nuevo item
-                    child: ListTile(
-                      leading: Icon(Icons.group),
-                      title: Text('Mis personas'),
+                  ];
+
+                  // 👇 Solo mostrar si es copropietario
+                  if (rolUsuario == 'Copropietario') {
+                    items.add(
+                      const PopupMenuItem(
+                        value: 'personas',
+                        child: ListTile(
+                          leading: Icon(Icons.group),
+                          title: Text('Mis personas'),
+                        ),
+                      ),
+                    );
+                  }
+
+                  items.add(
+                    const PopupMenuItem(
+                      value: 'logout',
+                      child: ListTile(
+                        leading: Icon(Icons.logout),
+                        title: Text('Cerrar sesión'),
+                      ),
                     ),
-                  ),
-                  const PopupMenuItem(
-                    value: 'logout',
-                    child: ListTile(
-                      leading: Icon(Icons.logout),
-                      title: Text('Cerrar sesión'),
-                    ),
-                  ),
-                ],
+                  );
+
+                  return items;
+                },
               ),
             ],
           ),
