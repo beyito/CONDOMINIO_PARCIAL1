@@ -1,9 +1,10 @@
-
+from django.utils import timezone
 from rest_framework.decorators import api_view,action
 from rest_framework.response import Response
 from area_comun.models import Reserva
 from .models import PagoModel
-# from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer, ListaVisitantesSerializer, RegistroVisita, ListaReservasSerializer
+from users.models import CopropietarioModel
+from .serializers import ListaPagosSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -90,3 +91,32 @@ def adjuntarComprobanteReserva(request, id_reserva):
 #         return Response({"status": 0, "message": "Reserva no encontrada"})
 #     except Exception as e:
 #         return Response({"status": 0, "message": str(e)})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsCopropietario])
+def mostrarPagosCopropietario(request):
+    usuario_actual = request.user  
+    try:
+        copropietario = CopropietarioModel.objects.get(idUsuario = usuario_actual.id)
+    except CopropietarioModel.DoesNotExist:
+        return Response({
+        "status": 2,
+        "error": 1,
+        "message": "no existe el copropietario",
+        "values": []
+    })
+    # 🔹 Filtrar las reservas por el idUsuario
+    # print(copropietario)
+    hoy = timezone.now().date()
+    print(hoy)
+    pagos = PagoModel.objects.filter(copropietario=copropietario)
+    
+    # print(reservas)
+    serializer = ListaPagosSerializer(pagos, many=True)
+    return Response({
+        "status": 1,
+        "error": 0,
+        "message": "Reservas obtenidas correctamente",
+        "values": serializer.data
+    })
