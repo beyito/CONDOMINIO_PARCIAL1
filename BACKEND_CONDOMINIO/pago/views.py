@@ -78,19 +78,17 @@ def adjuntarComprobante(request, id_pago):
                 f.write(chunk)
         if (pago.tipo_pago == "expensa"):
 
-            expensa = ExpensaModel.objects.get(pago = pago)                  
-            pago.tipo_pago = 'expensa'
+            expensa = ExpensaModel.objects.get(pago = pago) 
             pago.copropietario = expensa.unidad.id_copropietario
             pago.monto = expensa.monto
         elif ( pago.tipo_pago == "reserva"):  
 
-            reserva = Reserva.objects.get(pago = pago)       
-            pago.tipo_pago = 'reserva'
+            reserva = Reserva.objects.get(pago = pago)  
             # pago.monto = reserva.area_comun.precio_por_bloque
             pago.copropietario = reserva.usuario
             
         pago.url_comprobante = f'comprobantes/{imagen.name}'
-        pago.estado = 'pendiente'
+        pago.estado = "pendiente"
         pago.save()
 
         return Response({

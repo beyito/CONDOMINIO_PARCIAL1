@@ -19,7 +19,7 @@ class PagoModel(models.Model):
     TIPO_CHOICES = (
         ('reserva', 'Reserva'),
         ('expensa', 'Expensa'),
-        ('multa','Multa'),
+        ('multa','Multa')
     )
     estado = models.CharField(max_length=50, choices=ESTADO_CHOICES, default='no pagado')
     tipo_pago = models.CharField(max_length=50, choices=TIPO_CHOICES, null = True)

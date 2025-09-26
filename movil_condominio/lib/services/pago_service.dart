@@ -39,7 +39,7 @@ class PagoService {
 
     var request = http.MultipartRequest(
       'PATCH',
-      Uri.parse('$baseUrl/adjuntarComprobanteReserva/$id_pago/'),
+      Uri.parse('$baseUrl/adjuntarComprobante/$id_pago/'),
     );
 
     request.headers['Authorization'] = 'Bearer $token';

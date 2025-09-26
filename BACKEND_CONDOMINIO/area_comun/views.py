@@ -306,7 +306,8 @@ class ReservaViewSet(viewsets.ModelViewSet):
             # monto=area.precio_por_bloque * tiempo_reserva.total_seconds() / 3600,
             descripcion = f"Se quiere reservar: {area.nombre_area} por {tiempo_reserva} horas",
             fecha_emision=timezone.now().date(),  # opcional si no usas auto_now_add
-            copropietario = copropietario
+            copropietario = copropietario,
+            tipo_pago = "reserva"
             )
             data['pago'] = pago.id
         data['area_comun'] = area.id_area
