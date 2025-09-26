@@ -4,7 +4,7 @@ import { useAuth } from '../../../hooks/useAuth'
 import {
   Home,
   Users,
-  Settings,
+  Clipboard,
   Zap,
   Shield,
   MapPin,
@@ -64,6 +64,12 @@ const menuItems = [
     icon: Zap,
     label: 'Dispositivos IoT',
     path: '/dashboard/smart'
+  },
+  {
+    id: 'bitacora',
+    icon: Clipboard,
+    label: 'Bitácora',
+    path: '/dashboard/bitacora'
   }
 ]
 

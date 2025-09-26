@@ -23,3 +23,7 @@ export const updatePersonal = async (id, data) => {
 export const updateUsuario = async (id, data) => {
     return instancia.put(`usuario/usuarios/users/${id}/`, data);
 }
+
+export const getBitacora = async () => {
+    return instancia.get('usuario/bitacora/');  
+}

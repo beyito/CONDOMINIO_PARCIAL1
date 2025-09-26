@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from django.core.exceptions import ValidationError
 from .models import Unidad, Vehiculo, Mascota  
 from .serializers import UnidadSerializer, VehiculoSerializer, MascotaSerializer
+from users.bitacora import registrar_bitacora
 # Create your views here.
 import logging #para registrar errores en el servidor
 
@@ -37,7 +38,7 @@ def crearUnidad(request):
                     'values':None 
                 })
             unidad = serializer.save() # crea en la bd
-
+            registrar_bitacora(request, f'Se creo la Unidad {unidad.id}')
             return Response({
                 'status': 1,
                 'error': 0,
@@ -94,10 +95,11 @@ def editar_unidad(request, unidad_id):
 
         if serializer.is_valid():
             unidad_actualizada = serializer.save()
+            registrar_bitacora(request, f'Unidad {unidad_actualizada.id} actualizada exitosamente')
             return Response({
                 'status': 1,
                 'error': 0,
-                'message': f'Unidad {unidad_actualizada.codigo} actualizada exitosamente',
+                'message': f'Se actualizo la Unidad {unidad_actualizada.codigo}',
                 'values': UnidadSerializer(unidad_actualizada).data
                 # ['id', 
                 # 'codigo', 
@@ -301,6 +303,7 @@ def registrar_vehiculo(request):
                 })
             
             vehiculo = serializer.save()
+            registrar_bitacora(request, f"Registró vehículo {vehiculo.id} - {vehiculo.placa}")
             
             return Response({
                 'status': 1,
@@ -357,6 +360,7 @@ def editar_vehiculo(request, vehiculo_id):
             })
         
         serializer = VehiculoSerializer(vehiculo, data=request.data, partial=True)
+        registrar_bitacora(request, f"Editó vehículo {vehiculo.id} - {vehiculo.placa}")
         
         if serializer.is_valid():
             vehiculo_actualizado = serializer.save()
@@ -556,6 +560,7 @@ def registrar_mascota(request):
         
         if serializer.is_valid():
             mascota = serializer.save()
+            registrar_bitacora(request, f"Registró mascota {mascota.id} - {mascota.nombre}")
             
             return Response({
                 'status': 1,
@@ -588,6 +593,8 @@ def editar_mascota(request, mascota_id):
         mascota = Mascota.objects.get(id=mascota_id)
         
         serializer = MascotaSerializer(mascota, data=request.data, partial=True)
+        
+        registrar_bitacora(request, f"Editó mascota {mascota.id} - {mascota.nombre}")
         
         if serializer.is_valid():
             mascota_actualizada = serializer.save()
