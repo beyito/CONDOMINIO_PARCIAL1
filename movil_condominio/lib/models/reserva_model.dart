@@ -1,5 +1,6 @@
 class ReservaModel {
   final int? id_reserva;
+  final int? pago_id;
   final String? fecha;
   final String? nombre_area;
   final String? hora_inicio;
@@ -10,6 +11,7 @@ class ReservaModel {
   final String? motivo_cancelacion;
   ReservaModel({
     this.id_reserva,
+    this.pago_id,
     this.fecha,
     this.hora_inicio,
     this.hora_fin,
@@ -23,6 +25,7 @@ class ReservaModel {
   factory ReservaModel.fromJson(Map<String, dynamic> json) {
     return ReservaModel(
       id_reserva: json['id_reserva'],
+      pago_id: json['pago_id'],
       fecha: json['fecha'],
       hora_inicio: json['hora_inicio'],
       hora_fin: json['hora_fin'],
@@ -36,6 +39,7 @@ class ReservaModel {
 
   Map<String, dynamic> toJson() => {
     'id_reserva': id_reserva,
+    'pago_id': pago_id,
     'fecha': fecha,
     'hora_inicio': hora_inicio,
     'hora_fin': hora_fin,

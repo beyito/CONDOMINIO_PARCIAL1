@@ -18,6 +18,7 @@ class RegistroVisita(serializers.ModelSerializer):
         fields = '__all__'
 
 class ReservaSerializer(serializers.ModelSerializer):
+    url_comprobante = serializers.CharField(source='pago.url_comprobante', read_only=True)
     area_comun = serializers.PrimaryKeyRelatedField(queryset=AreaComun.objects.all(), required=False)
     class Meta:
         model = Reserva
@@ -84,7 +85,7 @@ class ListaReservasSerializer(serializers.ModelSerializer):
     hora_fin = "hora_fin"
     estado = "estado"
     nota = "nota"
-    url_comprobante = serializers.IntegerField(source='pago.url_comprobante', read_only=True)
+    url_comprobante = serializers.CharField(source='pago.url_comprobante', read_only=True)
     cancelada_en = "cancelada_en"
     motivo_cancelacion = "motivo_cancelacion"
     class Meta:
