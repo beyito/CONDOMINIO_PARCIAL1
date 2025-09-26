@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import CopropietarioModel
+from unidad_pertenencia.models import Unidad
 # Create your models here.
 class PagoModel(models.Model):
     descripcion = models.CharField(max_length=200)
@@ -25,3 +26,14 @@ class PagoModel(models.Model):
 
     class Meta:
         db_table = 'pago'
+
+class ExpensaModel(models.Model):
+    id_expensa = models.AutoField(primary_key=True)
+    pago = models.ForeignKey('PagoModel', on_delete=models.SET_NULL, null=True, blank=True, related_name='expensas')
+    unidad = models.ForeignKey(Unidad, on_delete=models.SET_NULL, null=True, blank=True, related_name='expensas')
+    monto = models.FloatField(default=0.00, blank=True)
+    descripcion = models.CharField(max_length=200, null = True, blank = True)
+    fecha = models.DateField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'expensa'
