@@ -1,7 +1,7 @@
 
 from rest_framework import generics, viewsets, status
-from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer, PersonalSerializer, ResidenteSerializer, PersonalListSerializer, UserUpdateSerializer
+from django.contrib.auth import get_user_model, authenticate
+from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer, PersonalSerializer, ResidenteSerializer, PersonalListSerializer, UserUpdateSerializer, BitacoraSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.views import APIView
@@ -9,9 +9,11 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 from rest_framework.exceptions import AuthenticationFailed
-from .models import PersonalModel, Residente
+from .models import PersonalModel, Residente, Bitacora
 from unidad_pertenencia.models import Unidad
 from rest_framework.decorators import api_view
+from .bitacora import registrar_bitacora
+
 User = get_user_model()
 
 class RegisterCopropietarioView(generics.CreateAPIView):
@@ -25,6 +27,8 @@ class RegisterCopropietarioView(generics.CreateAPIView):
 
         if serializer.is_valid():
             usuario = serializer.save()
+            registrar_bitacora(request, f"Registró copropietario {usuario.id} - {usuario.username}")
+
             return Response({
                 "status": 1,
                 "error": 0,
@@ -50,7 +54,9 @@ class RegisterPersonalView(generics.CreateAPIView):
         print(data)
         serializer = self.get_serializer(data=data)
         if serializer.is_valid():
-            serializer.save()  # llama automáticamente al create del serializer
+            usuario = serializer.save()  # llama automáticamente al create del serializer
+            print(usuario)
+            registrar_bitacora(request, f"Registró personal {usuario.id} - {usuario.username}")
             return Response({
                 "status": 1,
                 "error": 0,
@@ -103,6 +109,7 @@ class PersonalDetailView(generics.RetrieveUpdateAPIView):
         serializer = self.get_serializer(usuario, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        registrar_bitacora(request, f"Actualizó personal {personal.idUsuario.id} - {personal.idUsuario.username}")
 
         # Actualizar campos de PersonalModel
         personal.turno = request.data.get('turno', personal.turno)
@@ -125,6 +132,7 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        registrar_bitacora(request, f"Registró usuario {serializer.instance.id} - {serializer.instance.username}")
         return Response({
             "status": 1,
             "error": 0,
@@ -146,6 +154,14 @@ class UserViewSet(viewsets.ModelViewSet):
             "message": "Usuarios listados correctamente",
             "values": serializer.data
         })
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        registrar_bitacora(request, f"Actualizó usuario {self.get_object().id} - {self.get_object().username}")
+        return response
+    def partial_update(self, request, *args, **kwargs):
+        response = super().partial_update(request, *args, **kwargs)
+        registrar_bitacora(request, f"Actualizó parcialmente usuario {self.get_object().id} - {self.get_object().username}")
+        return response
     def get_serializer_class(self):
         if self.action in ['update', 'partial_update']:
             return UserUpdateSerializer
@@ -157,7 +173,6 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        print("Request data", request.data)
         try:
             serializer.is_valid(raise_exception=True)
         except AuthenticationFailed as e:
@@ -177,6 +192,12 @@ class MyTokenObtainPairView(TokenObtainPairView):
             })
 
         # Si pasó la validación
+        # Obtener usuario autenticado
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(username=username, password=password)
+        if user:
+            registrar_bitacora(request, f"Inició sesión usuario {user.id} - {user.username}")
         return Response({
             "status": 1,
             "error": 0,
@@ -205,6 +226,8 @@ class LogoutView(APIView):
             # Si tu configuración tiene blacklist habilitado, podemos invalidarlo
             if hasattr(token, 'blacklist'):
                 token.blacklist()
+            
+            registrar_bitacora(request, f"Cerró sesión usuario {request.user.id} - {request.user.username}")
 
             return Response({
                 "status": 1,
@@ -250,5 +273,18 @@ class ResidenteViewSet(viewsets.ModelViewSet):
     queryset = Residente.objects.all().order_by("-created_at")
     serializer_class = ResidenteSerializer
 
+class BitacoraListView(generics.ListAPIView):
+    queryset = Bitacora.objects.all()
+    serializer_class = BitacoraSerializer
+    permission_classes = [IsAuthenticated]
 
-        
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response({
+            "status": 1,
+            "error": 0,
+            "message": "Bitácora obtenida correctamente",
+            "values": serializer.data
+        })

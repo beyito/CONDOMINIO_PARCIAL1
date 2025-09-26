@@ -10,6 +10,7 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from condominio.permissions import IsPersonal, IsCopropietario
+from users.bitacora import registrar_bitacora
 import requests
 from django.conf import settings
 import os
@@ -135,6 +136,7 @@ def marcarEntradaVisita(request):
         resultado = serializer.save()
         visitante = resultado['visitante']
         registro = resultado['registro']
+        registrar_bitacora(request, f"Registró entrada para {visitante.nombre} {visitante.apellido} a las {registro.fecha_entrada}.")
         return Response({
             "status": 1,
             "error": 0,
@@ -157,6 +159,7 @@ def marcarSalidaVisita(request):
         resultado = serializer.save()
         visitante = resultado['visitante']
         registro = resultado['registro']
+        registrar_bitacora(request, f"Registró salida para {visitante.nombre} {visitante.apellido} a las {registro.fecha_salida}.")
         return Response({
             "status": 1,
             "error": 0,
@@ -196,6 +199,8 @@ class AreaComunViewSet(viewsets.ModelViewSet):
         instance.estado = 'inactivo'
         instance.save()
 
+        registrar_bitacora(request, f"Eliminó area con id {instance.pk}")
+
         return Response({
             "status": 1,
             "error": 0,
@@ -216,6 +221,7 @@ class AreaComunViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        registrar_bitacora(request, f"Registró area con id {serializer.instance.pk}")
         return Response({
             "status": 1,
             "error": 0,
@@ -244,6 +250,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         
         serializer.save()
+        registrar_bitacora(self.request, f"Registró reserva con id {serializer.instance.pk}")
 
     def create(self, request, *args, **kwargs):
         area_nombre = request.data.get("area_comun")
@@ -297,6 +304,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        registrar_bitacora(request, f"Registró reserva con id {serializer.instance.pk}")
 
         return Response({
             "status": 1,
@@ -324,6 +332,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
         reserva.save()
 
         serializer = self.get_serializer(reserva)
+        registrar_bitacora(request, f"Canceló reserva con id {reserva.id_reserva}")
         return Response({
             "status": 1,
             "error": 0,
@@ -407,6 +416,7 @@ def adjuntarComprobante(request, id_reserva):
         # Guardar la ruta relativa en la BD
         reserva.url_comprobante = f'comprobantes/{imagen.name}'
         reserva.save()
+        registrar_bitacora(request, f"Registró comprobante para reserva con id {reserva.id_reserva}")
 
         return Response({
             "status": 1,

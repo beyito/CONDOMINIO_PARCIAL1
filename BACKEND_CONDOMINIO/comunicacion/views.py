@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from .models import Comunicado
 from .serializers import ListarComunicadoSerializer, ComunicadoSerializer
 from users.models import Usuario
-
+from users.bitacora import registrar_bitacora
 
 # Create your views here.
 # CREAR COMUNICADO SOLO LO PUEDE HACER EL ADMINISTRADOR
@@ -32,6 +32,7 @@ def crearComunicado(request, administrador_id):
     serializer = ComunicadoSerializer(data=data)
     if serializer.is_valid():
         comunicado = serializer.save()  # aquí Django crea el objeto correctamente
+        registrar_bitacora(request, f"Registró comunicado {comunicado.id} - {comunicado.titulo}")
         return Response(
             {
                 "status": 1,
@@ -89,6 +90,7 @@ def editarComunicado(request, comunicado_id, administrador_id):
     serializer = ComunicadoSerializer(comunicado, data=data, partial=True)  # partial permite actualizar algunos campos
     if serializer.is_valid():
         comunicado = serializer.save()
+        registrar_bitacora(request, f"Actualizó comunicado {comunicado.id} - {comunicado.titulo}")
         return Response({
             "status": 1,
             "error": 0,
@@ -127,6 +129,8 @@ def eliminarComunicado(request, comunicado_id, administrador_id):
     # Opción 2: marcar como inactivo (recomendado)
     comunicado.activo = False
     comunicado.save()
+
+    registrar_bitacora(request, f"Eliminó comunicado {comunicado.id} - {comunicado.titulo}")
 
     return Response({
         "status": 1,

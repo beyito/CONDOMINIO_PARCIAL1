@@ -13,6 +13,7 @@ from condominio.permissions import IsPersonal, IsCopropietario
 from users.serializers import PersonalListSerializer
 from users.models import PersonalModel
 from django.db import transaction
+from users.bitacora import registrar_bitacora
 
 # Create your views here.
 
@@ -38,7 +39,7 @@ def mostrarTareasPersonal(request):
     #         "hora_realizacion": tarea["hora_realizacion"],
     #         "estado": tarea["estado"],
     #     })
-
+    registrar_bitacora(request, "Listo sus tareas")
     return Response({
         "status": 1,
         "error": 0,
@@ -52,6 +53,7 @@ def crearTarea(request):
     serializer = CrearTareaSerializer(data=request.data)
     if serializer.is_valid():
         tarea = serializer.save()
+        registrar_bitacora(request, f"Registró tarea {tarea.id} - {tarea.tarea}")
         return Response({
             "status": 1,
             "error": 0,
@@ -102,7 +104,7 @@ def asignarPersonalTarea(request, tarea_id):
             personal=personal,
             fecha_asignacion=fecha  # ⚠️ IMPORTANTE
         )
-
+    registrar_bitacora(request, f"Asignó personal a la tarea {tarea.id} - {tarea.tarea}")
     return Response({
         "status": 1,
         "error": 0,
@@ -166,6 +168,7 @@ def marcarTareaRealizada(request, id_tarea_personal):
     tareaPersonal.estado = 'hecho'
     tareaPersonal.hora_realizacion = timezone.now().time().replace(microsecond=0)
     tareaPersonal.save()
+    registrar_bitacora(request, f"Marco la tarea personal con id: {tareaPersonal.id} como realizada")
     return Response({
             "status": 1,
             "error": 0,

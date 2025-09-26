@@ -157,3 +157,17 @@ class Residente(models.Model):
 
     class Meta:
         db_table = "residente"
+
+from django.db import models
+
+class Bitacora(models.Model):
+    accion = models.TextField()           # Lo que pasó (ej. 'Asignó personal a tarea 3')
+    ip = models.GenericIPAddressField()   # IP del cliente
+    fecha_hora = models.DateTimeField(auto_now_add=True)  # Fecha y hora exacta
+
+    class Meta:
+        db_table = 'bitacora'
+        ordering = ['-fecha_hora']
+
+    def __str__(self):
+        return f"{self.fecha_hora} - {self.accion} ({self.ip})"
