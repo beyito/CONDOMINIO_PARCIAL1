@@ -104,7 +104,7 @@ def asignarPersonalTarea(request, tarea_id):
             personal=personal,
             fecha_asignacion=fecha  # ⚠️ IMPORTANTE
         )
-    registrar_bitacora(request, f"Asignó personal a la tarea {tarea.id} - {tarea.tarea}")
+    registrar_bitacora(request, f"Asignó personal a la tarea {tarea.id} - {tarea.id}")
     return Response({
         "status": 1,
         "error": 0,

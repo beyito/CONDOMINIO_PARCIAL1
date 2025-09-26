@@ -32,7 +32,7 @@ export default function Tareas() {
   }, [fetchTareas])
 
   const tareas = data?.data?.values || []
-
+  console.log(tareas)
   const getStatusColor = (estado) => {
     switch (estado) {
       case 'Pendiente':
@@ -60,7 +60,16 @@ export default function Tareas() {
     t.titulo.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const hoy = new Date().toISOString().split('T')[0]
+  const hoy = new Date()
+    .toLocaleDateString('es-BO', {
+      timeZone: 'America/La_Paz',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    })
+    .split('/')
+    .reverse()
+    .join('-')
 
   // Agrupar asignaciones por fecha
   const groupByFecha = (asignaciones) => {

@@ -27,3 +27,11 @@ export const updateUsuario = async (id, data) => {
 export const getBitacora = async () => {
     return instancia.get('usuario/bitacora/');  
 }
+
+export const getResidentes = async () => {
+    return instancia.get('usuario/residentes/');  
+}
+
+export const updateResidente = async (id, data) => {
+    return instancia.put(`usuario/residentes/${id}/`, data);
+}
