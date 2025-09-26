@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'users',
     'area_comun',
     'comunicacion',
-    'gestion_expensas',
     'unidad_pertenencia',
     'tareas',
 ]
