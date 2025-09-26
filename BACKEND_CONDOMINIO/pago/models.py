@@ -12,6 +12,7 @@ class PagoModel(models.Model):
         ('pagado', 'Pagado'),
         ('no pagado', 'No pagado'),
         ('pendiente', 'Pendiente'),
+        ('rechazado', 'Rechazado'),
     )
     TIPO_CHOICES = (
         ('reserva', 'Reserva'),
