@@ -18,7 +18,7 @@ urlpatterns = [
     path('mostrarVisitas', views.mostrarVisitas, name='mostrarVisitas'),
     path('mostrarReservasCopropietario', views.mostrarReservasCopropietario, name = 'mostrarReservasCopropietario'),
     path('cancelarReserva/<int:id_reserva>', views.cancelarReserva, name='cancelarReserva'),
-    # path('adjuntarComprobante/<int:id_reserva>/', views.adjuntarComprobante, name = 'adjuntarComprobante')
+    path('registrarVisita/<int:id_persona>', views.registrarVisita, name = 'registrarVisita'),
 ]
 
 # 3. Agregar las del router a urlpatterns

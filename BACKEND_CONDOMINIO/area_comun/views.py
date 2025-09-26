@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from datetime import datetime, timedelta
 from users.models import CopropietarioModel
 from .models import AreaComun, Reserva, AutorizacionVisita
+from users.models import PersonaModel
 from pago.models import PagoModel
 from .serializers import MarcarEntradaSerializer, MarcarSalidaSerializer,AreaComunSerializer, ReservaSerializer, ListaVisitantesSerializer, RegistroVisita, ListaReservasSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -405,40 +406,40 @@ def cancelarReserva(request, id_reserva):
         })
 
 
+@api_view(['POST'])
+def registrarVisita(request, id_persona):
+    try:
+        persona = PersonaModel.objects.get(id = id_persona)
+    except PersonaModel.DoesNotExist:
+        return Response ({
+            "status": 2,
+            "error": 1,
+            "message": "no existe ninguna persona con ese id"
+        })
+# REGISTRAR LA VISITA
+    user = request.user
+    try:
+        copropietario = CopropietarioModel.objects.get(idUsuario=user.id)
+    except CopropietarioModel.DoesNotExist:
+        return Response({
+            "status": 0,
+            "error": 1,
+            "message": "No se encontró el copropietario asociado al usuario"
+        }, status=400)
 
-# @api_view(['PATCH'])
-# @permission_classes([IsAuthenticated])
-# def adjuntarComprobante(request, id_reserva):
-#     try:
-#         reserva = Reserva.objects.get(id_reserva=id_reserva)
-
-#         if 'imagen' not in request.FILES:
-#             return Response({"status": 0, "message": "No se envió la imagen"})
-
-#         imagen = request.FILES['imagen']  # 👈 nombre que envía Flutter
-
-#         # Carpeta donde guardar los comprobantes
-#         carpeta = os.path.join(settings.MEDIA_ROOT, 'comprobantes')
-#         os.makedirs(carpeta, exist_ok=True)
-
-#         # Ruta completa para guardar el archivo
-#         ruta_guardado = os.path.join(carpeta, imagen.name)
-#         with open(ruta_guardado, 'wb+') as f:
-#             for chunk in imagen.chunks():
-#                 f.write(chunk)
-
-#         # Guardar la ruta relativa en la BD
-#         reserva.url_comprobante = f'comprobantes/{imagen.name}'
-#         reserva.save()
-
-#         return Response({
-#             "status": 1,
-#             "message": "Comprobante subido correctamente",
-#             "url_comprobante": reserva.url_comprobante
-#         })
-
-#     except Reserva.DoesNotExist:
-#         return Response({"status": 0, "message": "Reserva no encontrada"})
-#     except Exception as e:
-#         return Response({"status": 0, "message": str(e)})
-
+    # Tomar los atributos extra del request
+    hora_inicio = request.data.get('hora_inicio')
+    hora_fin = request.data.get('hora_fin')
+    motivo_visita = request.data.get('motivo_visita')
+    AutorizacionVisita.objects.create(
+        hora_inicio = hora_inicio,
+        hora_fin = hora_fin,
+        motivo_visita = motivo_visita,
+        visitante = persona,
+        copropietario = copropietario
+    )
+    return Response({
+            "status": 1,
+            "error": 0,
+            "message": f"Se registró una visita para : {persona.nombre} {persona.apellido}"
+        })
