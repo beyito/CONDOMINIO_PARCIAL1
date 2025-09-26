@@ -231,7 +231,7 @@ class _ReservasCopropietarioWidgetState
                 File file = File(pickedFile!.path);
 
                 if (reserva.id_reserva != null) {
-                  final result = await _service.adjuntarComprobante(
+                  final result = await _service.adjuntarComprobanteReserva(
                     reserva.id_reserva as int,
                     file,
                   );

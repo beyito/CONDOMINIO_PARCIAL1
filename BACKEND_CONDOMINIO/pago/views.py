@@ -37,6 +37,7 @@ def adjuntarComprobanteReserva(request, id_reserva):
         # Guardar la ruta relativa en la BD
         pago.url_comprobante = f'comprobantes/{imagen.name}'
         pago.estado = 'pendiente'
+        pago.tipo_pago = 'reserva'
         pago.save()
 
         return Response({

@@ -62,7 +62,7 @@ class ReservaCopropietarioService {
     }
   }
 
-  Future<Map<String, dynamic>> adjuntarComprobante(
+  Future<Map<String, dynamic>> adjuntarComprobanteReserva(
     int idReserva,
     File imagen,
   ) async {
