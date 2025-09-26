@@ -10,9 +10,10 @@ class PagoModel(models.Model):
     url_comprobante = models.URLField(null=True, blank=True)
     ESTADO_CHOICES = (
         ('pagado', 'Pagado'),
-        ('no pagado', 'No pagado'),
+        ('no pagado', 'No Pagado'),
         ('pendiente', 'Pendiente'),
         ('rechazado', 'Rechazado'),
+        ('en mora', 'En Mora')
     )
     TIPO_CHOICES = (
         ('reserva', 'Reserva'),
