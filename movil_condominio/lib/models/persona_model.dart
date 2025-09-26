@@ -1,33 +1,22 @@
-class PersonaModel {
-  final String? ci;
-  final int? idPersona;
-  final String? nombre;
-  final String? telefono;
-  final String? tipoPase;
+class Persona {
+  final int id;
+  final String nombre;
+  final String apellido;
+  final String documento;
 
-  PersonaModel({
-    this.ci,
-    this.idPersona,
-    this.nombre,
-    this.telefono,
-    this.tipoPase,
+  Persona({
+    required this.id,
+    required this.nombre,
+    required this.apellido,
+    required this.documento,
   });
 
-  factory PersonaModel.fromJson(Map<String, dynamic> json) {
-    return PersonaModel(
-      ci: json['ci'] ?? 0,
-      idPersona: json['idPersona'] ?? 0,
-      nombre: json['nombre'] ?? "",
-      telefono: json['telefono'] ?? "",
-      tipoPase: json['TIPO_PASE'] ?? "",
+  factory Persona.fromJson(Map<String, dynamic> json) {
+    return Persona(
+      id: json['id'],
+      nombre: json['nombre'],
+      apellido: json['apellido'],
+      documento: json['documento'],
     );
   }
-
-  Map<String, dynamic> toJson() => {
-        'ci': ci,
-        'idPersona': idPersona,
-        'nombre': nombre,
-        'telefono': telefono,
-        'TIPO_PASE': tipoPase,
-      };
 }

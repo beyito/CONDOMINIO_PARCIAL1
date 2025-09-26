@@ -38,8 +38,9 @@ class _CustomAppbarState extends State<CustomAppbar> {
                 icon: const Icon(Icons.person, size: 28),
                 onSelected: (value) async {
                   if (value == 'perfil') {
-                    context
-                        .go('/home/0/perfil'); // Podemos usar /home/1, /home/2
+                    context.go('/home/0/perfil');
+                  } else if (value == 'personas') {
+                    context.go('/home/0/personas'); // 👈 Aquí defines tu ruta
                   } else if (value == 'logout') {
                     await _logout(context);
                   }
@@ -50,6 +51,13 @@ class _CustomAppbarState extends State<CustomAppbar> {
                     child: ListTile(
                       leading: Icon(Icons.account_circle),
                       title: Text('Mi perfil'),
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'personas', // 👈 Nuevo item
+                    child: ListTile(
+                      leading: Icon(Icons.group),
+                      title: Text('Mis personas'),
                     ),
                   ),
                   const PopupMenuItem(

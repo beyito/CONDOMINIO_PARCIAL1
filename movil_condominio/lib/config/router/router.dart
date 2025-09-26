@@ -1,5 +1,6 @@
 import 'package:movil_condominio/pages/home_page.dart';
 import 'package:movil_condominio/views/login/login_page.dart';
+import 'package:movil_condominio/views/persona/persona_view.dart';
 import 'package:movil_condominio/views/usuario/perfil_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +24,10 @@ final appRouter = GoRouter(
         return HomePage(pageIndex: pageIndex);
       },
       routes: [
+        GoRoute(
+          path: 'personas',
+          builder: (context, state) => const ListaPersonasView(),
+        ),
         // Subruta dentro de Home
         GoRoute(
           path: 'perfil',
