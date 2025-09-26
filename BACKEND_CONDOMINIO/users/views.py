@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 from rest_framework.exceptions import AuthenticationFailed
-from .models import PersonalModel, Residente, Bitacora, CopropietarioModel
+from .models import PersonalModel, Residente, Bitacora, CopropietarioModel, PersonaModel
 from unidad_pertenencia.models import Unidad
 from rest_framework.decorators import api_view
 from .bitacora import registrar_bitacora
@@ -294,7 +294,7 @@ class BitacoraListView(generics.ListAPIView):
 class PersonaView(generics.CreateAPIView):
     serializer_class = PersonaSerializer
     permission_classes = [IsAuthenticated]
-
+    
     def create(self, request, *args, **kwargs):
         # Extraer id_copropietario del token
         user = request.user
@@ -322,5 +322,22 @@ class PersonaView(generics.CreateAPIView):
             "status": 1,
             "error": 0,
             "message": f"Se Registró a la persona {serializer.instance.nombre} {serializer.instance.apellido}",
+        })
+    
+class ListaPersonaView(generics.ListAPIView):
+    # queryset = PersonaModel.objects.all()
+    serializer_class = PersonaSerializer
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request, *args, **kwargs):
+        copropietario = CopropietarioModel.objects.get(idUsuario = request.user.id)
+        queryset = PersonaModel.objects.filter(copropietario = copropietario)
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response({
+            "status": 1,
+            "error": 0,
+            "message": "se listó las personas correctamente",
+            "values": serializer.data
         })
     
