@@ -38,6 +38,7 @@ def adjuntarComprobanteReserva(request, id_reserva):
         pago.url_comprobante = f'comprobantes/{imagen.name}'
         pago.estado = 'pendiente'
         pago.tipo_pago = 'reserva'
+        pago.copropietario = reserva.usuario
         pago.save()
 
         return Response({
