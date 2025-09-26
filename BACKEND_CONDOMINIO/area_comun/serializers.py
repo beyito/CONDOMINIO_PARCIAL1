@@ -89,7 +89,7 @@ class ListaReservasSerializer(serializers.ModelSerializer):
     motivo_cancelacion = "motivo_cancelacion"
     class Meta:
         model = Reserva
-        fields = ['id_reserva','usuario','id_areacomun', 'nombre_area',  'fecha','hora_inicio','hora_fin','estado' ,'nota', 'cancelada_en', 'motivo_cancelacion', 'url_comprobante' ]
+        fields = ['id_reserva','usuario','id_areacomun', 'nombre_area',  'fecha','hora_inicio','hora_fin','estado' ,'nota', 'cancelada_en', 'motivo_cancelacion','pago_id', 'url_comprobante' ]
 
 class MarcarEntradaSerializer(serializers.Serializer):
     personal_id = serializers.IntegerField()
