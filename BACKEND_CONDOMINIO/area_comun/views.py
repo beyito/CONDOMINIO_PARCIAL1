@@ -303,7 +303,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
         else:
             tiempo_reserva = fin_datetime - inicio_datetime
             pago = PagoModel.objects.create(
-            monto=area.precio_por_bloque * tiempo_reserva.total_seconds() / 3600,
+            # monto=area.precio_por_bloque * tiempo_reserva.total_seconds() / 3600,
             descripcion = f"Se quiere reservar: {area.nombre_area} por {tiempo_reserva} horas",
             fecha_emision=timezone.now().date()  # opcional si no usas auto_now_add
             )
