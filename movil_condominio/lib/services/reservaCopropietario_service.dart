@@ -9,6 +9,7 @@ import 'package:http_parser/http_parser.dart'; // para MediaType
 
 class ReservaCopropietarioService {
   final String baseUrl = '${Config.baseUrl}/areacomun';
+  final String baseUrlPago = '${Config.baseUrl}/pago';
   final AuthService authService = AuthService();
 
   Future<List<ReservaModel>> mostrarReservasCopropietario() async {
@@ -71,7 +72,7 @@ class ReservaCopropietarioService {
 
     var request = http.MultipartRequest(
       'PATCH',
-      Uri.parse('$baseUrl/adjuntarComprobante/$idReserva/'),
+      Uri.parse('$baseUrlPago/adjuntarComprobanteReserva/$idReserva/'),
     );
 
     request.headers['Authorization'] = 'Bearer $token';
