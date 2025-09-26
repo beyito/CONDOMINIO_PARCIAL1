@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     path('adjuntarComprobanteReserva/<int:id_reserva>/', views.adjuntarComprobanteReserva, name = 'adjuntarComprobanteReserva'),
-    path('adjuntarComprobanteExpensa/<int:id_expensa>/',views.adjuntarComprobanteExpensa, name = 'adjuntarComprobanteExpensa'),
+    path('adjuntarComprobante/<int:id_pago>/',views.adjuntarComprobante, name = 'adjuntarComprobante'),
     path('mostrarPagosCopropietario', views.mostrarPagosCopropietario, name = 'mostrarPagosCopropietario'),
     path('generarExpensas', views.generarExpensas, name = 'generarExpensas'),
     # path('mostrarTodasTareas', views.mostrarTodasTareas, name='mostrarTodasTareas'),

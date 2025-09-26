@@ -118,7 +118,10 @@ class _ReservasCopropietarioWidgetState
                           // Mostrar el texto del comprobante y botón Adjuntar Comprobante
                           if (reserva.estado?.toLowerCase() == "pendiente")
                             ElevatedButton(
-                              onPressed: () => _showAdjuntarDialog(reserva),
+                              onPressed: reserva.id_reserva != null
+                                  ? () =>
+                                        _showAdjuntarDialog(reserva.id_reserva!)
+                                  : null,
                               child: Text(
                                 reserva.url_comprobante == null
                                     ? "Adjuntar Comprobante"
@@ -194,7 +197,7 @@ class _ReservasCopropietarioWidgetState
   }
 
   // ----------------- DIALOGO ADJUNTAR -----------------
-  void _showAdjuntarDialog(ReservaModel reserva) async {
+  void _showAdjuntarDialog(int id_reserva) async {
     XFile? pickedFile;
     final ImagePicker picker = ImagePicker();
 
@@ -230,9 +233,9 @@ class _ReservasCopropietarioWidgetState
 
                 File file = File(pickedFile!.path);
 
-                if (reserva.id_reserva != null) {
+                if (id_reserva != null) {
                   final result = await _service.adjuntarComprobanteReserva(
-                    reserva.id_reserva as int,
+                    id_reserva,
                     file,
                   );
 

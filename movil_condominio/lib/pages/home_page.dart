@@ -5,6 +5,7 @@ import 'package:movil_condominio/shared/custom_bottom_navigation.dart';
 import 'package:movil_condominio/views/usuario/noticias_view.dart';
 import 'package:movil_condominio/views/area_comun/areacomun_view.dart';
 import '../views/control_ingreso/control_ingreso_view.dart';
+import '../views/pago/pago_view.dart';
 import '../views/reserva/reservasCopropietario_view.dart';
 import '../views/tarea/tarea_views.dart';
 //import '../views/areas_comunes/areas_comunes_view.dart';
@@ -42,6 +43,7 @@ class _HomePageState extends State<HomePage> {
           NoticiasView(),
           ReservaCopropietarioView(),
           AreasComunesView(),
+          PagoView(),
         ];
       } else if (_rol == 'Limpieza') {
         _viewRoutes = [NoticiasView(), TareaView()];
@@ -49,6 +51,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  //nada
   @override
   Widget build(BuildContext context) {
     return Scaffold(

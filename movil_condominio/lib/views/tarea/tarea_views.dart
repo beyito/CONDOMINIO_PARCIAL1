@@ -41,7 +41,7 @@ class _TareaViewState extends State<TareaView> {
           }
           final tareas = snapshot.data ?? [];
           if (tareas.isEmpty) {
-            return const Center(child: Text("No hay visitas registradas."));
+            return const Center(child: Text("No hay tareas por hacer."));
           }
           return RefreshIndicator(
             onRefresh: () async {

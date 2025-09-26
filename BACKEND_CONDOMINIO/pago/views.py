@@ -59,10 +59,9 @@ def adjuntarComprobanteReserva(request, id_reserva):
 
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated, IsCopropietario])
-def adjuntarComprobanteExpensa(request, id_expensa):
+def adjuntarComprobante(request, id_pago):
     try:
-        expensa = ExpensaModel.objects.get(id_expensa=id_expensa)
-        pago = PagoModel.objects.get(id = expensa.pago.id)
+        pago = PagoModel.objects.get(id = id_pago)
         if 'imagen' not in request.FILES:
             return Response({"status": 0, "message": "No se envió la imagen"})
 
@@ -77,13 +76,21 @@ def adjuntarComprobanteExpensa(request, id_expensa):
         with open(ruta_guardado, 'wb+') as f:
             for chunk in imagen.chunks():
                 f.write(chunk)
+        if (pago.tipo_pago == "expensa"):
 
-        # Guardar la ruta relativa en la BD
+            expensa = ExpensaModel.objects.get(pago = pago)                  
+            pago.tipo_pago = 'expensa'
+            pago.copropietario = expensa.unidad.id_copropietario
+            pago.monto = expensa.monto
+        elif ( pago.tipo_pago == "reserva"):  
+
+            reserva = Reserva.objects.get(pago = pago)       
+            pago.tipo_pago = 'reserva'
+            # pago.monto = reserva.area_comun.precio_por_bloque
+            pago.copropietario = reserva.usuario
+            
         pago.url_comprobante = f'comprobantes/{imagen.name}'
         pago.estado = 'pendiente'
-        pago.tipo_pago = 'expensa'
-        pago.copropietario = expensa.unidad.id_copropietario
-        pago.monto = expensa.monto
         pago.save()
 
         return Response({
@@ -92,8 +99,8 @@ def adjuntarComprobanteExpensa(request, id_expensa):
             "url_comprobante": pago.url_comprobante
         })
 
-    except Reserva.DoesNotExist:
-        return Response({"status": 0, "message": "Expensa no encontrada"})
+    except PagoModel.DoesNotExist:
+        return Response({"status": 0, "message": "Pago no encontrada"})
     except Exception as e:
         return Response({"status": 0, "message": str(e)})
 
@@ -143,7 +150,8 @@ def generarExpensas(request):
             # monto=area.precio_por_bloque * tiempo_reserva.total_seconds() / 3600,
             descripcion = f"Se generó el pago de expensa de la unidad con codigo: {unidad.codigo}",
             fecha_emision=timezone.now().date(),
-            copropietario = unidad.id_copropietario
+            copropietario = unidad.id_copropietario,
+            tipo_pago = "expensa",
             )
         expensa = ExpensaModel.objects.create(
             unidad=unidad,   # relacionar con el copropietario
