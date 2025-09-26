@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import PersonalModel,Usuario,CopropietarioModel,Rol, Residente
+from .models import PersonalModel,Usuario,CopropietarioModel,Rol, Residente, Bitacora
 from unidad_pertenencia.models import Unidad
 
 User = get_user_model()
@@ -223,3 +223,18 @@ class ResidenteSerializer(serializers.ModelSerializer):
             return usuario.idRol.name if usuario.idRol else None
         except Usuario.DoesNotExist:
             return None
+        
+class BitacoraSerializer(serializers.ModelSerializer):
+    # Campos separados de fecha y hora
+    fecha = serializers.SerializerMethodField()
+    hora = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Bitacora
+        fields = ['id', 'accion', 'ip', 'fecha_hora', 'fecha', 'hora']
+
+    def get_fecha(self, obj):
+        return obj.fecha_hora.date()
+
+    def get_hora(self, obj):
+        return obj.fecha_hora.time().strftime('%H:%M:%S')

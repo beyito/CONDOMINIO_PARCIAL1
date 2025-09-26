@@ -10,6 +10,7 @@ import Unidades from '../pages/Unidades/Unidades'
 import PersonalDashboard from '../pages/Usuarios/Personal'
 import Tareas from '../pages/Tareas/Tareas'
 import ComunicadosPage from '../pages/Comunicados/ComunicadosPage'
+import BitacoraDashboard from '../pages/Bitacora/Bitacora'
 
 function AppRoutes() {
   const { isAuthenticated, loading } = useAuth()
@@ -46,6 +47,7 @@ function AppRoutes() {
         <Route path='unidades' element={<Unidades />} />
         <Route path='tareas' element={<Tareas />} />
         <Route path='comunicados' element={<ComunicadosPage />} />
+        <Route path='bitacora' element={<BitacoraDashboard />} />
       </Route>
 
       <Route
