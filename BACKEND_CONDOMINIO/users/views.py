@@ -1,7 +1,7 @@
 
 from rest_framework import generics, viewsets, status
 from django.contrib.auth import get_user_model, authenticate
-from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer, PersonalSerializer, ResidenteSerializer, PersonalListSerializer, UserUpdateSerializer, BitacoraSerializer
+from .serializers import UserSerializer, MyTokenObtainPairSerializer, CopropietarioSerializer, PersonalSerializer, ResidenteSerializer, PersonaSerializer, PersonalListSerializer, UserUpdateSerializer, BitacoraSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.views import APIView
@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 from rest_framework.exceptions import AuthenticationFailed
-from .models import PersonalModel, Residente, Bitacora
+from .models import PersonalModel, Residente, Bitacora, CopropietarioModel
 from unidad_pertenencia.models import Unidad
 from rest_framework.decorators import api_view
 from .bitacora import registrar_bitacora
@@ -289,5 +289,38 @@ class BitacoraListView(generics.ListAPIView):
             "error": 0,
             "message": "Bitácora obtenida correctamente",
             "values": serializer.data
+        })
+    
+class PersonaView(generics.CreateAPIView):
+    serializer_class = PersonaSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        # Extraer id_copropietario del token
+        user = request.user
+        copropietario = CopropietarioModel.objects.get(idUsuario = user.id)
+        id_copropietario = copropietario.idUsuario
+        print(id_copropietario)
+        if not id_copropietario:
+            return Response({
+                "status": 0,
+                "error": 1,
+                "message": "No se encontró el copropietario"
+            }, status=400)
+
+        # Agregar id_copropietario a los datos que se van a serializar
+        data = request.data.copy()
+        data['copropietario'] = id_copropietario 
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        registrar_bitacora(request, f"Registró a la persona {serializer.instance.nombre} {serializer.instance.apellido}")
+
+        return Response({
+            "status": 1,
+            "error": 0,
+            "message": f"Se Registró a la persona {serializer.instance.nombre} {serializer.instance.apellido}",
         })
     

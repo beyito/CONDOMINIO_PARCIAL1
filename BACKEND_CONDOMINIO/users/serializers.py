@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import PersonalModel,Usuario,CopropietarioModel,Rol, Residente, Bitacora
+from .models import PersonalModel,Usuario,CopropietarioModel,Rol, Residente, Bitacora, PersonaModel
 from unidad_pertenencia.models import Unidad
 
 User = get_user_model()
@@ -238,3 +238,9 @@ class BitacoraSerializer(serializers.ModelSerializer):
 
     def get_hora(self, obj):
         return obj.fecha_hora.time().strftime('%H:%M:%S')
+    
+class PersonaSerializer(serializers.ModelSerializer):
+    # rol = serializers.SerializerMethodField()
+    class Meta:
+        model = PersonaModel
+        fields = "__all__"

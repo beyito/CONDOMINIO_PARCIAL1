@@ -116,10 +116,17 @@ class CopropietarioModel(models.Model):
 class PersonaModel(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    documento = models.CharField(max_length=50, unique=True)  # CI
+    documento = models.CharField(max_length=50, unique=False)  # CI
     
     # Relación muchos a muchos: visitante puede visitar a varios copropietarios
-    copropietarios = models.ManyToManyField(CopropietarioModel, through="area_comun.AutorizacionVisita")
+    copropietario = models.ForeignKey(
+        'CopropietarioModel',  # o 'app_name.CopropietarioModel' si está en otra app
+        on_delete=models.CASCADE,  # Si se borra el copropietario, se borran sus personas
+        related_name='personas' ,
+        null = True,
+        blank=True
+          # nombre para acceder a las personas desde el copropietario
+    )
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"

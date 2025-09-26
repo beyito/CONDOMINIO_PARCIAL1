@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.utils import timezone
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view,action
@@ -302,8 +303,9 @@ class ReservaViewSet(viewsets.ModelViewSet):
             data['estado'] = "confirmada"
         else:
             tiempo_reserva = fin_datetime - inicio_datetime
+            horas = Decimal(tiempo_reserva.total_seconds()) / Decimal(3600)
             pago = PagoModel.objects.create(
-            # monto=area.precio_por_bloque * tiempo_reserva.total_seconds() / 3600,
+            monto=area.precio_por_bloque * horas,
             descripcion = f"Se quiere reservar: {area.nombre_area} por {tiempo_reserva} horas",
             fecha_emision=timezone.now().date(),  # opcional si no usas auto_now_add
             copropietario = copropietario,

@@ -83,7 +83,7 @@ class AutorizacionVisita(models.Model):
 
 
 
-# LO QUE TENIA EN GUARDIA
+
 
 class RegistroVisitaModel(models.Model):
     autorizacion = models.ForeignKey(AutorizacionVisita, on_delete=models.CASCADE)
