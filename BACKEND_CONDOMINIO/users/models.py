@@ -138,7 +138,7 @@ class Residente(models.Model):
     ci = models.CharField(max_length=20, unique=True, verbose_name="Carnet de Identidad")
     telefono = models.CharField(max_length=20, blank=True, null=True)
     correo = models.EmailField(unique=True)
-    # foto = models.ImageField(upload_to="residentes/fotos/", blank=True, null=True)
+    foto = models.ImageField(upload_to="residentes/fotos/", blank=True, null=True)
     estado = models.CharField(max_length=10, choices=ESTADOS, default="activo")
 
     # Relación con Unidad

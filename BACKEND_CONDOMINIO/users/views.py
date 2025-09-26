@@ -13,6 +13,7 @@ from .models import PersonalModel, Residente, Bitacora
 from unidad_pertenencia.models import Unidad
 from rest_framework.decorators import api_view
 from .bitacora import registrar_bitacora
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 User = get_user_model()
 
@@ -272,6 +273,7 @@ class PerfilUsuarioView(APIView):
 class ResidenteViewSet(viewsets.ModelViewSet):
     queryset = Residente.objects.all().order_by("-created_at")
     serializer_class = ResidenteSerializer
+    parser_classes = (MultiPartParser, FormParser,JSONParser)
 
 class BitacoraListView(generics.ListAPIView):
     queryset = Bitacora.objects.all()
@@ -288,3 +290,4 @@ class BitacoraListView(generics.ListAPIView):
             "message": "Bitácora obtenida correctamente",
             "values": serializer.data
         })
+    

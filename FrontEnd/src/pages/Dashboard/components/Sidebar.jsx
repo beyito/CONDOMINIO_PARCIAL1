@@ -26,7 +26,8 @@ const menuItems = [
     label: 'Usuarios',
     subItems: [
       { id: 'copropietarios', label: 'Usuarios', path: '/dashboard/usuarios' },
-      { id: 'personal', label: 'Personal', path: '/dashboard/personal' }
+      { id: 'personal', label: 'Personal', path: '/dashboard/personal' },
+      { id: 'residentes', label: 'Residentes', path: '/dashboard/residentes' }
     ]
   },
   {
