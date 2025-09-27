@@ -59,11 +59,10 @@ export default function FaceRecognition() {
       const labeledDescriptors = await Promise.all(
         residentesConFoto.map(async (res) => {
           try {
-            console.log('Procesando foto de', res.nombre)
-            const BACKEND_URL = import.meta.env.VITE_API_URL
-            const url = res.foto.startsWith('http')
+            console.log('Procesando foto de', res.foto)
+            const url = res.foto.startsWith('https')
               ? res.foto
-              : `${BACKEND_URL}${res.foto}${res.foto}`
+              : res.foto// : 'https://condominio-parcial1.onrender.com/media/residentes/fotos/fotoPerfil.jpeg'
             const img = await faceapi.fetchImage(url)
             const detections = await faceapi
               .detectSingleFace(
