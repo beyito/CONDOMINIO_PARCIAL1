@@ -38,7 +38,7 @@ const Unidades = () => {
   const unidades = data?.data?.values || []
   console.log(unidades)
 
-  const estadosUnidad = ['activa', 'inactiva', 'mantenimiento']
+  const estadosUnidad = ['ocupada', 'inactiva', 'activa']
 
   const filteredUnidades = unidades.filter((unidad) => {
     const matchesSearch =
@@ -52,11 +52,11 @@ const Unidades = () => {
 
   const getEstadoColor = (estado) => {
     switch (estado) {
-      case 'activa':
+      case 'ocupada':
         return 'bg-green-100 text-green-800'
-      case 'inactiva':
+      case 'activa':
         return 'bg-red-100 text-red-800'
-      case 'mantenimiento':
+      case 'inactiva':
         return 'bg-yellow-100 text-yellow-800'
       default:
         return 'bg-gray-100 text-gray-800'
