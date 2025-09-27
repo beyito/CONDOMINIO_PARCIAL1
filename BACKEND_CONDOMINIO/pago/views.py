@@ -145,7 +145,7 @@ def generarExpensas(request):
     expensas_creadas = []
     for unidad in unidades:
         pago = PagoModel.objects.create(
-            # monto=area.precio_por_bloque * tiempo_reserva.total_seconds() / 3600,
+            monto=unidad.precio,
             descripcion = f"Se generó el pago de expensa de la unidad con codigo: {unidad.codigo}",
             fecha_emision=timezone.now().date(),
             copropietario = unidad.id_copropietario,
