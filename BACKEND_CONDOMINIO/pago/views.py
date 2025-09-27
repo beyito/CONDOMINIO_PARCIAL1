@@ -164,3 +164,66 @@ def generarExpensas(request):
             "error": 0,
             "message": f"El admin con id: {pago.copropietario.idUsuario} generó las expensas para la fecha {timezone.now().date()}."
         })
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def listarPagosAdmin(request):
+    pagos = PagoModel.objects.all().order_by('-fecha_emision')
+    serializer = ListaPagosSerializer(pagos, many=True)
+    return Response({
+        "status": 1,
+        "error": 0,
+        "message": "Pagos obtenidos correctamente",
+        "values": serializer.data
+    })
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def actualizarEstadoPago(request, id_pago):
+    try:
+        pago = PagoModel.objects.get(id=id_pago)
+        nuevo_estado = request.data.get("estado")
+
+        if nuevo_estado not in ["pagado", "rechazado", "pendiente", "en mora"]:
+            return Response({"status": 0, "message": "Estado no válido"})
+
+        pago.estado = nuevo_estado
+        if nuevo_estado == "pagado":
+            pago.fecha_pago = timezone.now().date()
+        pago.save()
+
+        registrar_bitacora(request, f"El admin cambió el estado del pago {pago.id} a {nuevo_estado}")
+        return Response({
+            "status": 1,
+            "message": f"Estado del pago {pago.id} actualizado a {nuevo_estado}"
+        })
+
+    except PagoModel.DoesNotExist:
+        return Response({"status": 0, "message": "Pago no encontrado"})
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def marcarPagosEnMora(request):
+    hoy = timezone.now().date()
+    pagos = PagoModel.objects.filter(
+        estado="no pagado",
+        fecha_emision__lt=hoy
+    )
+    count = pagos.update(estado="en mora")
+    registrar_bitacora(request, f"El admin marcó {count} pagos en mora")
+    return Response({
+        "status": 1,
+        "message": f"Se actualizaron {count} pagos a estado 'en mora'"
+    })
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def detallePagoAdmin(request, id_pago):
+    try:
+        pago = PagoModel.objects.get(id=id_pago)
+        serializer = ListaPagosSerializer(pago)
+        return Response({
+            "status": 1,
+            "values": serializer.data
+        })
+    except PagoModel.DoesNotExist:
+        return Response({"status": 0, "message": "Pago no encontrado"})

@@ -12,6 +12,7 @@ import Tareas from '../pages/Tareas/Tareas'
 import ComunicadosPage from '../pages/Comunicados/ComunicadosPage'
 import BitacoraDashboard from '../pages/Bitacora/Bitacora'
 import ResidentesDashboard from '../pages/Usuarios/Residentes'
+import PagoDashboard from '../pages/Pagos/Pagosdashboard'
 
 function AppRoutes() {
   const { isAuthenticated, loading } = useAuth()
@@ -50,6 +51,7 @@ function AppRoutes() {
         <Route path='comunicados' element={<ComunicadosPage />} />
         <Route path='bitacora' element={<BitacoraDashboard />} />
         <Route path='residentes' element={<ResidentesDashboard />} />
+        <Route path='finanzas' element={<PagoDashboard />} />
       </Route>
 
       <Route

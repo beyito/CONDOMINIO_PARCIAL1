@@ -219,6 +219,10 @@ const Unidades = () => {
                       <span className='font-medium'>Tipo:</span>{' '}
                       {unidad.tipo_unidad}
                     </p>
+                    <p className='text-sm text-green-500'>
+                      <span className='font-medium'>Precio:</span>{' '}
+                      {unidad.precio} Bs
+                    </p>
                   </div>
 
                   {/* Stats */}
