@@ -60,9 +60,10 @@ export default function FaceRecognition() {
         residentesConFoto.map(async (res) => {
           try {
             console.log('Procesando foto de', res.nombre)
+            const BACKEND_URL = import.meta.env.VITE_API_URL
             const url = res.foto.startsWith('http')
               ? res.foto
-              : `http://localhost:8000${res.foto}`
+              : `${BACKEND_URL}${res.foto}${res.foto}`
             const img = await faceapi.fetchImage(url)
             const detections = await faceapi
               .detectSingleFace(
