@@ -117,7 +117,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",    # movil
     "https://staging.d31m3gtx8emy11.amplifyapp.com",# tu frontend Vite
     "https://condominio-parcial1.onrender.com",
-    "condominio-parcial-1.vercel.app",
+    "https://condominio-parcial-1.vercel.app",
 ]
 # Permitir cookies / credenciales
 CORS_ALLOW_CREDENTIALS = True
