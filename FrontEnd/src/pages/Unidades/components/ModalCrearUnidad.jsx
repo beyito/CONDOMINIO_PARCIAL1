@@ -28,6 +28,7 @@ export const ModalCrearUnidad = ({ setShowModal, onSuccess, unidad }) => {
       piso: 0,
       numero: '',
       area_m2: '',
+      precio: 0,
       estado: 'activa',
       tipo_unidad: 'apartamento'
     }
@@ -51,6 +52,7 @@ export const ModalCrearUnidad = ({ setShowModal, onSuccess, unidad }) => {
       setShowErrorModal(true)
     }
   }
+
   return (
     <>
       <div className='fixed inset-0 bg-black/20 flex items-center justify-center p-4 z-50'>
@@ -67,100 +69,149 @@ export const ModalCrearUnidad = ({ setShowModal, onSuccess, unidad }) => {
             </button>
           </div>
           <form className='space-y-4' onSubmit={handleSubmit}>
-            <input
-              type='text'
-              placeholder='Código'
-              value={formData.codigo || ''}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  codigo: e.target.value.toUpperCase()
-                })
-              }
-              className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-              required
-            />
-            <input
-              type='text'
-              placeholder='Bloque'
-              value={formData.bloque || ''}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  bloque: e.target.value.toUpperCase()
-                })
-              }
-              className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-              required
-            />
-            <input
-              type='number'
-              placeholder='Piso'
-              value={formData.piso || ''}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  piso: parseInt(e.target.value) || 0
-                })
-              }
-              className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-              min='0'
-              required
-            />
-            <input
-              type='text'
-              placeholder='Número'
-              value={formData.numero || ''}
-              onChange={(e) =>
-                setFormData({ ...formData, numero: e.target.value })
-              }
-              className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-              required
-            />
-            <input
-              type='number'
-              step='0.01'
-              placeholder='Área m²'
-              value={formData.area_m2 || ''}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  area_m2: parseFloat(e.target.value) || 0
-                })
-              }
-              className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-              min='0.01'
-              required
-            />
-            <select
-              value={formData.estado || 'activa'}
-              onChange={(e) =>
-                setFormData({ ...formData, estado: e.target.value })
-              }
-              className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-            >
-              {estadosUnidad.map((estado) => (
-                <option key={estado} value={estado}>
-                  {estado}
-                </option>
-              ))}
-            </select>
-            <select
-              value={formData.tipo_unidad || 'apartamento'}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  tipo_unidad: e.target.value
-                })
-              }
-              className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-            >
-              {tiposUnidad.map((tipo) => (
-                <option key={tipo} value={tipo}>
-                  {tipo}
-                </option>
-              ))}
-            </select>
+            <div>
+              <label className='block text-sm font-medium text-gray-700'>
+                Código
+              </label>
+              <input
+                type='text'
+                value={formData.codigo || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    codigo: e.target.value.toUpperCase()
+                  })
+                }
+                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+                required
+              />
+            </div>
+            <div>
+              <label className='block text-sm font-medium text-gray-700'>
+                Bloque
+              </label>
+              <input
+                type='text'
+                value={formData.bloque || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    bloque: e.target.value.toUpperCase()
+                  })
+                }
+                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+                required
+              />
+            </div>
+            <div>
+              <label className='block text-sm font-medium text-gray-700'>
+                Piso
+              </label>
+              <input
+                type='number'
+                value={formData.piso || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    piso: parseInt(e.target.value) || 0
+                  })
+                }
+                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+                min='0'
+                required
+              />
+            </div>
+            <div>
+              <label className='block text-sm font-medium text-gray-700'>
+                Número
+              </label>
+              <input
+                type='text'
+                value={formData.numero || ''}
+                onChange={(e) =>
+                  setFormData({ ...formData, numero: e.target.value })
+                }
+                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+                required
+              />
+            </div>
+            <div>
+              <label className='block text-sm font-medium text-gray-700'>
+                Área m²
+              </label>
+              <input
+                type='number'
+                step='0.01'
+                value={formData.area_m2 || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    area_m2: parseFloat(e.target.value) || 0
+                  })
+                }
+                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+                min='0.01'
+                required
+              />
+            </div>
+            <div>
+              <label className='block text-sm font-medium text-gray-700'>
+                Precio
+              </label>
+              <input
+                type='number'
+                step='0.01'
+                value={formData.precio || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    precio: e.target.value // lo dejas como string
+                  })
+                }
+                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+                min='0.01'
+                required
+              />
+            </div>
+            <div>
+              <label className='block text-sm font-medium text-gray-700'>
+                Estado
+              </label>
+              <select
+                value={formData.estado || 'activa'}
+                onChange={(e) =>
+                  setFormData({ ...formData, estado: e.target.value })
+                }
+                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+              >
+                {estadosUnidad.map((estado) => (
+                  <option key={estado} value={estado}>
+                    {estado}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className='block text-sm font-medium text-gray-700'>
+                Tipo de unidad
+              </label>
+              <select
+                value={formData.tipo_unidad || 'apartamento'}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    tipo_unidad: e.target.value
+                  })
+                }
+                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+              >
+                {tiposUnidad.map((tipo) => (
+                  <option key={tipo} value={tipo}>
+                    {tipo}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className='flex justify-end space-x-3 pt-4'>
               <button
                 type='button'
