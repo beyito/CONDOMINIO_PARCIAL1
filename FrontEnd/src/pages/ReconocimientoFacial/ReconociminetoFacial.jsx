@@ -3,6 +3,23 @@ import * as faceapi from 'face-api.js'
 import { getResidentes } from '../../api/usuarios/usuarios'
 import { useApi } from '../../hooks/useApi'
 
+import Tesseract from 'tesseract.js';
+
+async function detectarPlaca(frameCanvas) {
+  // frameCanvas es un <canvas> con la imagen del video
+  const { data } = await Tesseract.recognize(frameCanvas, 'eng', {
+    logger: (m) => console.log(m)
+  });
+  // Filtramos texto con formato de placa (ejemplo: letras + números)
+    const placas = data.text
+    .split('\n')
+    .map((t) => t.replace(/\s|-/g, '')) // quitamos espacios y guiones
+    .filter((t) => /^[A-Z]{3}[0-9]{3}$/.test(t)); // formato boliviano típico ABC123
+
+  return placas; // array de placas válidas
+}
+
+
 export default function FaceRecognition() {
   const videoRef = useRef()
   const canvasRef = useRef()
@@ -106,70 +123,87 @@ export default function FaceRecognition() {
   }, [data])
 
   // -------------------- Detección --------------------
-  useEffect(() => {
-    if (!videoRef.current || !faceMatcher) return
-    const canvas = canvasRef.current
-    const displaySize = {
-      width: videoRef.current.videoWidth || 400,
-      height: videoRef.current.videoHeight || 300
-    }
-    canvas.width = displaySize.width
-    canvas.height = displaySize.height
-    faceapi.matchDimensions(canvas, displaySize)
+useEffect(() => {
+  if (!videoRef.current || !faceMatcher) return
+  const canvas = canvasRef.current
+  const displaySize = {
+    width: videoRef.current.videoWidth || 400,
+    height: videoRef.current.videoHeight || 300
+  }
+  canvas.width = displaySize.width
+  canvas.height = displaySize.height
+  faceapi.matchDimensions(canvas, displaySize)
 
-    console.log('Iniciando detección...')
-    setMensaje('Escaneando...')
+  console.log('Iniciando detección...')
+  setMensaje('Escaneando...')
 
-    const interval = setInterval(async () => {
-      if (!videoRef.current) return
-      try {
-        const detections = await faceapi
-          .detectAllFaces(
-            videoRef.current,
-            new faceapi.TinyFaceDetectorOptions({
-              inputSize: 224,
-              scoreThreshold: 0.4
-            })
-          )
-          .withFaceLandmarks()
-          .withFaceDescriptors()
+  const interval = setInterval(async () => {
+    if (!videoRef.current) return
+    try {
+      // --- Detección facial ---
+      const detections = await faceapi
+        .detectAllFaces(
+          videoRef.current,
+          new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.4 })
+        )
+        .withFaceLandmarks()
+        .withFaceDescriptors()
 
-        const ctx = canvas.getContext('2d')
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
+      const ctx = canvas.getContext('2d')
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-        if (detections.length > 0) {
-          const resizedDetections = faceapi.resizeResults(
-            detections,
-            displaySize
-          )
-          faceapi.draw.drawDetections(canvas, resizedDetections)
-          faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
-          console.log(
-            'Número de caras detectadas en la cámara:',
-            detections.length
-          )
+      if (detections.length > 0) {
+        const resizedDetections = faceapi.resizeResults(detections, displaySize)
+        faceapi.draw.drawDetections(canvas, resizedDetections)
+        faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
 
-          const match = detections.map((d) =>
-            faceMatcher.findBestMatch(d.descriptor)
-          )
-          const result = match[0]
-          console.log('Resultado coincidencia:', result.label)
-          if (result.label !== 'unknown') {
-            setAcceso(result.label)
-            setMensaje(`Acceso concedido: ${result.label}`)
-          } else {
-            setMensaje('Acceso denegado')
-          }
+        const match = detections.map((d) => faceMatcher.findBestMatch(d.descriptor))
+        const result = match[0]
+        if (result.label !== 'unknown') {
+          setAcceso(result.label)
+          setMensaje(`Acceso facial concedido: ${result.label}`)
         } else {
-          setMensaje('Escaneando...')
+          setMensaje('Acceso facial denegado')
         }
-      } catch (err) {
-        console.error('Error detectando caras:', err)
       }
-    }, 500)
+        
+       // -------------------- Detección de placas --------------------
+    const videoWidth = videoRef.current.videoWidth || 400;
+    const videoHeight = videoRef.current.videoHeight || 300;
+        
+    // Definimos manualmente una región aproximada de la placa
+    // Esto depende de dónde aparezca el vehículo en la cámara
+    const xPlaca = videoWidth / 4;       // ejemplo: inicio horizontal
+    const yPlaca = videoHeight / 2;      // ejemplo: inicio vertical
+    const anchoPlaca = videoWidth / 2;   // ancho aproximado
+    const altoPlaca = videoHeight / 6;   // alto aproximado
+        
+    const placasCanvas = document.createElement('canvas');
+    placasCanvas.width = anchoPlaca;
+    placasCanvas.height = altoPlaca;
+    const ctx_placa = placasCanvas.getContext('2d');
+    ctx_placa.filter = 'contrast(200%) grayscale(100%)';
+    ctx_placa.drawImage(
+      videoRef.current,
+      xPlaca, yPlaca, anchoPlaca, altoPlaca, // región de la placa
+      0, 0, anchoPlaca, altoPlaca
+    );
+    const placas = await detectarPlaca(placasCanvas);
+    
+    if (placas.length > 0) {
+      console.log('Placa(s) detectada(s):', placas);
+      setMensaje(`Placa detectada: ${placas[0]}`);
+    }
 
-    return () => clearInterval(interval)
-  }, [faceMatcher])
+
+    } catch (err) {
+      console.error('Error detectando caras o placas:', err)
+    }
+  }, 1500) // cada 1.5s
+
+  return () => clearInterval(interval)
+}, [faceMatcher])
+
 
   // -------------------- Render --------------------
   if (loading) return <p>Cargando residentes...</p>
