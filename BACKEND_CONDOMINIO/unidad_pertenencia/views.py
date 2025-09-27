@@ -262,7 +262,7 @@ def obtener_unidad(request, unidad_id):
 @permission_classes([])
 def listar_unidades_inactivas(request):
     try:
-        unidades = Unidad.objects.filter(estado='inactiva').order_by('bloque', 'piso', 'numero')
+        unidades = Unidad.objects.filter(estado='activa').order_by('bloque', 'piso', 'numero')
         serializer = UnidadSerializer(unidades, many=True)
         return Response({
             'status': 1,

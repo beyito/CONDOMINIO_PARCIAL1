@@ -144,7 +144,7 @@ class CopropietarioSerializer(serializers.ModelSerializer):
             try:
                 unidad = Unidad.objects.get(id=unidad_id)
                 unidad.id_copropietario = copropietario
-                unidad.estado = "activa"
+                unidad.estado = "ocupada"
                 unidad.save()
 
                 # Crear Residente ligado a esa unidad
