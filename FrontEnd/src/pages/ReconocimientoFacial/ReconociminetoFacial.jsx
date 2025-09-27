@@ -62,7 +62,7 @@ export default function FaceRecognition() {
             console.log('Procesando foto de', res.foto)
             const url = res.foto.startsWith('https')
               ? res.foto
-              : res.foto// : 'https://condominio-parcial1.onrender.com/media/residentes/fotos/fotoPerfil.jpeg'
+              : 'https://condominio-parcial1.onrender.com/media/residentes/fotos/fotoPerfil.jpeg'
             const img = await faceapi.fetchImage(url)
             const detections = await faceapi
               .detectSingleFace(
