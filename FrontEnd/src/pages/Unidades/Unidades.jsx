@@ -38,7 +38,7 @@ const Unidades = () => {
   const unidades = data?.data?.values || []
   console.log(unidades)
 
-  const estadosUnidad = ['activa', 'inactiva', 'mantenimiento']
+  const estadosUnidad = ['ocupada', 'inactiva', 'activa']
 
   const filteredUnidades = unidades.filter((unidad) => {
     const matchesSearch =
