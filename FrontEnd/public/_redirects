@@ -1,0 +1,5 @@
+# Regla más agresiva - desactivar trailing slash completamente
+/models/* /models/:splat 200
+
+# Para SPA
+/* /index.html 200
