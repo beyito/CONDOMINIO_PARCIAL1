@@ -1,0 +1,34 @@
+import firebase_admin
+from firebase_admin import credentials, messaging
+
+# Función que devuelve la clave JSON como diccionario
+def get_firebase_key():
+    return {
+        "type": "service_account",
+        "project_id": "si2condominio",
+        "private_key_id": "3c8dc00cc1dfefbb7199aa1a1211ac3e7f6788a6",
+        "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQCFxSZbyL3pagJB\n7ymHv8s0gOaR86IQHKeS+og1oLCwZN1uL/tTp2C3BibjgnIp65ZEn+xmzcYgq0JV\nxdqXLT6/fcucgND0+udfFXb3LvfnoPt8ayx7lFJ81bf5xtXaLTnB0mSdtYPvA2S0\nZFJAkmeE7+V6zOtmE0q7Ni5fMBBAOaDmVEp9HQNbYI+5wDZoM9VWeWgz5LY85YAK\neNxPjU7v7fWL+P1dQnXsUvISuvKhsvqRkEA9UoCbhpeGjHQDPzT2XcClsxNeB4ey\nvuSk1lTxN8MQreRSecgGSQT/MoS0M0nLlYB+9zecMufW0ZevdZBVbQhrdc2ARcAA\nDrtcrsmBAgMBAAECgf9D8gexxxzvWjEbXGcz1G9ak76Jk75VgLh9J1PYKW6VqiXu\nueBmdTXiwPUvyipCsK763GAvN4XTQinHd1+4OfsNONAbBjMcu/SZj0WF+A1jUZlr\ncOR/QK9FSSjRbfVhhGc506vXj0McPBUCq5I7yiFanJ9q6HsItfPXc4XKQ5d9hwv7\n8LWHCGNBSqOJcfTE5ArPZ5/xxhpgd2j7+r2PXLWw3Y358FrlBrvORpuCiSzUC9pN\nhaDYjau8eyc0EXTmJKIQpZ+DE2U6NbjMZ5zNa/gb2p7+jUijJm4Mudd7NEcwN+dV\nIgu/fRCSXZnPWGnIBVVrmxZdWzFFWY4oGjQdmmECgYEAumj8AVE6//y9V2fEZ8NP\nd0cKfNyOYqqeUUvOrwE+DzAgujCgsue96S2054POrFoGBYsXcl50dW0As6d6SUU1\nr4hszjAmyQdTz2poXiAGxOtAKHyraC5Y/OUTKdPIV3t6fbhnWf5hcXW/sWfI8xWu\nCbsGhYt71Rb05u3jVEWnvaECgYEAt7VrGczYRlslnPEKpeyfVxTj4XyS9PWAgvHS\n5NCZaF+df5coomWCVBqzIVAxvVmDIjwPPfsOfcil+iYgL9oUiEfMhhxQ+q8Wv/To\noojtTCn/w7p9mZuNfx+sUYCYm856OyXfdHDj6Jua7MB5WH4ZvbiayovsUpnWFMw2\n4AwGv+ECgYAZAeyM4LDhlq5wA2O9593JSqaFibEwW2NR1LGtmKUStIovcEaeuago\nmBEk3fHj/U/Bfp9uoG1PM4hckaM+ISLKoaq3Ho6VeX4s3UGTHwjJciXxSIhWOaGG\ni9S+T8MYuV/9bbevwwifiARncFzs/4ORmp2NXOEH/URtloxgyddvAQKBgQCR+RLI\nJm/3v7csdI+8dj/KZywH4P+4q1bZNaQY8vPi7o7sckT0fWpIwAp0Pw+24GiFjGmk\nG1hRdF0GXsMWotfLzhliux9Rgky2bLlpZRoBeiHj+cyRgPu29ojrHh6lNzUCyL48\n/PLrwrEgzHPfcBuuGADPTs2SePCWCArWjlfSoQKBgCDjrquZwmaQMXI9GgmmWPH0\nLk58FqEvqiQfvggITF+OD15Zu0w3tDqSkeyHR1NQJU82TI9Apsj5ChiupcV0OLkM\nEz48stTPwf9QJe+ujU3E080kgkMbnySS9rxhCZptGUrhGSO/kB5PayGrl+6Rdzd6\nmJ+Qc/cb2VwHmufbAg/e\n-----END PRIVATE KEY-----\n",
+        "client_email": "firebase-adminsdk-fbsvc@si2condominio.iam.gserviceaccount.com",
+        "client_id": "112052298028373909066",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40si2condominio.iam.gserviceaccount.com",
+        "universe_domain": "googleapis.com"
+    }
+
+# Inicializa Firebase Admin SDK (solo una vez)
+cred = credentials.Certificate(get_firebase_key())
+firebase_admin.initialize_app(cred)
+
+def enviar_notificacion(token, titulo, cuerpo, data_extra=None):
+    message = messaging.Message(
+        notification=messaging.Notification(
+            title=titulo,
+            body=cuerpo
+        ),
+        data=data_extra or {},
+        token=token
+    )
+    response = messaging.send(message)
+    return response

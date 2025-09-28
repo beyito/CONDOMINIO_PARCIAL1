@@ -1,3 +1,5 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:movil_condominio/shared/custom_appbar.dart';
@@ -8,6 +10,7 @@ import '../views/control_ingreso/control_ingreso_view.dart';
 import '../views/pago/pago_view.dart';
 import '../views/reserva/reservasCopropietario_view.dart';
 import '../views/tarea/tarea_views.dart';
+import 'package:movil_condominio/config/config_db.dart';
 //import '../views/areas_comunes/areas_comunes_view.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _setupHomePage();
+    _setupFirebaseMessaging();
   }
 
   Future<void> _setupHomePage() async {
@@ -47,6 +51,58 @@ class _HomePageState extends State<HomePage> {
         ];
       } else if (_rol == 'Limpieza') {
         _viewRoutes = [NoticiasView(), TareaView()];
+      }
+    });
+  }
+
+  // -------------------------------
+  // 🔹 Configurar Firebase Messaging
+  // -------------------------------
+  // Pedir permisos en iOS
+  Future<void> _setupFirebaseMessaging() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    // Solicitar permisos (solo necesario para iOS, pero no hace daño)
+    await messaging.requestPermission();
+
+    // Obtener token FCM
+    String? token_mensaje = await messaging.getToken();
+    print("Token FCM: $token_mensaje");
+
+    // Guardar o enviar al backend
+    if (token_mensaje != null) {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString("token") ?? "";
+
+      await http.post(
+        Uri.parse("${Config.baseUrl}/comunicacion/registrar-token/"),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: '{"token": "$token_mensaje", "plataforma": "android"}',
+      );
+    }
+    // Escuchar notificaciones en primer plano
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print(
+        "📩 Notificación recibida en foreground: ${message.notification?.title}",
+      );
+      // Aquí puedes mostrar un SnackBar o AlertDialog
+    });
+
+    // Escuchar cuando el usuario abre la notificación
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print("👉 Notificación abierta por el usuario: ${message.data}");
+      // Aquí puedes navegar a la pantalla específica según message.data
+    });
+
+    // Notificación que abrió la app desde cerrado
+    FirebaseMessaging.instance.getInitialMessage().then((
+      RemoteMessage? message,
+    ) {
+      if (message != null) {
+        print("🔔 App abierta desde notificación: ${message.data}");
       }
     });
   }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "886358520499",
+    "project_id": "si2condominio",
+    "storage_bucket": "si2condominio.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:886358520499:android:d2170d2f65ce551ed3f6c6",
+        "android_client_info": {
+          "package_name": "com.example.movil_condominio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBb8lqpEEv17SAb5o3XNwICcfrqH7ovo4s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

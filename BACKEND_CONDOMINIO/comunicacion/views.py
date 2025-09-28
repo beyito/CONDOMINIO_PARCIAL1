@@ -1,10 +1,35 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .models import Comunicado
+from .models import Comunicado, Dispositivo
 from .serializers import ListarComunicadoSerializer, ComunicadoSerializer
 from users.models import Usuario
 from users.bitacora import registrar_bitacora
+from rest_framework.permissions import IsAuthenticated
+from condominio.utils import enviar_notificacion
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def registrar_token(request):
+    usuario = request.user
+    token = request.data.get("token")
+    plataforma = request.data.get("plataforma", "android")
+
+    if not token:
+        return Response({"status": 2, "error": 1, "message": "no se pudo registrar el token"})
+
+    dispositivo, created = Dispositivo.objects.update_or_create(
+        usuario=usuario,
+        token=token,
+        defaults={"plataforma": plataforma},
+    )
+
+    return Response({
+                "status": 1,
+                "error": 0,
+                "message": "Se registró el token",
+                "values": token,
+    })
 
 # Create your views here.
 # CREAR COMUNICADO SOLO LO PUEDE HACER EL ADMINISTRADOR
@@ -32,6 +57,9 @@ def crearComunicado(request, administrador_id):
     serializer = ComunicadoSerializer(data=data)
     if serializer.is_valid():
         comunicado = serializer.save()  # aquí Django crea el objeto correctamente
+        dispositivos = Dispositivo.objects.all()  # o filtrar por rol/usuario
+        for disp in dispositivos:
+            enviar_notificacion(disp.token, request.data.get('titulo') , request.data.get('descripcion') )
         registrar_bitacora(request, f"Registró comunicado {comunicado.id} - {comunicado.titulo}")
         return Response(
             {
