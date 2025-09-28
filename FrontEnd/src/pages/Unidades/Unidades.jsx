@@ -54,9 +54,9 @@ const Unidades = () => {
     switch (estado) {
       case 'ocupada':
         return 'bg-green-100 text-green-800'
-      case 'activa':
-        return 'bg-red-100 text-red-800'
       case 'inactiva':
+        return 'bg-red-100 text-red-800'
+      case 'activa':
         return 'bg-yellow-100 text-yellow-800'
       default:
         return 'bg-gray-100 text-gray-800'

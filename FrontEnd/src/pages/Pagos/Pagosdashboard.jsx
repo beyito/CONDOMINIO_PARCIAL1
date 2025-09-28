@@ -39,7 +39,7 @@ export default function PagoDashboard() {
   useEffect(() => {
     execute()
   }, [execute])
-
+  console.log(data)
   const handleUpdateEstado = async (id, estado) => {
     try {
       await updatePago(id, { estado })
@@ -220,7 +220,14 @@ export default function PagoDashboard() {
             {pago.url_comprobante && (
               <button
                 className='text-blue-600 underline mt-1 flex items-center gap-1'
-                onClick={() => window.open(pago.url_comprobante, '_blank')}
+                onClick={() =>
+                  window.open(
+                    `${import.meta.env.VITE_API_URL}/media/${
+                      pago.url_comprobante
+                    }`,
+                    '_blank'
+                  )
+                }
               >
                 <FileText className='w-4 h-4' /> Ver comprobante
               </button>
