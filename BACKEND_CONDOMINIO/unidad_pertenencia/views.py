@@ -493,7 +493,6 @@ def listar_vehiculos(request):
     """Listar todos los vehículos o por unidad"""
     try:
         unidad_id = request.query_params.get('unidad_id', None)
-        
         if unidad_id:
             vehiculos = Vehiculo.objects.filter(unidad_id=unidad_id).order_by('placa')
         else:
@@ -747,3 +746,50 @@ def obtener_mascota(request, mascota_id):
             'values': None
         })
     
+@api_view(['GET'])
+@permission_classes([])  # si quieres que no tenga permisos por ahora
+def listarPertenencias(request):
+    try:
+        usuario_id = request.user.id  
+
+        # 1. Obtener las unidades del copropietario logueado
+        unidades = Unidad.objects.filter(id_copropietario_id=usuario_id)
+        # 2. Listar pertenencias de cada unidad
+        vehiculos = []
+        mascotas = []
+        for unidad in unidades:
+            for v in unidad.vehiculos.all():  # gracias al related_name
+                vehiculos.append({
+                    "placa": v.placa,
+                    "marca": v.marca,
+                    "modelo": v.modelo,
+                    "color": v.color,
+                    "estado": v.estado,
+                    "tipo": v.tipo_vehiculo,
+                })
+            for m in unidad.mascotas.all():  # gracias al related_name
+                mascotas.append({
+                    "nombre": m.nombre,
+                    "tipo": m.tipo_mascota,
+                    "raza": m.raza,
+                    "color": m.color,
+                    "peso": float(m.peso_kg) if m.peso_kg else None,
+                })
+
+        return Response({
+            'status': 1,
+            'error': 0,
+            'message': 'Pertenencias encontradas',
+            'values': {
+                'vehiculos': vehiculos,
+                'mascotas': mascotas,
+            }
+        })
+
+    except Exception as e:
+        return Response({
+            'status': 2,
+            'error': 1,
+            'message': f'Error al obtener pertenencias: {str(e)}',
+            'values': None
+        })

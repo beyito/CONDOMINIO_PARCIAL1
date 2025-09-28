@@ -22,4 +22,6 @@ urlpatterns = [
     path('mascotas/<int:mascota_id>', views.obtener_mascota, name='obtener_mascota'),
     path('mascotas/<int:mascota_id>/editar', views.editar_mascota, name='editar_mascota'),
     path('mascotas/<int:mascota_id>/estado', views.cambiar_estado_mascota, name='cambiar_estado_mascota'),
+
+    path('listarPertenencias', views.listarPertenencias, name = 'listarPertenencias'),
 ]

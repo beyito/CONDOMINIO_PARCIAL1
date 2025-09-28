@@ -16,6 +16,15 @@ async function detectarPlaca(frameCanvas) {
     .filter((t) => /^[0-9]{4}[A-Z]{3}$/.test(t));
 }
 
+function mejorarImagen(img) {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = img.width * 2; // duplicar tamaño
+  canvas.height = img.height * 2;
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  return canvas;
+}
+
 export default function FaceRecognition() {
   const videoRef = useRef();
   const canvasRef = useRef();
@@ -157,8 +166,8 @@ useEffect(() => {
         tempCanvas.height = video.videoHeight;
         const tempCtx = tempCanvas.getContext('2d');
         tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
-
-        const placas = await detectarPlaca(tempCanvas);
+        const tempMejorardo = mejorarImagen(tempCanvas)
+        const placas = await detectarPlaca(tempMejorardo);
         if (placas.length) {
           for (const placa of placas) {
             const resultado = verificarPlacaLocal(placa);
