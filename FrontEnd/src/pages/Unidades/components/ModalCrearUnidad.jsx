@@ -9,7 +9,7 @@ import { XCircle } from 'lucide-react'
 import ApprovalModal from '../../../components/AprovalModal'
 import ErrorModal from '../../../components/ErrorModal'
 
-const estadosUnidad = ['activa', 'inactiva', 'mantenimiento']
+const estadosUnidad = ['ocupada', 'inactiva', 'activa']
 const tiposUnidad = [
   'apartamento',
   'casa',
@@ -29,7 +29,7 @@ export const ModalCrearUnidad = ({ setShowModal, onSuccess, unidad }) => {
       numero: '',
       area_m2: '',
       precio: 0,
-      estado: 'activa',
+      estado: 'ocupada',
       tipo_unidad: 'apartamento'
     }
   )
@@ -178,7 +178,7 @@ export const ModalCrearUnidad = ({ setShowModal, onSuccess, unidad }) => {
                 Estado
               </label>
               <select
-                value={formData.estado || 'activa'}
+                value={formData.estado || 'ocupada'}
                 onChange={(e) =>
                   setFormData({ ...formData, estado: e.target.value })
                 }

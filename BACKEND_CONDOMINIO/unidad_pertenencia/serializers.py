@@ -28,8 +28,8 @@ class VehiculoSerializer(serializers.ModelSerializer):
         if not value:
             raise serializers.ValidationError("La unidad es obligatoria.")
         
-        if value.estado != "activa":
-            raise serializers.ValidationError("La unidad debe estar activa.")
+        if value.estado != "ocupada":
+            raise serializers.ValidationError("La unidad debe estar ocupada.")
         return value 
     
 class MascotaSerializer(serializers.ModelSerializer):
