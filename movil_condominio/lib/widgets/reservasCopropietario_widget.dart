@@ -197,7 +197,7 @@ class _ReservasCopropietarioWidgetState
   }
 
   // ----------------- DIALOGO ADJUNTAR -----------------
-  void _showAdjuntarDialog(int id_reserva) async {
+  void _showAdjuntarDialog(int idReserva) async {
     XFile? pickedFile;
     final ImagePicker picker = ImagePicker();
 
@@ -233,9 +233,9 @@ class _ReservasCopropietarioWidgetState
 
                 File file = File(pickedFile!.path);
 
-                if (id_reserva != null) {
+                if (idReserva != null) {
                   final result = await _service.adjuntarComprobanteReserva(
-                    id_reserva,
+                    idReserva,
                     file,
                   );
 

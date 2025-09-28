@@ -2,6 +2,7 @@ import 'package:movil_condominio/pages/home_page.dart';
 import 'package:movil_condominio/views/login/login_page.dart';
 import 'package:movil_condominio/views/persona/persona_view.dart';
 import 'package:movil_condominio/views/usuario/perfil_view.dart';
+import 'package:movil_condominio/views/pertenencia/pertenencia_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,6 +28,10 @@ final appRouter = GoRouter(
         GoRoute(
           path: 'personas',
           builder: (context, state) => const ListaPersonasView(),
+        ),
+        GoRoute(
+          path: 'pertenencias',
+          builder: (context, state) => const ListaPertenenciaView(),
         ),
         // Subruta dentro de Home
         GoRoute(

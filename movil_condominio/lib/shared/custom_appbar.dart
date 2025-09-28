@@ -56,6 +56,8 @@ class _CustomAppbarState extends State<CustomAppbar> {
                     context.go('/home/0/perfil');
                   } else if (value == 'personas') {
                     context.go('/home/0/personas');
+                  } else if (value == 'pertenencias') {
+                    context.go('/home/0/pertenencias');
                   } else if (value == 'logout') {
                     await _logout(context);
                   }
@@ -79,6 +81,15 @@ class _CustomAppbarState extends State<CustomAppbar> {
                         child: ListTile(
                           leading: Icon(Icons.group),
                           title: Text('Mis personas'),
+                        ),
+                      ),
+                    );
+                    items.add(
+                      const PopupMenuItem(
+                        value: 'pertenencias',
+                        child: ListTile(
+                          leading: Icon(Icons.group),
+                          title: Text('Mis pertenencias'),
                         ),
                       ),
                     );

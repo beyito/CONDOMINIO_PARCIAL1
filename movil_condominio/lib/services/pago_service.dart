@@ -31,7 +31,7 @@ class PagoService {
   }
 
   Future<Map<String, dynamic>> adjuntarComprobante(
-    int id_pago,
+    int idPago,
     File imagen,
   ) async {
     final token = await authService.getToken();
@@ -39,7 +39,7 @@ class PagoService {
 
     var request = http.MultipartRequest(
       'PATCH',
-      Uri.parse('$baseUrl/adjuntarComprobante/$id_pago/'),
+      Uri.parse('$baseUrl/adjuntarComprobante/$idPago/'),
     );
 
     request.headers['Authorization'] = 'Bearer $token';

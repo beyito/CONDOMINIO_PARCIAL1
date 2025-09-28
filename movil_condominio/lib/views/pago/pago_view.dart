@@ -106,7 +106,7 @@ class _PagoViewState extends State<PagoView> {
     );
   }
 
-  void _showAdjuntarDialog(int id_pago) async {
+  void _showAdjuntarDialog(int idPago) async {
     XFile? pickedFile;
     final ImagePicker picker = ImagePicker();
 
@@ -142,10 +142,10 @@ class _PagoViewState extends State<PagoView> {
 
                 File file = File(pickedFile!.path);
 
-                if (id_pago != null) {
+                if (idPago != null) {
                   final reservaService = ReservaCopropietarioService();
                   final result = await _service.adjuntarComprobante(
-                    id_pago,
+                    idPago,
                     file,
                   );
                   // ✅ Manejar respuesta del backend

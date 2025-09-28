@@ -39,21 +39,21 @@ class ReservaCopropietarioService {
   }
 
   Future<Map<String, dynamic>> cancelarReserva(
-    int id_reserva,
-    String motivo_cancelacion,
+    int idReserva,
+    String motivoCancelacion,
   ) async {
     final token = await authService.getToken();
     if (token == null) throw Exception("Usuario no autenticado");
 
     final response = await http.patch(
       Uri.parse(
-        '$baseUrl/cancelarReserva/$id_reserva',
+        '$baseUrl/cancelarReserva/$idReserva',
       ), // 👈 ojo con la barra final
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode({"motivo_cancelacion": motivo_cancelacion}),
+      body: jsonEncode({"motivo_cancelacion": motivoCancelacion}),
     );
 
     if (response.statusCode == 200) {
