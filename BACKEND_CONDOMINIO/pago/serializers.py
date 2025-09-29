@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PagoModel,ExpensaModel
+from .models import PagoModel,ExpensaModel, QRModel
 from area_comun.models import Reserva
 
 class ListaPagosSerializer(serializers.ModelSerializer):
@@ -28,4 +28,9 @@ class ListaPagosSerializer(serializers.ModelSerializer):
             expensa = ExpensaModel.objects.get(pago=obj)
             return expensa.id_expensa
         except ExpensaModel.DoesNotExist:
-            return None   
+            return None  
+        
+class QRSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QRModel
+        fields = '__all__' 

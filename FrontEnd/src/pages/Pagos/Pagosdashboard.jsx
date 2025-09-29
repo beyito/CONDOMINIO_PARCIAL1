@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import CrearQRModal from './components/CrearQrModal'
 import {
   getPagos,
   updatePago,
@@ -28,6 +29,7 @@ export default function PagoDashboard() {
   const [tab, setTab] = useState('reserva')
   const [estadoFiltro, setEstadoFiltro] = useState('todos')
   const [reporteModal, setReporteModal] = useState(false)
+  const [qrModal, setQrModal] = useState(false)
   const [reporteData, setReporteData] = useState({
     tipoPago: 'todos',
     estado: 'todos',
@@ -46,6 +48,19 @@ export default function PagoDashboard() {
       execute()
     } catch (err) {
       console.error('Error al actualizar pago:', err)
+    }
+  }
+  const handleCrearQR = async (payload) => {
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL}/qr/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      alert('QR creado correctamente')
+    } catch (err) {
+      console.error(err)
+      alert('Error al crear QR')
     }
   }
 
@@ -308,8 +323,15 @@ export default function PagoDashboard() {
         </div>
       </div>
 
-      {/* Botón de reportes */}
-      <div className='flex justify-end mb-4'>
+      {/* Botones */}
+      <div className='flex justify-end mb-4 gap-2'>
+        <button
+          onClick={() => setQrModal(true)}
+          className='px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-2'
+        >
+          Crear QR
+        </button>
+
         <button
           onClick={() => setReporteModal(true)}
           className='px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 flex items-center gap-2'
@@ -462,6 +484,12 @@ export default function PagoDashboard() {
           </div>
         </div>
       )}
+      {/* Modal Crear QR */}
+      <CrearQRModal
+        isOpen={qrModal}
+        onClose={() => setQrModal(false)}
+        onSave={handleCrearQR}
+      />
     </div>
   )
 }

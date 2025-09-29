@@ -1,11 +1,12 @@
 from django.utils import timezone
 from rest_framework.decorators import api_view,action
+from rest_framework import status
 from rest_framework.response import Response
 from area_comun.models import Reserva
-from .models import PagoModel, ExpensaModel
+from .models import PagoModel, ExpensaModel, QRModel    
 from unidad_pertenencia.models import Unidad
 from users.models import CopropietarioModel
-from .serializers import ListaPagosSerializer
+from .serializers import ListaPagosSerializer, QRSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
@@ -227,3 +228,45 @@ def detallePagoAdmin(request, id_pago):
         })
     except PagoModel.DoesNotExist:
         return Response({"status": 0, "message": "Pago no encontrado"})
+
+@api_view(['GET', 'POST'])
+def qr_list_create(request):
+    if request.method == 'GET':
+        try:
+            qr = QRModel.objects.get(estado="activo")
+            serializer = QRSerializer(qr)
+            return Response({
+                "status": 1,
+                "error": 0,
+                "message": "QR activo obtenido correctamente",
+                "values": serializer.data
+            })
+        except QRModel.DoesNotExist:
+            return Response({
+                "status": 0,
+                "error": 1,
+                "message": "No hay QR activo",
+                "values": None
+            }, status=status.HTTP_404_NOT_FOUND)
+
+    elif request.method == 'POST':
+        # Inactivar cualquier QR activo antes de crear uno nuevo
+        if request.data.get("estado", "activo") == "activo":
+            QRModel.objects.filter(estado="activo").update(estado="inactivo")
+
+        serializer = QRSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            registrar_bitacora(request, f"Registró QR con id {serializer.instance.pk}")
+            return Response({
+                "status": 1,
+                "error": 0,
+                "message": "QR creado correctamente",
+                "values": serializer.data
+            }, status=status.HTTP_201_CREATED)
+        return Response({
+            "status": 0,
+            "error": 1,
+            "message": "Error al crear QR",
+            "values": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)

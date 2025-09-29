@@ -37,3 +37,14 @@ class ExpensaModel(models.Model):
 
     class Meta:
         db_table = 'expensa'
+class QRModel(models.Model):
+    id_qr = models.AutoField(primary_key=True)
+    url_qr = models.URLField(null=True, blank=True)
+    fecha = models.DateField(auto_now_add=True)
+    ESTADO_CHOICES = (
+        ('activo', 'Activo'),
+        ('inactivo', 'Inactivo'),
+    )
+    estado = models.CharField(max_length=50, choices=ESTADO_CHOICES, default='activo')
+    class Meta:
+        db_table = 'qr'

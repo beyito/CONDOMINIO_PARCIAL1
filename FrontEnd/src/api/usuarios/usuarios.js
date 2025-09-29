@@ -35,3 +35,7 @@ export const getResidentes = async () => {
 export const updateResidente = async (id, data) => {
     return instancia.put(`usuario/residentes/${id}/`, data);
 }
+
+export const registrarBitacora = async (data) => {
+    return instancia.post('usuario/bitacora/registrar/', data);  
+}

@@ -1,6 +1,6 @@
 # users/urls.py
 from django.urls import include, path
-from .views import RegisterView, UserViewSet,ListaPersonaView, MyTokenObtainPairView, PersonaView, LogoutView, RegisterCopropietarioView, RegisterPersonalView, PerfilUsuarioView, ResidenteViewSet, PersonalDetailView, PersonalListView, BitacoraListView
+from .views import RegisterView, UserViewSet,ListaPersonaView, MyTokenObtainPairView, PersonaView, LogoutView, RegisterCopropietarioView, RegisterPersonalView, PerfilUsuarioView, ResidenteViewSet, PersonalDetailView, PersonalListView, BitacoraListView,RegistrarBitacoraView
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework import routers
 
@@ -26,6 +26,7 @@ urlpatterns = [
     path('usuarios/', include(router.urls)), #CRUD de los usuarios
     path('residentes/',include(routerResidente.urls)), #CRUD de los residentes
     path('bitacora/', BitacoraListView.as_view(), name='bitacora-list'),
+    path('bitacora/registrar/', RegistrarBitacoraView.as_view(), name='registrar_bitacora'),
     # Para el copropietario
     path('registrarPersona/', PersonaView.as_view(), name='persona-create'),
     path('mostrarPersonas/', ListaPersonaView.as_view(), name='persona-list'),
