@@ -12,6 +12,11 @@ import '../views/reserva/reservasCopropietario_view.dart';
 import '../views/tarea/tarea_views.dart';
 import 'package:movil_condominio/config/config_db.dart';
 //import '../views/areas_comunes/areas_comunes_view.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+// Instancia global del plugin
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class HomePage extends StatefulWidget {
   static const name = 'home-screen';
@@ -62,14 +67,22 @@ class _HomePageState extends State<HomePage> {
   Future<void> _setupFirebaseMessaging() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-    // Solicitar permisos (solo necesario para iOS, pero no hace daño)
+    // Solicitar permisos (iOS)
     await messaging.requestPermission();
+
+    // Inicializar flutter_local_notifications
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
     // Obtener token FCM
     String? tokenMensaje = await messaging.getToken();
     print("Token FCM: $tokenMensaje");
 
-    // Guardar o enviar al backend
+    // Guardar token en backend
     if (tokenMensaje != null) {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString("token") ?? "";
@@ -83,21 +96,40 @@ class _HomePageState extends State<HomePage> {
         body: '{"token": "$tokenMensaje", "plataforma": "android"}',
       );
     }
-    // Escuchar notificaciones en primer plano
+
+    // 🔹 Foreground: mostrar notificación en barra
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print(
         "📩 Notificación recibida en foreground: ${message.notification?.title}",
       );
-      // Aquí puedes mostrar un SnackBar o AlertDialog
+
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+
+      if (notification != null && android != null) {
+        flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              'canal_general', // ID del canal
+              'Canal General', // nombre
+              channelDescription: 'Notificaciones generales',
+              importance: Importance.max,
+              priority: Priority.high,
+            ),
+          ),
+        );
+      }
     });
 
-    // Escuchar cuando el usuario abre la notificación
+    // Cuando el usuario abre la notificación
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print("👉 Notificación abierta por el usuario: ${message.data}");
-      // Aquí puedes navegar a la pantalla específica según message.data
     });
 
-    // Notificación que abrió la app desde cerrado
+    // App abierta desde notificación cerrada
     FirebaseMessaging.instance.getInitialMessage().then((
       RemoteMessage? message,
     ) {

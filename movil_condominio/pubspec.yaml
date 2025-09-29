@@ -41,6 +41,7 @@ dependencies:
   http_parser: ^4.1.2
   firebase_core: ^4.1.1
   firebase_messaging: ^16.0.2
+  flutter_local_notifications: ^13.0.0
 
 dev_dependencies:
   flutter_test:
