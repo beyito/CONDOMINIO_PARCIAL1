@@ -6,6 +6,7 @@ from area_comun.models import Reserva
 from .models import PagoModel, ExpensaModel, QRModel    
 from unidad_pertenencia.models import Unidad
 from users.models import CopropietarioModel
+from comunicacion.models import Dispositivo
 from .serializers import ListaPagosSerializer, QRSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import api_view, permission_classes
@@ -14,6 +15,7 @@ from condominio.permissions import IsPersonal, IsCopropietario
 import requests
 from django.conf import settings
 import os
+from condominio.utils import enviar_notificacion
 from users.bitacora import registrar_bitacora
 # Create your views here.
 @api_view(['PATCH'])
@@ -160,6 +162,9 @@ def generarExpensas(request):
             )
         expensas_creadas.append(expensa.id_expensa)
     registrar_bitacora(request, f"Generó las expensas para la fecha {timezone.now().date()}")
+    dispositivos = Dispositivo.objects.all()
+    for disp in dispositivos:
+            enviar_notificacion(disp.token, "Generación de expensas", f"El admin con id: {request.user.id} generó las expensas para la fecha {timezone.now().date()}.")
     return Response({
             "status": 1,
             "error": 0,
