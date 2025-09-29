@@ -10,6 +10,7 @@ urlpatterns = [
     path('actualizarEstadoPago/<int:id_pago>/', views.actualizarEstadoPago, name='actualizarEstadoPago'),
     path('detallePagoAdmin/<int:id_pago>/', views.detallePagoAdmin, name='detallePagoAdmin'),
     path('marcarPagosEnMora/', views.marcarPagosEnMora, name='marcarPagosEnMora'),
+    path('qr/', views.qr_list_create, name='qr_list_create'),
     # path('mostrarTodasTareas', views.mostrarTodasTareas, name='mostrarTodasTareas'),
     # path('marcarTareaRealizada/<int:id_tarea_personal>', views.marcarTareaRealizada, name = 'marcarTareaRealizada'),
 ]

@@ -340,4 +340,24 @@ class ListaPersonaView(generics.ListAPIView):
             "message": "se listó las personas correctamente",
             "values": serializer.data
         })
+
+class RegistrarBitacoraView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        accion = request.data.get('accion')
+        if not accion:
+            return Response({
+                "status": 0,
+                "error": 1,
+                "message": "Debes enviar el campo 'accion'"
+            }, status=400)
+
+        registrar_bitacora(request, accion)
+
+        return Response({
+            "status": 1,
+            "error": 0,
+            "message": "Registro agregado a la bitácora correctamente"
+        })
     
