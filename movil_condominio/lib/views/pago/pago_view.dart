@@ -14,17 +14,30 @@ class PagoView extends StatefulWidget {
 class _PagoViewState extends State<PagoView> {
   late Future<List<PagoModel>> _pagosFuture;
   final PagoService _service = PagoService();
+
+  // 🔹 Aquí guardamos el QR que recibiste de tu API
+  final String urlQr =
+      "https://res.cloudinary.com/dpicsykwa/image/upload/v1759113048/perawxrrky9rm8lnj740.jpg";
+
   @override
   void initState() {
     super.initState();
-    // Aquí deberías pasar el token real
     _pagosFuture = _service.mostrarPagosCopropietario();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Mis Pagos")),
+      appBar: AppBar(
+        title: const Text("Mis Pagos"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.qr_code_2),
+            tooltip: "Ver QR",
+            onPressed: () => _mostrarQr(context),
+          ),
+        ],
+      ),
       body: FutureBuilder<List<PagoModel>>(
         future: _pagosFuture,
         builder: (context, snapshot) {
@@ -40,7 +53,6 @@ class _PagoViewState extends State<PagoView> {
           }
           return RefreshIndicator(
             onRefresh: () async {
-              // Reasignamos el Future para que se recargue la lista
               setState(() {
                 _pagosFuture = _service.mostrarPagosCopropietario();
               });
@@ -73,12 +85,10 @@ class _PagoViewState extends State<PagoView> {
                             ),
                           ),
                         ),
-                        // Botón condicional
                         if (pago.estado == "no pagado")
                           ElevatedButton.icon(
                             onPressed: () {
                               _showAdjuntarDialog(pago.id);
-                              // Lógica para adjuntar comprobante
                             },
                             icon: const Icon(Icons.upload_file),
                             label: const Text("Adjuntar Comprobante"),
@@ -86,14 +96,11 @@ class _PagoViewState extends State<PagoView> {
                         else if (pago.estado == "pendiente")
                           ElevatedButton.icon(
                             onPressed: () {
-                              _showAdjuntarDialog(
-                                pago.id,
-                              ); // Lógica para cambiar comprobante
+                              _showAdjuntarDialog(pago.id);
                             },
                             icon: const Icon(Icons.edit),
                             label: const Text("Cambiar Comprobante"),
                           ),
-                        // No mostrar botón si está "pagado" o "cancelada"
                       ],
                     ),
                   ),
@@ -102,6 +109,40 @@ class _PagoViewState extends State<PagoView> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  void _mostrarQr(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Código QR"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.network(
+              urlQr,
+              height: 200,
+              width: 200,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Text("Error al cargar el QR");
+              },
+            ),
+            const SizedBox(height: 10),
+            Text(
+              "Escanea este código para continuar",
+              style: TextStyle(color: Colors.grey[700]),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cerrar"),
+          ),
+        ],
       ),
     );
   }
@@ -123,7 +164,7 @@ class _PagoViewState extends State<PagoView> {
                   pickedFile = await picker.pickImage(
                     source: ImageSource.gallery,
                   );
-                  setStateDialog(() {}); // ✅ actualiza solo el diálogo
+                  setStateDialog(() {});
                 },
                 child: const Text("Seleccionar Imagen"),
               ),
@@ -139,12 +180,9 @@ class _PagoViewState extends State<PagoView> {
             ElevatedButton(
               onPressed: () async {
                 if (pickedFile == null) return;
-
                 File file = File(pickedFile!.path);
 
-                final reservaService = ReservaCopropietarioService();
                 final result = await _service.adjuntarComprobante(idPago, file);
-                // ✅ Manejar respuesta del backend
                 if (result['status'] == 1) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -162,7 +200,6 @@ class _PagoViewState extends State<PagoView> {
                     ),
                   );
                 }
-
                 setState(() {
                   _pagosFuture = _service.mostrarPagosCopropietario();
                 });
