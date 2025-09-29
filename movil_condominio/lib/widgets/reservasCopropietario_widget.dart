@@ -233,30 +233,28 @@ class _ReservasCopropietarioWidgetState
 
                 File file = File(pickedFile!.path);
 
-                if (idReserva != null) {
-                  final result = await _service.adjuntarComprobanteReserva(
-                    idReserva,
-                    file,
-                  );
+                final result = await _service.adjuntarComprobanteReserva(
+                  idReserva,
+                  file,
+                );
 
-                  // ✅ Manejar respuesta del backend
-                  if (result['status'] == 1) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          "✅ Comprobante subido: ${result['url_comprobante']}",
-                        ),
-                        backgroundColor: Colors.green,
+                // ✅ Manejar respuesta del backend
+                if (result['status'] == 1) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "✅ Comprobante subido: ${result['url_comprobante']}",
                       ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text("❌ Error: ${result['message']}"),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("❌ Error: ${result['message']}"),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
                 }
 
                 setState(() {

@@ -66,11 +66,11 @@ class _HomePageState extends State<HomePage> {
     await messaging.requestPermission();
 
     // Obtener token FCM
-    String? token_mensaje = await messaging.getToken();
-    print("Token FCM: $token_mensaje");
+    String? tokenMensaje = await messaging.getToken();
+    print("Token FCM: $tokenMensaje");
 
     // Guardar o enviar al backend
-    if (token_mensaje != null) {
+    if (tokenMensaje != null) {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString("token") ?? "";
 
@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json",
         },
-        body: '{"token": "$token_mensaje", "plataforma": "android"}',
+        body: '{"token": "$tokenMensaje", "plataforma": "android"}',
       );
     }
     // Escuchar notificaciones en primer plano

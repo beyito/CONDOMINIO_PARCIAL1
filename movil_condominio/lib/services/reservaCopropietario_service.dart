@@ -5,7 +5,7 @@ import 'package:movil_condominio/services/auth_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:movil_condominio/config/config_db.dart';
 import 'dart:io';
-import 'package:http_parser/http_parser.dart'; // para MediaType
+// para MediaType
 
 class ReservaCopropietarioService {
   final String baseUrl = '${Config.baseUrl}/areacomun';

@@ -79,4 +79,5 @@ htmlcov/
 
 # 3) ...pero conserva el _init_.py
 !**/migrations/_init_.py
+secrets/
 

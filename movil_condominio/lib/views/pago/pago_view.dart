@@ -142,30 +142,25 @@ class _PagoViewState extends State<PagoView> {
 
                 File file = File(pickedFile!.path);
 
-                if (idPago != null) {
-                  final reservaService = ReservaCopropietarioService();
-                  final result = await _service.adjuntarComprobante(
-                    idPago,
-                    file,
+                final reservaService = ReservaCopropietarioService();
+                final result = await _service.adjuntarComprobante(idPago, file);
+                // ✅ Manejar respuesta del backend
+                if (result['status'] == 1) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "✅ Comprobante subido: ${result['url_comprobante']}",
+                      ),
+                      backgroundColor: Colors.green,
+                    ),
                   );
-                  // ✅ Manejar respuesta del backend
-                  if (result['status'] == 1) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          "✅ Comprobante subido: ${result['url_comprobante']}",
-                        ),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text("❌ Error: ${result['message']}"),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("❌ Error: ${result['message']}"),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
                 }
 
                 setState(() {
