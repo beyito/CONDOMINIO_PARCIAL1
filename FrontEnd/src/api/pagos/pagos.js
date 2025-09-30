@@ -17,7 +17,7 @@ export const marcarPagosEnMora = async () => {
 }
 
 export const generarExpensas = async () => {
-    return instancia.get('pago/generarExpensas/');  
+    return instancia.post('pago/generarExpensas');  
 }
 
 export const postQr = async (data) => {
